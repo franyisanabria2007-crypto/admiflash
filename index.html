@@ -397,6 +397,33 @@
     let estadoFiltroActual = 'todos';
     let pedidoSeleccionadoId = null;
 
+    // FUNCION AUXILIAR PARA OBTENER EL NOMBRE DEL CLIENTE SIN IMPORTAR EL FORMATO
+    function obtenerNombreCliente(p) {
+      if (!p) return 'Cliente';
+      if (typeof p.cliente === 'string' && p.cliente.trim() !== '') return p.cliente;
+      if (typeof p.cliente === 'object' && p.cliente !== null && p.cliente.nombre) return p.cliente.nombre;
+      if (p.nombreCliente) return p.nombreCliente;
+      if (p.nombre) return p.nombre;
+      return 'Cliente';
+    }
+
+    // FUNCION AUXILIAR PARA OBTENER EL TELEFONO SIN IMPORTAR EL FORMATO
+    function obtenerTelefonoCliente(p) {
+      if (!p) return 'Sin tel';
+      if (p.telefono) return p.telefono;
+      if (typeof p.cliente === 'object' && p.cliente !== null && p.cliente.telefono) return p.cliente.telefono;
+      if (p.tel) return p.tel;
+      return 'Sin tel';
+    }
+
+    // FUNCION AUXILIAR PARA OBTENER LA DIRECCIÓN
+    function obtenerDireccionCliente(p) {
+      if (!p) return 'Sin dirección';
+      if (p.direccion) return p.direccion;
+      if (typeof p.cliente === 'object' && p.cliente !== null && p.cliente.direccion) return p.cliente.direccion;
+      return 'Sin dirección';
+    }
+
     window.onload = () => {
       const sesionAdmin = sessionStorage.getItem('admin_pedidosflash_autenticado');
       if (sesionAdmin === 'true') {
@@ -492,8 +519,8 @@
 
       const filtrados = keys.filter(id => {
         const p = todosLosPedidosAdmin[id];
-        const nom = (p.cliente || p.nombre || '').toLowerCase();
-        const tel = (p.telefono || '').toLowerCase();
+        const nom = obtenerNombreCliente(p).toLowerCase();
+        const tel = obtenerTelefonoCliente(p).toLowerCase();
         const ord = (p.orden || id).toLowerCase();
 
         const matchQuery = nom.includes(query) || tel.includes(query) || ord.includes(query);
@@ -510,8 +537,8 @@
       filtrados.forEach(id => {
         const p = todosLosPedidosAdmin[id];
         const numOrden = p.orden || id.substring(0, 8);
-        const nombreCliente = p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente');
-        const telCliente = p.telefono || (p.cliente ? p.cliente.telefono : '') || 'Sin tel';
+        const nombreCliente = obtenerNombreCliente(p);
+        const telCliente = obtenerTelefonoCliente(p);
         const monto = parseFloat(p.total || p.montoTotal || p.monto || 0).toFixed(2);
         const metodo = p.metodoPago || p.pago || 'Efectivo';
         const chofer = p.chofer || 'Sin Asignar';
@@ -753,16 +780,16 @@
 
       document.getElementById('adm-modal-orden-id').innerText = `Orden: ${p.orden || id}`;
       document.getElementById('adm-modal-fecha').innerText = p.fecha ? new Date(p.fecha).toLocaleString() : 'Reciente';
-      document.getElementById('adm-modal-cliente').innerText = p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente');
-      document.getElementById('adm-modal-telefono').innerText = p.telefono || 'Sin especificar';
-      document.getElementById('adm-modal-direccion').innerText = p.direccion || 'Sin dirección';
+      document.getElementById('adm-modal-cliente').innerText = obtenerNombreCliente(p);
+      document.getElementById('adm-modal-telefono').innerText = obtenerTelefonoCliente(p);
+      document.getElementById('adm-modal-direccion').innerText = obtenerDireccionCliente(p);
       document.getElementById('adm-modal-total').innerText = `$${parseFloat(p.total || p.montoTotal || p.monto || 0).toFixed(2)}`;
 
       const lista = document.getElementById('adm-modal-items-lista');
       lista.innerHTML = "";
       if (p.items && Array.isArray(p.items)) {
         p.items.forEach(it => {
-          lista.innerHTML += `<div class="flex justify-between"><span>• ${it.cantidad || 1}x ${it.nombre}</span><span>$${((it.cantidad||1)*(it.precio||0)).toFixed(2)}</span></div>`;
+          lista.innerHTML += `<div class="flex justify-between font-medium"><span>• ${it.cantidad || 1}x ${it.nombre || it.titulo || 'Producto'}</span><span>$${((it.cantidad||1)*(it.precio||0)).toFixed(2)}</span></div>`;
         });
       } else {
         lista.innerHTML = `<p>${p.detalle || p.productos || 'Carrera de Transporte Flash'}</p>`;
