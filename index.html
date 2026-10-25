@@ -10,14 +10,14 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   
-  <!-- Chart.js para las gráficas financieras (Versión compatible con GitHub Pages) -->
+  <!-- Chart.js de cdnjs (con fallback nativo) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-  <!-- Google Fonts: Plus Jakarta Sans & Orbitron -->
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <script>
@@ -140,23 +140,29 @@
       </div>
     </div>
 
-    <!-- SECCIÓN DE GRÁFICAS FINANCIERAS CON ALTURA FIJA PARA EVITAR COLAPSO -->
+    <!-- SECCIÓN DE GRÁFICAS FINANCIERAS (CANVAS DUAL CON FALLBACK NATIVO) -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl md:col-span-2 flex flex-col justify-between">
-        <h3 class="text-xs font-black text-white uppercase tracking-wider mb-2 flex items-center gap-2">
-          <i data-lucide="bar-chart-3" class="w-4 h-4 text-accent-cyan"></i> Resumen Financiero (Ventas vs Gastos)
-        </h3>
-        <div class="relative h-60 w-full">
-          <canvas id="graficaVentas"></canvas>
+        <div class="flex justify-between items-center mb-2">
+          <h3 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="bar-chart-3" class="w-4 h-4 text-accent-cyan"></i> Resumen Financiero (Ventas vs Gastos)
+          </h3>
+          <span id="tag-render-ventas" class="text-[9px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400">Iniciando...</span>
+        </div>
+        <div class="relative h-64 w-full flex items-center justify-center">
+          <canvas id="graficaVentas" class="w-full h-full block"></canvas>
         </div>
       </div>
 
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
-        <h3 class="text-xs font-black text-white uppercase tracking-wider mb-2 flex items-center gap-2">
-          <i data-lucide="pie-chart" class="w-4 h-4 text-accent-emerald"></i> Proporción Neta
-        </h3>
-        <div class="relative h-60 w-full">
-          <canvas id="graficaDona"></canvas>
+        <div class="flex justify-between items-center mb-2">
+          <h3 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-accent-emerald"></i> Proporción Neta
+          </h3>
+          <span id="tag-render-dona" class="text-[9px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400">Iniciando...</span>
+        </div>
+        <div class="relative h-64 w-full flex items-center justify-center">
+          <canvas id="graficaDona" class="w-full h-full block"></canvas>
         </div>
       </div>
     </div>
@@ -395,7 +401,7 @@
   </div>
 
   <script>
-    // CONFIGURACIÓN DE FIREBASE
+    // CONFIGURACIÓN DE FIREBASE REALTIME DATABASE
     const firebaseConfig = {
       apiKey: "AIzaSyB19B9jLHPpgKxVvMH97D5VafgTp0CfnOc", 
       authDomain: "pedidosflash-c7bb7.firebaseapp.com",
@@ -447,11 +453,17 @@
     }
 
     window.onload = () => {
+      lucide.createIcons();
       const sesionAdmin = sessionStorage.getItem('admin_pedidosflash_autenticado');
       if (sesionAdmin === 'true') {
         document.getElementById('modal-login-admin').classList.add('hidden');
         inicializarSuscripciones();
       }
+      
+      // Manejar redimensionado del Canvas de forma adaptativa
+      window.addEventListener('resize', () => {
+        calcularMetricasAdmin();
+      });
     };
 
     function autenticarAdmin(e) {
@@ -531,63 +543,218 @@
       document.getElementById('metrica-pedidos').innerText = totalPedidos;
       document.getElementById('cant-admin-pedidos').innerText = totalPedidos;
 
-      // ACTUALIZAR LAS GRÁFICAS SI CHART.JS ESTÁ CARGADO
+      // DISPARAR EL RENDERIZADO DE GRÁFICAS (CHART.JS CON FALLBACK A CANVAS2D NATIVO)
+      renderizarGraficasFinancieras(totalVentas, totalGastos, gananciaNeta);
+    }
+
+    function renderizarGraficasFinancieras(ventas, gastos, neta) {
+      let usoChartJS = false;
+
+      // Intentar primero con Chart.js si la librería cargó correctamente
       if (typeof Chart !== 'undefined') {
-        actualizarGraficasFinancieras(totalVentas, totalGastos, gananciaNeta);
+        try {
+          const cvBar = document.getElementById('graficaVentas');
+          const cvDona = document.getElementById('graficaDona');
+          
+          if (cvBar && cvDona) {
+            if (chartVentasObj) chartVentasObj.destroy();
+            if (chartDonaObj) chartDonaObj.destroy();
+
+            chartVentasObj = new Chart(cvBar.getContext('2d'), {
+              type: 'bar',
+              data: {
+                labels: ['Ventas Brutas', 'Gastos', 'Ganancia Neta'],
+                datasets: [{
+                  data: [ventas, gastos, neta],
+                  backgroundColor: ['#ffb800', '#f43f5e', '#00e676'],
+                  borderRadius: 8
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                  y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+                  x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+                }
+              }
+            });
+
+            chartDonaObj = new Chart(cvDona.getContext('2d'), {
+              type: 'doughnut',
+              data: {
+                labels: ['Ganancia Neta', 'Gastos'],
+                datasets: [{
+                  data: [Math.max(0, neta), gastos],
+                  backgroundColor: ['#00e676', '#f43f5e'],
+                  borderWidth: 0
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } }
+                }
+              }
+            });
+
+            document.getElementById('tag-render-ventas').innerText = 'Chart.js';
+            document.getElementById('tag-render-dona').innerText = 'Chart.js';
+            usoChartJS = true;
+          }
+        } catch (err) {
+          console.warn("Chart.js falló, cambiando a renderizado Canvas2D nativo:", err);
+          usoChartJS = false;
+        }
+      }
+
+      // FALLBACK INDESTRUCTIBLE EN CANVAS 2D NATIVO
+      if (!usoChartJS) {
+        document.getElementById('tag-render-ventas').innerText = 'Canvas2D Nativo';
+        document.getElementById('tag-render-dona').innerText = 'Canvas2D Nativo';
+        
+        dibujarBarCanvasNativo('graficaVentas', [
+          { label: 'Ventas', valor: ventas, color: '#ffb800' },
+          { label: 'Gastos', valor: gastos, color: '#f43f5e' },
+          { label: 'Neta', valor: neta, color: '#00e676' }
+        ]);
+
+        dibujarDonaCanvasNativa('graficaDona', [
+          { label: 'Neta', valor: Math.max(0, neta), color: '#00e676' },
+          { label: 'Gastos', valor: gastos, color: '#f43f5e' }
+        ]);
       }
     }
 
-    function actualizarGraficasFinancieras(ventas, gastos, neta) {
-      try {
-        const ctxVentas = document.getElementById('graficaVentas').getContext('2d');
-        if (chartVentasObj) chartVentasObj.destroy();
+    // MOTOR DIBUJO CANVAS 2D NATIVO - BARRAS
+    function dibujarBarCanvasNativo(canvasId, items) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
 
-        chartVentasObj = new Chart(ctxVentas, {
-          type: 'bar',
-          data: {
-            labels: ['Ventas Brutas', 'Gastos / Egresos', 'Ganancia Neta'],
-            datasets: [{
-              label: 'USD ($)',
-              data: [ventas, gastos, neta],
-              backgroundColor: ['#ffb800', '#f43f5e', '#00e676'],
-              borderRadius: 8
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
-              x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
-            }
-          }
-        });
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
 
-        const ctxDona = document.getElementById('graficaDona').getContext('2d');
-        if (chartDonaObj) chartDonaObj.destroy();
+      const w = rect.width;
+      const h = rect.height;
 
-        chartDonaObj = new Chart(ctxDona, {
-          type: 'doughnut',
-          data: {
-            labels: ['Ganancia Neta', 'Gastos Operativos'],
-            datasets: [{
-              data: [Math.max(0, neta), gastos],
-              backgroundColor: ['#00e676', '#f43f5e'],
-              borderWidth: 0
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } }
-            }
-          }
-        });
-      } catch (err) {
-        console.log("Error inicializando gráficas:", err);
+      ctx.clearRect(0, 0, w, h);
+
+      const maxVal = Math.max(...items.map(i => Math.abs(i.valor)), 10);
+      const padding = 35;
+      const chartH = h - padding * 2;
+      const barW = (w - padding * 2) / items.length - 20;
+
+      // Líneas de fondo
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = padding + (chartH / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(w - padding, y);
+        ctx.stroke();
       }
+
+      items.forEach((item, index) => {
+        const x = padding + 10 + index * (barW + 20);
+        const barH = (Math.abs(item.valor) / maxVal) * chartH;
+        const y = padding + chartH - barH;
+
+        // Barra con esquinas redondeadas
+        ctx.fillStyle = item.color;
+        ctx.beginPath();
+        if (ctx.roundRect) {
+          ctx.roundRect(x, y, barW, barH, [6, 6, 0, 0]);
+        } else {
+          ctx.rect(x, y, barW, barH);
+        }
+        ctx.fill();
+
+        // Texto Valor
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`$${item.valor.toFixed(0)}`, x + barW / 2, y - 6);
+
+        // Texto Label
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px sans-serif';
+        ctx.fillText(item.label, x + barW / 2, h - 10);
+      });
+    }
+
+    // MOTOR DIBUJO CANVAS 2D NATIVO - DONA
+    function dibujarDonaCanvasNativa(canvasId, items) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width;
+      const h = rect.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const total = items.reduce((acc, i) => acc + i.valor, 0);
+      const centerX = w / 2;
+      const centerY = (h - 30) / 2;
+      const outerRadius = Math.min(w, h - 30) / 2.5;
+      const innerRadius = outerRadius * 0.6;
+
+      if (total <= 0) {
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 15;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, outerRadius - 10, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.fillStyle = '#64748b';
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Sin datos', centerX, centerY + 4);
+        return;
+      }
+
+      let startAngle = -Math.PI / 2;
+
+      items.forEach(item => {
+        const sliceAngle = (item.valor / total) * (2 * Math.PI);
+        const endAngle = startAngle + sliceAngle;
+
+        ctx.fillStyle = item.color;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
+        ctx.arc(centerX, centerY, innerRadius, endAngle, startAngle, true);
+        ctx.closePath();
+        ctx.fill();
+
+        startAngle = endAngle;
+      });
+
+      // Leyenda
+      let legX = 20;
+      const legY = h - 15;
+      items.forEach(item => {
+        ctx.fillStyle = item.color;
+        ctx.fillRect(legX, legY - 8, 10, 10);
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(`${item.label}: $${item.valor.toFixed(0)}`, legX + 14, legY);
+
+        legX += (w / 2);
+      });
     }
 
     function renderizarTablaPedidos() {
