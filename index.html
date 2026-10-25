@@ -9,8 +9,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Chart.js para las gráficas financieras -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Chart.js para las gráficas financieras (Versión compatible con GitHub Pages) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -139,13 +140,13 @@
       </div>
     </div>
 
-    <!-- SECCIÓN DE GRÁFICAS FINANCIERAS -->
+    <!-- SECCIÓN DE GRÁFICAS FINANCIERAS CON ALTURA FIJA PARA EVITAR COLAPSO -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl md:col-span-2 flex flex-col justify-between">
         <h3 class="text-xs font-black text-white uppercase tracking-wider mb-2 flex items-center gap-2">
           <i data-lucide="bar-chart-3" class="w-4 h-4 text-accent-cyan"></i> Resumen Financiero (Ventas vs Gastos)
         </h3>
-        <div class="relative h-64 w-full flex items-center justify-center">
+        <div class="relative h-60 w-full">
           <canvas id="graficaVentas"></canvas>
         </div>
       </div>
@@ -154,7 +155,7 @@
         <h3 class="text-xs font-black text-white uppercase tracking-wider mb-2 flex items-center gap-2">
           <i data-lucide="pie-chart" class="w-4 h-4 text-accent-emerald"></i> Proporción Neta
         </h3>
-        <div class="relative h-64 w-full flex items-center justify-center">
+        <div class="relative h-60 w-full">
           <canvas id="graficaDona"></canvas>
         </div>
       </div>
@@ -530,59 +531,63 @@
       document.getElementById('metrica-pedidos').innerText = totalPedidos;
       document.getElementById('cant-admin-pedidos').innerText = totalPedidos;
 
-      // ACTUALIZAR LAS GRÁFICAS
-      actualizarGraficasFinancieras(totalVentas, totalGastos, gananciaNeta);
+      // ACTUALIZAR LAS GRÁFICAS SI CHART.JS ESTÁ CARGADO
+      if (typeof Chart !== 'undefined') {
+        actualizarGraficasFinancieras(totalVentas, totalGastos, gananciaNeta);
+      }
     }
 
     function actualizarGraficasFinancieras(ventas, gastos, neta) {
-      // Gráfica de Barras
-      const ctxVentas = document.getElementById('graficaVentas').getContext('2d');
-      if (chartVentasObj) chartVentasObj.destroy();
+      try {
+        const ctxVentas = document.getElementById('graficaVentas').getContext('2d');
+        if (chartVentasObj) chartVentasObj.destroy();
 
-      chartVentasObj = new Chart(ctxVentas, {
-        type: 'bar',
-        data: {
-          labels: ['Ventas Brutas', 'Gastos / Egresos', 'Ganancia Neta'],
-          datasets: [{
-            label: 'USD ($)',
-            data: [ventas, gastos, neta],
-            backgroundColor: ['#ffb800', '#f43f5e', '#00e676'],
-            borderRadius: 8
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
-            x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+        chartVentasObj = new Chart(ctxVentas, {
+          type: 'bar',
+          data: {
+            labels: ['Ventas Brutas', 'Gastos / Egresos', 'Ganancia Neta'],
+            datasets: [{
+              label: 'USD ($)',
+              data: [ventas, gastos, neta],
+              backgroundColor: ['#ffb800', '#f43f5e', '#00e676'],
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+              x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+            }
           }
-        }
-      });
+        });
 
-      // Gráfica de Dona
-      const ctxDona = document.getElementById('graficaDona').getContext('2d');
-      if (chartDonaObj) chartDonaObj.destroy();
+        const ctxDona = document.getElementById('graficaDona').getContext('2d');
+        if (chartDonaObj) chartDonaObj.destroy();
 
-      chartDonaObj = new Chart(ctxDona, {
-        type: 'doughnut',
-        data: {
-          labels: ['Ganancia Neta', 'Gastos Operativos'],
-          datasets: [{
-            data: [Math.max(0, neta), gastos],
-            backgroundColor: ['#00e676', '#f43f5e'],
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } }
+        chartDonaObj = new Chart(ctxDona, {
+          type: 'doughnut',
+          data: {
+            labels: ['Ganancia Neta', 'Gastos Operativos'],
+            datasets: [{
+              data: [Math.max(0, neta), gastos],
+              backgroundColor: ['#00e676', '#f43f5e'],
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } }
+            }
           }
-        }
-      });
+        });
+      } catch (err) {
+        console.log("Error inicializando gráficas:", err);
+      }
     }
 
     function renderizarTablaPedidos() {
