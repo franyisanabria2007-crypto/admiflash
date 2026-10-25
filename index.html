@@ -9,7 +9,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Chart.js CDN para las Gráficas -->
+  <!-- Chart.js para las gráficas financieras -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- Firebase SDKs -->
@@ -139,29 +139,23 @@
       </div>
     </div>
 
-    <!-- SECCIÓN DE GRÁFICAS ESTADÍSTICAS FINANCIERAS -->
+    <!-- SECCIÓN DE GRÁFICAS FINANCIERAS -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="md:col-span-2 bg-slate-900 border border-indigo-500/20 rounded-2xl p-4 shadow-xl space-y-3">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-          <h3 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
-            <i data-lucide="bar-chart-3" class="w-4 h-4 text-accent-cyan"></i> Comparativa: Ventas vs Gastos vs Ganancia Neta
-          </h3>
-          <span class="text-[10px] text-slate-400 font-bold">Balance General</span>
-        </div>
-        <div class="h-60 relative w-full">
-          <canvas id="graficoFinanzasPrincipal"></canvas>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl md:col-span-2 flex flex-col justify-between">
+        <h3 class="text-xs font-black text-white uppercase tracking-wider mb-2 flex items-center gap-2">
+          <i data-lucide="bar-chart-3" class="w-4 h-4 text-accent-cyan"></i> Resumen Financiero (Ventas vs Gastos)
+        </h3>
+        <div class="relative h-64 w-full flex items-center justify-center">
+          <canvas id="graficaVentas"></canvas>
         </div>
       </div>
 
-      <div class="bg-slate-900 border border-indigo-500/20 rounded-2xl p-4 shadow-xl space-y-3">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-          <h3 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
-            <i data-lucide="pie-chart" class="w-4 h-4 text-accent-emerald"></i> Distribución Financiera
-          </h3>
-          <span class="text-[10px] text-slate-400 font-bold">% Utilidad</span>
-        </div>
-        <div class="h-60 relative w-full flex items-center justify-center">
-          <canvas id="graficoDistribucionDona"></canvas>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
+        <h3 class="text-xs font-black text-white uppercase tracking-wider mb-2 flex items-center gap-2">
+          <i data-lucide="pie-chart" class="w-4 h-4 text-accent-emerald"></i> Proporción Neta
+        </h3>
+        <div class="relative h-64 w-full flex items-center justify-center">
+          <canvas id="graficaDona"></canvas>
         </div>
       </div>
     </div>
@@ -227,8 +221,6 @@
 
     <!-- PESTAÑA 2: PRODUCCIÓN, AUTORIZACIÓN Y RETIROS DE CHOFERES -->
     <section id="sec-admin-choferes" class="space-y-4 hidden">
-      
-      <!-- SECCIÓN DESTACADA: NOTIFICACIONES DE RETIRO PENDIENTES -->
       <div id="contenedor-notificaciones-retiro" class="bg-amber-950/30 border-2 border-amber-500/50 rounded-2xl p-4 shadow-xl space-y-3 hidden">
         <div class="flex items-center justify-between border-b border-amber-500/30 pb-2">
           <h3 class="text-sm font-black text-amber-300 flex items-center gap-2">
@@ -241,7 +233,6 @@
         <div id="lista-notificaciones-retiro" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
       </div>
 
-      <!-- TARJETAS GENERALES DE CHOFERES -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
         <div class="flex justify-between items-center border-b border-slate-800 pb-3">
           <div>
@@ -294,7 +285,6 @@
     <!-- PESTAÑA 4: AJUSTES Y CAMBIO DE CLAVE -->
     <section id="sec-admin-ajustes" class="space-y-4 hidden">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
           <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
             <i data-lucide="key" class="w-5 h-5 text-accent-cyan"></i>
@@ -336,7 +326,6 @@
             </button>
           </div>
         </div>
-
       </div>
     </section>
 
@@ -426,11 +415,10 @@
     let estadoFiltroActual = 'todos';
     let pedidoSeleccionadoId = null;
 
-    // VARIABLES PARA GRÁFICOS CHART.JS
-    let chartFinanzasBar = null;
-    let chartFinanzasDona = null;
+    let chartVentasObj = null;
+    let chartDonaObj = null;
 
-    // FUNCIONES AUXILIARES UNIVERSALES PARA EXTRACCIÓN DE DATOS
+    // FUNCIONES AUXILIARES UNIVERSALES
     function obtenerNombreCliente(p) {
       if (!p) return 'Cliente';
       if (typeof p.cliente === 'string') return p.cliente;
@@ -542,69 +530,48 @@
       document.getElementById('metrica-pedidos').innerText = totalPedidos;
       document.getElementById('cant-admin-pedidos').innerText = totalPedidos;
 
-      actualizarGraficosFinancieros(totalVentas, totalGastos, gananciaNeta);
+      // ACTUALIZAR LAS GRÁFICAS
+      actualizarGraficasFinancieras(totalVentas, totalGastos, gananciaNeta);
     }
 
-    function actualizarGraficosFinancieros(ventas, gastos, ganancia) {
-      // 1. Gráfico de Barras Principal
-      const ctxBar = document.getElementById('graficoFinanzasPrincipal').getContext('2d');
-      if (chartFinanzasBar) chartFinanzasBar.destroy();
+    function actualizarGraficasFinancieras(ventas, gastos, neta) {
+      // Gráfica de Barras
+      const ctxVentas = document.getElementById('graficaVentas').getContext('2d');
+      if (chartVentasObj) chartVentasObj.destroy();
 
-      chartFinanzasBar = new Chart(ctxBar, {
+      chartVentasObj = new Chart(ctxVentas, {
         type: 'bar',
         data: {
-          labels: ['Ventas Brutas', 'Gastos', 'Ganancia Neta'],
+          labels: ['Ventas Brutas', 'Gastos / Egresos', 'Ganancia Neta'],
           datasets: [{
-            label: 'Monto ($)',
-            data: [ventas, gastos, Math.max(0, ganancia)],
-            backgroundColor: [
-              'rgba(255, 184, 0, 0.85)',
-              'rgba(251, 113, 133, 0.85)',
-              'rgba(0, 230, 118, 0.85)'
-            ],
-            borderColor: [
-              '#ffb800',
-              '#fb7185',
-              '#00e676'
-            ],
-            borderWidth: 2,
-            borderRadius: 10
+            label: 'USD ($)',
+            data: [ventas, gastos, neta],
+            backgroundColor: ['#ffb800', '#f43f5e', '#00e676'],
+            borderRadius: 8
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
+          plugins: { legend: { display: false } },
           scales: {
-            y: {
-              beginAtZero: true,
-              ticks: { color: '#94a3b8', font: { size: 10 } },
-              grid: { color: 'rgba(255, 255, 255, 0.05)' }
-            },
-            x: {
-              ticks: { color: '#f8fafc', font: { weight: 'bold', size: 11 } },
-              grid: { display: false }
-            }
+            y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+            x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
           }
         }
       });
 
-      // 2. Gráfico de Dona
-      const ctxDona = document.getElementById('graficoDistribucionDona').getContext('2d');
-      if (chartFinanzasDona) chartFinanzasDona.destroy();
+      // Gráfica de Dona
+      const ctxDona = document.getElementById('graficaDona').getContext('2d');
+      if (chartDonaObj) chartDonaObj.destroy();
 
-      chartFinanzasDona = new Chart(ctxDona, {
+      chartDonaObj = new Chart(ctxDona, {
         type: 'doughnut',
         data: {
           labels: ['Ganancia Neta', 'Gastos Operativos'],
           datasets: [{
-            data: [Math.max(0, ganancia), gastos],
-            backgroundColor: [
-              '#00e676',
-              '#fb7185'
-            ],
+            data: [Math.max(0, neta), gastos],
+            backgroundColor: ['#00e676', '#f43f5e'],
             borderWidth: 0
           }]
         },
@@ -612,12 +579,8 @@
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              position: 'bottom',
-              labels: { color: '#cbd5e1', font: { size: 11, weight: 'bold' } }
-            }
-          },
-          cutout: '70%'
+            legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } }
+          }
         }
       });
     }
