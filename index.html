@@ -397,30 +397,30 @@
     let estadoFiltroActual = 'todos';
     let pedidoSeleccionadoId = null;
 
-    // FUNCION AUXILIAR PARA OBTENER EL NOMBRE DEL CLIENTE SIN IMPORTAR EL FORMATO
+    // FUNCIONES AUXILIARES UNIVERSALES PARA EXTRACCIÓN DE DATOS
     function obtenerNombreCliente(p) {
       if (!p) return 'Cliente';
-      if (typeof p.cliente === 'string' && p.cliente.trim() !== '') return p.cliente;
-      if (typeof p.cliente === 'object' && p.cliente !== null && p.cliente.nombre) return p.cliente.nombre;
+      if (typeof p.cliente === 'string') return p.cliente;
+      if (p.cliente && typeof p.cliente === 'object' && p.cliente.nombre) return p.cliente.nombre;
       if (p.nombreCliente) return p.nombreCliente;
       if (p.nombre) return p.nombre;
+      if (p.user) return p.user;
       return 'Cliente';
     }
 
-    // FUNCION AUXILIAR PARA OBTENER EL TELEFONO SIN IMPORTAR EL FORMATO
     function obtenerTelefonoCliente(p) {
       if (!p) return 'Sin tel';
       if (p.telefono) return p.telefono;
-      if (typeof p.cliente === 'object' && p.cliente !== null && p.cliente.telefono) return p.cliente.telefono;
       if (p.tel) return p.tel;
+      if (p.celular) return p.celular;
+      if (p.cliente && typeof p.cliente === 'object' && p.cliente.telefono) return p.cliente.telefono;
       return 'Sin tel';
     }
 
-    // FUNCION AUXILIAR PARA OBTENER LA DIRECCIÓN
     function obtenerDireccionCliente(p) {
       if (!p) return 'Sin dirección';
       if (p.direccion) return p.direccion;
-      if (typeof p.cliente === 'object' && p.cliente !== null && p.cliente.direccion) return p.cliente.direccion;
+      if (p.cliente && typeof p.cliente === 'object' && p.cliente.direccion) return p.cliente.direccion;
       return 'Sin dirección';
     }
 
@@ -493,7 +493,7 @@
         const p = todosLosPedidosAdmin[id];
         totalPedidos++;
         if (p.estado === 'entregado') {
-          totalVentas += parseFloat(p.total || p.montoTotal || p.monto || 0);
+          totalVentas += parseFloat(p.total || p.montoTotal || p.monto || p.precioTotal || 0);
         }
       });
 
@@ -519,34 +519,36 @@
 
       const filtrados = keys.filter(id => {
         const p = todosLosPedidosAdmin[id];
-        const nom = obtenerNombreCliente(p).toLowerCase();
-        const tel = obtenerTelefonoCliente(p).toLowerCase();
-        const ord = (p.orden || id).toLowerCase();
+        if (!p) return false;
 
-        const matchQuery = nom.includes(query) || tel.includes(query) || ord.includes(query);
-        const matchEstado = (estadoFiltroActual === 'todos') || (p.estado === estadoFiltroActual);
+        const textoCompleto = JSON.stringify(p).toLowerCase();
+        const matchQuery = query === '' || textoCompleto.includes(query);
+        
+        const estadoPed = (p.estado || 'pendiente').toLowerCase();
+        const matchEstado = (estadoFiltroActual === 'todos') || (estadoPed === estadoFiltroActual);
 
         return matchQuery && matchEstado;
       });
 
       if (filtrados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-500">No hay registros para mostrar.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-500">No hay registros que coincidan con el filtro actual.</td></tr>`;
         return;
       }
 
       filtrados.forEach(id => {
         const p = todosLosPedidosAdmin[id];
-        const numOrden = p.orden || id.substring(0, 8);
+        const numOrden = p.orden || p.idOrden || id.substring(0, 8);
         const nombreCliente = obtenerNombreCliente(p);
         const telCliente = obtenerTelefonoCliente(p);
-        const monto = parseFloat(p.total || p.montoTotal || p.monto || 0).toFixed(2);
-        const metodo = p.metodoPago || p.pago || 'Efectivo';
-        const chofer = p.chofer || 'Sin Asignar';
+        const monto = parseFloat(p.total || p.montoTotal || p.monto || p.precioTotal || 0).toFixed(2);
+        const metodo = p.metodoPago || p.pago || p.formaPago || 'Efectivo';
+        const chofer = p.chofer || p.nombreChofer || 'Sin Asignar';
+        const estadoActual = p.estado || 'pendiente';
 
         let badgeEstado = 'bg-slate-800 text-slate-300';
-        if (p.estado === 'pendiente') badgeEstado = 'bg-amber-500/20 text-accent-yellow border-amber-500/30';
-        if (p.estado === 'aceptado' || p.estado === 'en_camino') badgeEstado = 'bg-cyan-500/20 text-accent-cyan border-cyan-500/30';
-        if (p.estado === 'entregado') badgeEstado = 'bg-emerald-500/20 text-accent-emerald border-emerald-500/30';
+        if (estadoActual === 'pendiente') badgeEstado = 'bg-amber-500/20 text-accent-yellow border-amber-500/30';
+        if (estadoActual === 'aceptado' || estadoActual === 'en_camino') badgeEstado = 'bg-cyan-500/20 text-accent-cyan border-cyan-500/30';
+        if (estadoActual === 'entregado') badgeEstado = 'bg-emerald-500/20 text-accent-emerald border-emerald-500/30';
 
         tbody.innerHTML += `
           <tr class="hover:bg-slate-800/40 transition">
@@ -557,7 +559,7 @@
             </td>
             <td class="p-3.5 font-bold">${metodo}</td>
             <td class="p-3.5 font-black text-accent-yellow">$${monto}</td>
-            <td class="p-3.5"><span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-md border ${badgeEstado}">${p.estado || 'PENDIENTE'}</span></td>
+            <td class="p-3.5"><span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-md border ${badgeEstado}">${estadoActual}</span></td>
             <td class="p-3.5 font-bold text-slate-300">${chofer}</td>
             <td class="p-3.5 text-center">
               <button onclick="abrirModalAdminDetalle('${id}')" class="bg-indigo-600/30 hover:bg-indigo-600 text-accent-cyan hover:text-white font-bold px-2.5 py-1.5 rounded-lg text-[10px] border border-indigo-500/30 transition">
@@ -593,7 +595,6 @@
         const c = choferesBD[tel];
         const esPendiente = c.estado === 'pendiente';
 
-        // Calcular producción real en vivo
         let totalProducidoChofer = 0;
         let carrerasFinalizadas = 0;
         let gananciaAcumulada = 0;
@@ -602,7 +603,7 @@
           const ped = todosLosPedidosAdmin[idPed];
           if (ped.choferTelefono === tel && ped.estado === 'entregado') {
             carrerasFinalizadas++;
-            totalProducidoChofer += parseFloat(ped.total || ped.montoTotal || ped.monto || 0);
+            totalProducidoChofer += parseFloat(ped.total || ped.montoTotal || ped.monto || ped.precioTotal || 0);
             gananciaAcumulada += parseFloat(ped.gananciaChofer || 0.70);
           }
         });
@@ -610,7 +611,6 @@
         const pagadoChofer = parseFloat(c.totalPagado || 0);
         const saldoPendienteLiquidar = Math.max(0, gananciaAcumulada - pagadoChofer);
 
-        // Si tiene una solicitud de retiro activa
         if (c.solicitudRetiro && c.solicitudRetiro.estado === 'pendiente') {
           retirosPendientesCount++;
           listaNotificaciones.innerHTML += `
@@ -641,7 +641,6 @@
               </span>
             </div>
 
-            <!-- DESGLOSE DE PRODUCCIÓN -->
             <div class="bg-slate-900 p-2.5 rounded-xl text-xs space-y-1.5 border border-indigo-500/20">
               <div class="flex justify-between items-center">
                 <span class="text-slate-400 text-[10px] font-bold">Total Producido (Ventas):</span>
@@ -778,12 +777,12 @@
       const p = todosLosPedidosAdmin[id];
       if (!p) return;
 
-      document.getElementById('adm-modal-orden-id').innerText = `Orden: ${p.orden || id}`;
+      document.getElementById('adm-modal-orden-id').innerText = `Orden: ${p.orden || p.idOrden || id}`;
       document.getElementById('adm-modal-fecha').innerText = p.fecha ? new Date(p.fecha).toLocaleString() : 'Reciente';
       document.getElementById('adm-modal-cliente').innerText = obtenerNombreCliente(p);
       document.getElementById('adm-modal-telefono').innerText = obtenerTelefonoCliente(p);
       document.getElementById('adm-modal-direccion').innerText = obtenerDireccionCliente(p);
-      document.getElementById('adm-modal-total').innerText = `$${parseFloat(p.total || p.montoTotal || p.monto || 0).toFixed(2)}`;
+      document.getElementById('adm-modal-total').innerText = `$${parseFloat(p.total || p.montoTotal || p.monto || p.precioTotal || 0).toFixed(2)}`;
 
       const lista = document.getElementById('adm-modal-items-lista');
       lista.innerHTML = "";
