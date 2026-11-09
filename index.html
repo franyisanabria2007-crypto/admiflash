@@ -9,15 +9,12 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  
-  <!-- Chart.js de cdnjs (con fallback nativo) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Plus Jakarta Sans & Orbitron -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <script>
@@ -117,7 +114,7 @@
 
       <div class="bg-slate-900/80 border border-emerald-500/30 p-4 rounded-2xl shadow-lg space-y-1 glow-emerald">
         <div class="flex justify-between items-center text-slate-400">
-          <span class="text-[10px] font-bold uppercase tracking-wider">Ganancia Neta</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider">Ganancia App (8%)</span>
           <i data-lucide="wallet" class="w-4 h-4 text-accent-emerald"></i>
         </div>
         <p id="metrica-ganancia-neta" class="text-lg sm:text-2xl font-black text-accent-emerald">$0.00</p>
@@ -133,53 +130,29 @@
 
       <div class="bg-slate-900/80 border border-amber-500/20 p-4 rounded-2xl shadow-lg space-y-1 col-span-2 md:col-span-1">
         <div class="flex justify-between items-center text-slate-400">
-          <span class="text-[10px] font-bold uppercase tracking-wider">Retiros Pendientes</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider">Choferes Pendientes</span>
           <i data-lucide="bell" class="w-4 h-4 text-accent-yellow"></i>
         </div>
-        <p id="metrica-retiros-pendientes" class="text-lg sm:text-2xl font-black text-accent-yellow">0</p>
-      </div>
-    </div>
-
-    <!-- SECCIÓN DE GRÁFICAS FINANCIERAS (CANVAS DUAL CON FALLBACK NATIVO) -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl md:col-span-2 flex flex-col justify-between">
-        <div class="flex justify-between items-center mb-2">
-          <h3 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
-            <i data-lucide="bar-chart-3" class="w-4 h-4 text-accent-cyan"></i> Resumen Financiero (Ventas vs Gastos)
-          </h3>
-          <span id="tag-render-ventas" class="text-[9px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400">Iniciando...</span>
-        </div>
-        <div class="relative h-64 w-full flex items-center justify-center">
-          <canvas id="graficaVentas" class="w-full h-full block"></canvas>
-        </div>
-      </div>
-
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
-        <div class="flex justify-between items-center mb-2">
-          <h3 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
-            <i data-lucide="pie-chart" class="w-4 h-4 text-accent-emerald"></i> Proporción Neta
-          </h3>
-          <span id="tag-render-dona" class="text-[9px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400">Iniciando...</span>
-        </div>
-        <div class="relative h-64 w-full flex items-center justify-center">
-          <canvas id="graficaDona" class="w-full h-full block"></canvas>
-        </div>
+        <p id="metrica-choferes-pendientes" class="text-lg sm:text-2xl font-black text-accent-yellow">0</p>
       </div>
     </div>
 
     <!-- PESTAÑAS DE NAVEGACIÓN -->
     <div class="flex border-b border-slate-800 gap-2 overflow-x-auto no-scrollbar pb-1">
       <button onclick="cambiarPestana('pedidos')" id="tab-admin-pedidos" class="px-4 py-2.5 rounded-xl text-xs font-black bg-indigo-600 text-white flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="list-ordered" class="w-4 h-4"></i> Pedidos y Carreras (<span id="cant-admin-pedidos">0</span>)
+        <i data-lucide="list-ordered" class="w-4 h-4"></i> Pedidos (<span id="cant-admin-pedidos">0</span>)
+      </button>
+      <button onclick="cambiarPestana('tiendas')" id="tab-admin-tiendas" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
+        <i data-lucide="store" class="w-4 h-4"></i> Tiendas Aliadas (<span id="cant-admin-tiendas-badge" class="text-accent-cyan font-black">0</span>)
+      </button>
+      <button onclick="cambiarPestana('productos')" id="tab-admin-productos" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
+        <i data-lucide="package-plus" class="w-4 h-4"></i> Gestión de Productos
       </button>
       <button onclick="cambiarPestana('choferes')" id="tab-admin-choferes" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="users" class="w-4 h-4"></i> Producción y Retiros (<span id="cant-admin-choferes-badge" class="text-accent-yellow font-black">0</span>)
+        <i data-lucide="users" class="w-4 h-4"></i> Choferes (<span id="cant-admin-choferes-badge" class="text-accent-yellow font-black">0</span>)
       </button>
       <button onclick="cambiarPestana('gastos')" id="tab-admin-gastos" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="receipt" class="w-4 h-4"></i> Control de Gastos
-      </button>
-      <button onclick="cambiarPestana('ajustes')" id="tab-admin-ajustes" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="settings" class="w-4 h-4"></i> Configuración y Clave
+        <i data-lucide="receipt" class="w-4 h-4"></i> Gastos
       </button>
     </div>
 
@@ -188,14 +161,14 @@
       <div class="flex flex-col sm:flex-row gap-2 justify-between items-stretch sm:items-center">
         <div class="relative flex-1 max-w-md">
           <i data-lucide="search" class="w-4 h-4 text-indigo-400 absolute left-3.5 top-3"></i>
-          <input type="text" id="busqueda-admin-pedidos" oninput="filtrarTablaPedidos()" placeholder="Buscar cliente, teléfono o número de orden..." class="w-full pl-10 pr-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-accent-cyan">
+          <input type="text" id="busqueda-admin-pedidos" oninput="filtrarTablaPedidos()" placeholder="Buscar cliente, teléfono u orden..." class="w-full pl-10 pr-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-accent-cyan">
         </div>
         
         <div class="flex gap-1.5 overflow-x-auto no-scrollbar">
           <button onclick="filtrarEstadoPedido('todos')" id="fil-est-todos" class="btn-fil-est text-[11px] font-black bg-indigo-600 text-white px-3 py-1.5 rounded-lg">Todos</button>
           <button onclick="filtrarEstadoPedido('pendiente')" id="fil-est-pendiente" class="btn-fil-est text-[11px] font-bold bg-slate-900 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg">Pendientes</button>
           <button onclick="filtrarEstadoPedido('aceptado')" id="fil-est-aceptado" class="btn-fil-est text-[11px] font-bold bg-slate-900 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg">En Curso</button>
-          <button onclick="filtrarEstadoPedido('entregado')" id="fil-est-entregado" class="btn-fil-est text-[11px] font-bold bg-slate-900 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg">Finalizados</button>
+          <button onclick="filtrarEstadoPedido('entregado')" id="fil-est-entregado" class="btn-fil-est text-[11px] font-bold bg-slate-900 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg">Entregados</button>
         </div>
       </div>
 
@@ -205,17 +178,18 @@
             <thead class="bg-slate-950/80 uppercase text-[10px] text-slate-400 border-b border-slate-800 font-extrabold tracking-wider">
               <tr>
                 <th class="p-3.5">Orden</th>
+                <th class="p-3.5">Tienda / Origen</th>
                 <th class="p-3.5">Cliente / Teléfono</th>
                 <th class="p-3.5">Método Pago</th>
                 <th class="p-3.5">Monto Total</th>
                 <th class="p-3.5">Estado</th>
-                <th class="p-3.5">Chofer Asignado</th>
+                <th class="p-3.5">Chofer</th>
                 <th class="p-3.5 text-center">Acción</th>
               </tr>
             </thead>
             <tbody id="tabla-pedidos-body" class="divide-y divide-slate-800/60 font-medium">
               <tr>
-                <td colspan="7" class="p-8 text-center text-slate-500">
+                <td colspan="8" class="p-8 text-center text-slate-500">
                   <i data-lucide="loader-2" class="w-6 h-6 animate-spin mx-auto mb-2 text-indigo-400"></i>
                   Cargando órdenes desde Firebase...
                 </td>
@@ -226,119 +200,194 @@
       </div>
     </section>
 
-    <!-- PESTAÑA 2: PRODUCCIÓN, AUTORIZACIÓN Y RETIROS DE CHOFERES -->
-    <section id="sec-admin-choferes" class="space-y-4 hidden">
-      <div id="contenedor-notificaciones-retiro" class="bg-amber-950/30 border-2 border-amber-500/50 rounded-2xl p-4 shadow-xl space-y-3 hidden">
-        <div class="flex items-center justify-between border-b border-amber-500/30 pb-2">
-          <h3 class="text-sm font-black text-amber-300 flex items-center gap-2">
-            <i data-lucide="bell-ring" class="w-5 h-5 text-accent-yellow animate-bounce"></i> Solicitudes de Retiro Pendientes
+    <!-- PESTAÑA 2: TIENDAS ALIADAS -->
+    <section id="sec-admin-tiendas" class="space-y-4 hidden">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        <!-- REGISTRAR NUEVA TIENDA -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+          <h3 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-800 pb-2">
+            <i data-lucide="plus-circle" class="w-4 h-4 text-accent-cyan"></i> Afiliar Nueva Tienda
           </h3>
-          <span class="bg-amber-500/20 text-accent-yellow text-[10px] font-black px-2.5 py-0.5 rounded-full border border-amber-500/30">
-            Requiere tu atención
-          </span>
+          <form onsubmit="registrarNuevaTiendaAdmin(event)" class="space-y-3 text-xs">
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Nombre del Comercio:</label>
+              <input type="text" id="reg-tienda-nombre" required placeholder="Ej: Moravos Café" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-cyan">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Categoría / Tipo:</label>
+              <select id="reg-tienda-categoria" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
+                <option value="comida">Comida Rápida / Café</option>
+                <option value="panaderia">Panadería</option>
+                <option value="viveres">Víveres / Bodegón</option>
+                <option value="charcuteria">Charcutería</option>
+                <option value="carnes">Carnicería</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Teléfono / WhatsApp:</label>
+              <input type="tel" id="reg-tienda-telefono" required placeholder="04121234567" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-cyan">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">RIF / Cédula Comercial:</label>
+              <input type="text" id="reg-tienda-rif" placeholder="J-12345678-0" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-cyan">
+            </div>
+            <button type="submit" class="w-full bg-accent-cyan hover:bg-cyan-400 text-slate-950 font-black py-2.5 rounded-xl transition shadow-md">
+              + Guardar y Activar Tienda
+            </button>
+          </form>
         </div>
-        <div id="lista-notificaciones-retiro" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
-      </div>
 
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-          <div>
-            <h3 class="text-sm font-black text-white flex items-center gap-2">
-              <i data-lucide="shield-check" class="w-5 h-5 text-accent-yellow"></i> Directorio de Choferes
-            </h3>
-            <p class="text-[11px] text-slate-400">Consulta cuánto ha producido cada chofer y autoriza nuevos ingresos</p>
+        <!-- DIRECTORIO DE TIENDAS -->
+        <div class="md:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+            <div>
+              <h3 class="text-sm font-black text-white flex items-center gap-2">
+                <i data-lucide="store" class="w-5 h-5 text-accent-cyan"></i> Directorio de Tiendas Aliadas
+              </h3>
+              <p class="text-[11px] text-slate-400">Ventas brutas, comisión del 8% de la app y pago del 92% a comercios</p>
+            </div>
+          </div>
+
+          <div id="grid-tiendas-admin" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="text-slate-500 text-xs py-6 text-center col-span-full">Cargando tiendas registradas...</div>
           </div>
         </div>
 
-        <div id="grid-choferes-admin" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          <div class="text-slate-500 text-xs py-6 text-center col-span-full">Cargando choferes registrados...</div>
-        </div>
       </div>
     </section>
 
-    <!-- PESTAÑA 3: REGISTRO DE GASTOS DE LA EMPRESA -->
+    <!-- PESTAÑA 3: GESTIÓN DE PRODUCTOS DE LAS TIENDAS -->
+    <section id="sec-admin-productos" class="space-y-4 hidden">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        <!-- AGREGAR PRODUCTO A UNA TIENDA -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+          <h3 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-800 pb-2">
+            <i data-lucide="package-plus" class="w-4 h-4 text-accent-yellow"></i> Añadir Producto a Tienda
+          </h3>
+          <form onsubmit="guardarNuevoProductoAdmin(event)" class="space-y-3 text-xs">
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Seleccionar Tienda Aliada:</label>
+              <select id="prod-select-tienda" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold focus:outline-none">
+                <!-- Se llena dinámicamente -->
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Nombre del Producto:</label>
+              <input type="text" id="prod-nombre" required placeholder="Ej: Hamburguesa Especial" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Precio al Público ($):</label>
+              <input type="number" step="0.01" id="prod-precio" required placeholder="4.50" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">URL o Nombre de Imagen:</label>
+              <input type="text" id="prod-imagen" placeholder="img/c1.png" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
+            </div>
+            <button type="submit" class="w-full bg-accent-yellow hover:bg-yellow-400 text-slate-950 font-black py-2.5 rounded-xl transition shadow-md">
+              + Agregar Producto a la App
+            </button>
+          </form>
+        </div>
+
+        <!-- LISTA DE PRODUCTOS REGISTRADOS -->
+        <div class="md:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+          <h3 class="text-xs font-black text-white uppercase tracking-wider border-b border-slate-800 pb-2 flex justify-between items-center">
+            <span>Catálogo Activo en Firebase</span>
+            <span id="cant-productos-total" class="text-accent-cyan font-black text-xs">0 productos</span>
+          </h3>
+          <div id="lista-productos-admin" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-96 overflow-y-auto no-scrollbar pr-1">
+            <p class="text-slate-500 text-xs text-center py-4 col-span-full">Cargando catálogo de productos...</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PESTAÑA 4: GESTIÓN Y APROBACIÓN DE CHOFERES -->
+    <section id="sec-admin-choferes" class="space-y-5 hidden">
+      
+      <!-- SECCIÓN DE SOLICITUDES PENDIENTES -->
+      <div id="contenedor-choferes-pendientes" class="bg-amber-950/20 border-2 border-amber-500/40 rounded-2xl p-4 sm:p-5 shadow-xl space-y-3 hidden">
+        <div class="flex items-center justify-between border-b border-amber-500/30 pb-2">
+          <h3 class="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-2">
+            <i data-lucide="bell-ring" class="w-5 h-5 text-accent-yellow animate-bounce"></i> Solicitudes de Choferes por Aprobar
+          </h3>
+          <span id="badge-num-pendientes" class="bg-accent-yellow text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full">0</span>
+        </div>
+        <div id="grid-choferes-pendientes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+      </div>
+
+      <!-- DIRECTORIO DE CHOFERES APROBADOS Y REGISTRO DIRECTO -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+          <h3 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-800 pb-2">
+            <i data-lucide="user-plus" class="w-4 h-4 text-accent-yellow"></i> Registrar Chofer Manual
+          </h3>
+          <form onsubmit="registrarChoferAdminDirecto(event)" class="space-y-3 text-xs">
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Nombre Completo:</label>
+              <input type="text" id="reg-chofer-nombre" required placeholder="Ej: Carlos Pérez" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Teléfono / WhatsApp:</label>
+              <input type="tel" id="reg-chofer-telefono" required placeholder="04121234567" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Vehículo / Moto:</label>
+              <input type="text" id="reg-chofer-vehiculo" placeholder="Moto Empire Keeway" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
+            </div>
+            <button type="submit" class="w-full bg-accent-yellow hover:bg-yellow-400 text-slate-950 font-black py-2.5 rounded-xl transition shadow-md">
+              + Registrar Chofer (Activo)
+            </button>
+          </form>
+        </div>
+
+        <div class="md:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+            <h3 class="text-sm font-black text-white flex items-center gap-2">
+              <i data-lucide="shield-check" class="w-5 h-5 text-accent-emerald"></i> Choferes Activos en el Sistema
+            </h3>
+          </div>
+          <div id="grid-choferes-admin" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="text-slate-500 text-xs py-6 text-center col-span-full">Cargando choferes activos...</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- PESTAÑA 5: GASTOS -->
     <section id="sec-admin-gastos" class="space-y-4 hidden">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
           <h3 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-800 pb-2">
-            <i data-lucide="plus-circle" class="w-4 h-4 text-rose-400"></i> Registrar Nuevo Gasto
+            <i data-lucide="plus-circle" class="w-4 h-4 text-rose-400"></i> Registrar Gasto
           </h3>
           <form onsubmit="registrarGastoAdmin(event)" class="space-y-3 text-xs">
             <div>
-              <label class="block font-bold text-slate-300 mb-1">Descripción / Concepto:</label>
-              <input type="text" id="gasto-concepto" required placeholder="Ej: Gasolina, bolsas, mantenimiento..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-rose-400">
+              <label class="block font-bold text-slate-300 mb-1">Concepto:</label>
+              <input type="text" id="gasto-concepto" required placeholder="Ej: Mantenimiento, publicidad..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
             </div>
             <div>
               <label class="block font-bold text-slate-300 mb-1">Monto ($):</label>
-              <input type="number" step="0.01" id="gasto-monto" required placeholder="0.00" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold focus:outline-none focus:border-rose-400">
+              <input type="number" step="0.01" id="gasto-monto" required placeholder="0.00" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
             </div>
-            <button type="submit" class="w-full bg-rose-500 hover:bg-rose-400 text-slate-950 font-black py-2.5 rounded-xl transition shadow-md">
-              Añadir Gasto
-            </button>
+            <button type="submit" class="w-full bg-rose-500 text-slate-950 font-black py-2.5 rounded-xl">Añadir Gasto</button>
           </form>
         </div>
 
         <div class="md:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
-          <h3 class="text-xs font-black text-white uppercase tracking-wider border-b border-slate-800 pb-2">
-            Historial de Gastos
-          </h3>
-          <div id="lista-gastos-admin" class="space-y-2 max-h-72 overflow-y-auto no-scrollbar pr-1">
-            <p class="text-slate-500 text-xs text-center py-4">No hay gastos registrados.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PESTAÑA 4: AJUSTES Y CAMBIO DE CLAVE -->
-    <section id="sec-admin-ajustes" class="space-y-4 hidden">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
-          <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
-            <i data-lucide="key" class="w-5 h-5 text-accent-cyan"></i>
-            <h3 class="text-sm font-black text-white">Cambiar Tu Contraseña de Admin</h3>
-          </div>
-
-          <form onsubmit="actualizarClaveAdmin(event)" class="space-y-3 text-xs">
-            <div>
-              <label class="block font-bold text-slate-300 mb-1">Nueva Contraseña:</label>
-              <input type="password" id="cfg-nueva-clave" required placeholder="Ingresa la nueva clave..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-cyan">
-            </div>
-            <button type="submit" class="w-full bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black py-2.5 rounded-xl transition shadow-md">
-              Guardar Nueva Clave
-            </button>
-          </form>
-        </div>
-
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
-          <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
-            <i data-lucide="credit-card" class="w-5 h-5 text-accent-emerald"></i>
-            <h3 class="text-sm font-black text-white">Datos de Pago Móvil Oficial</h3>
-          </div>
-
-          <div class="space-y-3 text-xs">
-            <div>
-              <label class="block font-bold text-slate-300 mb-1">Banco Receptor:</label>
-              <input type="text" id="cfg-pm-banco" value="Banesco (0134)" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-emerald">
-            </div>
-            <div>
-              <label class="block font-bold text-slate-300 mb-1">Teléfono:</label>
-              <input type="text" id="cfg-pm-telefono" value="04262566854" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-emerald">
-            </div>
-            <div>
-              <label class="block font-bold text-slate-300 mb-1">Cédula / RIF:</label>
-              <input type="text" id="cfg-pm-cedula" value="V-28123456" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-emerald">
-            </div>
-            <button onclick="alert('Datos bancarios actualizados.')" class="w-full bg-accent-emerald hover:bg-emerald-400 text-slate-950 font-black py-2.5 rounded-xl transition shadow-md">
-              Actualizar Pago Móvil
-            </button>
-          </div>
+          <h3 class="text-xs font-black text-white border-b border-slate-800 pb-2">Historial de Gastos</h3>
+          <div id="lista-gastos-admin" class="space-y-2 max-h-72 overflow-y-auto no-scrollbar pr-1"></div>
         </div>
       </div>
     </section>
 
   </div>
 
-  <!-- MODAL DE EDICIÓN MANUAL DE PEDIDO -->
+  <!-- MODAL DE DETALLE Y REENVÍO DE PEDIDO A TIENDA -->
   <div id="modal-admin-detalle-pedido" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border border-indigo-500/40 w-full max-w-lg rounded-3xl p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -351,7 +400,7 @@
             <span id="adm-modal-fecha" class="text-[10px] text-slate-400">---</span>
           </div>
         </div>
-        <button onclick="cerrarModalAdminDetalle()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+        <button onclick="cerrarModalAdminDetalle()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
@@ -364,26 +413,30 @@
         </div>
 
         <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 space-y-2">
-          <h4 class="font-black text-indigo-300 border-b border-slate-800 pb-1">Productos / Carrera:</h4>
-          <div id="adm-modal-items-lista" class="space-y-1 text-slate-300"></div>
+          <h4 class="font-black text-indigo-300 border-b border-slate-800 pb-1">Productos Llevados:</h4>
+          <div id="adm-modal-items-lista" class="space-y-1.5 text-slate-300"></div>
           <div class="flex justify-between border-t border-slate-800 pt-2 font-black">
-            <span>Monto Total:</span>
+            <span>Monto Total Productos:</span>
             <span id="adm-modal-total" class="text-accent-yellow text-sm">--</span>
           </div>
         </div>
+
+        <button onclick="enviarPedidoATiendaWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl transition shadow-md flex items-center justify-center gap-2">
+          <i data-lucide="message-square" class="w-4 h-4"></i> 📲 Enviar Orden a la Tienda (WhatsApp)
+        </button>
 
         <div class="bg-slate-800/80 p-3.5 rounded-2xl border border-slate-700 space-y-3">
           <h4 class="font-black text-white">Controles Administrativos:</h4>
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Chofer Asignado:</label>
-              <select id="adm-select-chofer" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white font-bold focus:outline-none">
+              <select id="adm-select-chofer" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white font-bold">
                 <option value="">Sin Asignar</option>
               </select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Estado de la Orden:</label>
-              <select id="adm-select-estado" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white font-bold focus:outline-none">
+              <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Estado del Pedido:</label>
+              <select id="adm-select-estado" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white font-bold">
                 <option value="pendiente">PENDIENTE</option>
                 <option value="aceptado">ACEPTADO</option>
                 <option value="en_camino">EN CAMINO</option>
@@ -401,7 +454,7 @@
   </div>
 
   <script>
-    // CONFIGURACIÓN DE FIREBASE REALTIME DATABASE
+    // CONFIGURACIÓN DE FIREBASE
     const firebaseConfig = {
       apiKey: "AIzaSyB19B9jLHPpgKxVvMH97D5VafgTp0CfnOc", 
       authDomain: "pedidosflash-c7bb7.firebaseapp.com",
@@ -415,55 +468,30 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let claveMasterAdmin = localStorage.getItem('clave_admin_pedidosflash') || "admin123";
+    let claveMasterAdmin = "33179365";
     let todosLosPedidosAdmin = {};
     let choferesBD = {};
+    let tiendasBD = {};
+    let productosBD = {};
     let gastosBD = [];
     let estadoFiltroActual = 'todos';
     let pedidoSeleccionadoId = null;
 
-    let chartVentasObj = null;
-    let chartDonaObj = null;
-
-    // FUNCIONES AUXILIARES UNIVERSALES
-    function obtenerNombreCliente(p) {
-      if (!p) return 'Cliente';
-      if (typeof p.cliente === 'string') return p.cliente;
-      if (p.cliente && typeof p.cliente === 'object' && p.cliente.nombre) return p.cliente.nombre;
-      if (p.nombreCliente) return p.nombreCliente;
-      if (p.nombre) return p.nombre;
-      if (p.user) return p.user;
-      return 'Cliente';
-    }
-
-    function obtenerTelefonoCliente(p) {
-      if (!p) return 'Sin tel';
-      if (p.telefono) return p.telefono;
-      if (p.tel) return p.tel;
-      if (p.celular) return p.celular;
-      if (p.cliente && typeof p.cliente === 'object' && p.cliente.telefono) return p.cliente.telefono;
-      return 'Sin tel';
-    }
-
-    function obtenerDireccionCliente(p) {
-      if (!p) return 'Sin dirección';
-      if (p.direccion) return p.direccion;
-      if (p.cliente && typeof p.cliente === 'object' && p.cliente.direccion) return p.cliente.direccion;
-      return 'Sin dirección';
-    }
+    // TIENDAS POR DEFECTO SINCRO CLIENTE
+    const tiendasDefecto = {
+      moravos: { id: 'moravos', nombre: 'Moravos Café', telefono: '04121234567', categoria: 'comida', estado: 'autorizado' },
+      fran_chero: { id: 'fran_chero', nombre: 'El Sabor de Fran & Chero', telefono: '04129876543', categoria: 'comida', estado: 'autorizado' },
+      antons: { id: 'antons', nombre: "Anton's Burgers", telefono: '04141234567', categoria: 'comida', estado: 'autorizado' },
+      zirus: { id: 'zirus', nombre: 'Zirus Pizza', telefono: '04241234567', categoria: 'comida', estado: 'autorizado' },
+      panamericana: { id: 'panamericana', nombre: 'La Panamericana', telefono: '04125554433', categoria: 'panaderia', estado: 'autorizado' }
+    };
 
     window.onload = () => {
-      lucide.createIcons();
       const sesionAdmin = sessionStorage.getItem('admin_pedidosflash_autenticado');
       if (sesionAdmin === 'true') {
         document.getElementById('modal-login-admin').classList.add('hidden');
         inicializarSuscripciones();
       }
-      
-      // Manejar redimensionado del Canvas de forma adaptativa
-      window.addEventListener('resize', () => {
-        calcularMetricasAdmin();
-      });
     };
 
     function autenticarAdmin(e) {
@@ -474,18 +502,8 @@
         document.getElementById('modal-login-admin').classList.add('hidden');
         inicializarSuscripciones();
       } else {
-        alert("Contraseña de administrador incorrecta");
+        alert("Contraseña incorrecta");
       }
-    }
-
-    function actualizarClaveAdmin(e) {
-      e.preventDefault();
-      const nuevaClave = document.getElementById('cfg-nueva-clave').value.trim();
-      if (!nuevaClave) return;
-      claveMasterAdmin = nuevaClave;
-      localStorage.setItem('clave_admin_pedidosflash', nuevaClave);
-      document.getElementById('cfg-nueva-clave').value = "";
-      alert("¡Contraseña de administrador actualizada con éxito!");
     }
 
     function cerrarSesionAdmin() {
@@ -505,6 +523,23 @@
         actualizarSelectorChoferes();
       });
 
+      db.ref('tiendas').on('value', (snapshot) => {
+        const val = snapshot.val();
+        if (!val) {
+          db.ref('tiendas').set(tiendasDefecto);
+          tiendasBD = tiendasDefecto;
+        } else {
+          tiendasBD = val;
+        }
+        renderizarTiendasAdmin();
+        actualizarSelectorTiendasProductos();
+      });
+
+      db.ref('productos').on('value', (snapshot) => {
+        productosBD = snapshot.val() || {};
+        renderizarProductosAdmin();
+      });
+
       db.ref('gastos').on('value', (snapshot) => {
         gastosBD = snapshot.val() ? Object.values(snapshot.val()) : [];
         renderizarGastosAdmin();
@@ -516,18 +551,30 @@
       calcularMetricasAdmin();
       renderizarTablaPedidos();
       renderizarChoferesAdmin();
+      renderizarTiendasAdmin();
     }
 
     function calcularMetricasAdmin() {
       let totalVentas = 0;
       let totalPedidos = 0;
       let totalGastos = 0;
+      let gananciaAppAcumulada = 0;
+      let choferesPendientesCount = 0;
 
       Object.keys(todosLosPedidosAdmin).forEach(id => {
         const p = todosLosPedidosAdmin[id];
         totalPedidos++;
         if (p.estado === 'entregado') {
-          totalVentas += parseFloat(p.total || p.montoTotal || p.monto || p.precioTotal || 0);
+          const montoProds = parseFloat(p.total || p.montoTotal || p.monto || 0);
+          totalVentas += montoProds;
+          gananciaAppAcumulada += (montoProds * 0.08); // 8% comisión
+        }
+      });
+
+      Object.keys(choferesBD).forEach(tel => {
+        const c = choferesBD[tel];
+        if (c.estado === 'pendiente' || c.aprobado === false) {
+          choferesPendientesCount++;
         }
       });
 
@@ -535,226 +582,12 @@
         totalGastos += parseFloat(g.monto || 0);
       });
 
-      const gananciaNeta = totalVentas - totalGastos;
-
       document.getElementById('metrica-ventas').innerText = `$${totalVentas.toFixed(2)}`;
       document.getElementById('metrica-gastos').innerText = `$${totalGastos.toFixed(2)}`;
-      document.getElementById('metrica-ganancia-neta').innerText = `$${gananciaNeta.toFixed(2)}`;
+      document.getElementById('metrica-ganancia-neta').innerText = `$${gananciaAppAcumulada.toFixed(2)}`;
       document.getElementById('metrica-pedidos').innerText = totalPedidos;
-      document.getElementById('cant-admin-pedidos').innerText = totalPedidos;
-
-      // DISPARAR EL RENDERIZADO DE GRÁFICAS (CHART.JS CON FALLBACK A CANVAS2D NATIVO)
-      renderizarGraficasFinancieras(totalVentas, totalGastos, gananciaNeta);
-    }
-
-    function renderizarGraficasFinancieras(ventas, gastos, neta) {
-      let usoChartJS = false;
-
-      // Intentar primero con Chart.js si la librería cargó correctamente
-      if (typeof Chart !== 'undefined') {
-        try {
-          const cvBar = document.getElementById('graficaVentas');
-          const cvDona = document.getElementById('graficaDona');
-          
-          if (cvBar && cvDona) {
-            if (chartVentasObj) chartVentasObj.destroy();
-            if (chartDonaObj) chartDonaObj.destroy();
-
-            chartVentasObj = new Chart(cvBar.getContext('2d'), {
-              type: 'bar',
-              data: {
-                labels: ['Ventas Brutas', 'Gastos', 'Ganancia Neta'],
-                datasets: [{
-                  data: [ventas, gastos, neta],
-                  backgroundColor: ['#ffb800', '#f43f5e', '#00e676'],
-                  borderRadius: 8
-                }]
-              },
-              options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                  y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
-                  x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
-                }
-              }
-            });
-
-            chartDonaObj = new Chart(cvDona.getContext('2d'), {
-              type: 'doughnut',
-              data: {
-                labels: ['Ganancia Neta', 'Gastos'],
-                datasets: [{
-                  data: [Math.max(0, neta), gastos],
-                  backgroundColor: ['#00e676', '#f43f5e'],
-                  borderWidth: 0
-                }]
-              },
-              options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } }
-                }
-              }
-            });
-
-            document.getElementById('tag-render-ventas').innerText = 'Chart.js';
-            document.getElementById('tag-render-dona').innerText = 'Chart.js';
-            usoChartJS = true;
-          }
-        } catch (err) {
-          console.warn("Chart.js falló, cambiando a renderizado Canvas2D nativo:", err);
-          usoChartJS = false;
-        }
-      }
-
-      // FALLBACK INDESTRUCTIBLE EN CANVAS 2D NATIVO
-      if (!usoChartJS) {
-        document.getElementById('tag-render-ventas').innerText = 'Canvas2D Nativo';
-        document.getElementById('tag-render-dona').innerText = 'Canvas2D Nativo';
-        
-        dibujarBarCanvasNativo('graficaVentas', [
-          { label: 'Ventas', valor: ventas, color: '#ffb800' },
-          { label: 'Gastos', valor: gastos, color: '#f43f5e' },
-          { label: 'Neta', valor: neta, color: '#00e676' }
-        ]);
-
-        dibujarDonaCanvasNativa('graficaDona', [
-          { label: 'Neta', valor: Math.max(0, neta), color: '#00e676' },
-          { label: 'Gastos', valor: gastos, color: '#f43f5e' }
-        ]);
-      }
-    }
-
-    // MOTOR DIBUJO CANVAS 2D NATIVO - BARRAS
-    function dibujarBarCanvasNativo(canvasId, items) {
-      const canvas = document.getElementById(canvasId);
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
-
-      const w = rect.width;
-      const h = rect.height;
-
-      ctx.clearRect(0, 0, w, h);
-
-      const maxVal = Math.max(...items.map(i => Math.abs(i.valor)), 10);
-      const padding = 35;
-      const chartH = h - padding * 2;
-      const barW = (w - padding * 2) / items.length - 20;
-
-      // Líneas de fondo
-      ctx.strokeStyle = '#1e293b';
-      ctx.lineWidth = 1;
-      for (let i = 0; i <= 4; i++) {
-        const y = padding + (chartH / 4) * i;
-        ctx.beginPath();
-        ctx.moveTo(padding, y);
-        ctx.lineTo(w - padding, y);
-        ctx.stroke();
-      }
-
-      items.forEach((item, index) => {
-        const x = padding + 10 + index * (barW + 20);
-        const barH = (Math.abs(item.valor) / maxVal) * chartH;
-        const y = padding + chartH - barH;
-
-        // Barra con esquinas redondeadas
-        ctx.fillStyle = item.color;
-        ctx.beginPath();
-        if (ctx.roundRect) {
-          ctx.roundRect(x, y, barW, barH, [6, 6, 0, 0]);
-        } else {
-          ctx.rect(x, y, barW, barH);
-        }
-        ctx.fill();
-
-        // Texto Valor
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 11px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(`$${item.valor.toFixed(0)}`, x + barW / 2, y - 6);
-
-        // Texto Label
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '10px sans-serif';
-        ctx.fillText(item.label, x + barW / 2, h - 10);
-      });
-    }
-
-    // MOTOR DIBUJO CANVAS 2D NATIVO - DONA
-    function dibujarDonaCanvasNativa(canvasId, items) {
-      const canvas = document.getElementById(canvasId);
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
-
-      const w = rect.width;
-      const h = rect.height;
-
-      ctx.clearRect(0, 0, w, h);
-
-      const total = items.reduce((acc, i) => acc + i.valor, 0);
-      const centerX = w / 2;
-      const centerY = (h - 30) / 2;
-      const outerRadius = Math.min(w, h - 30) / 2.5;
-      const innerRadius = outerRadius * 0.6;
-
-      if (total <= 0) {
-        ctx.strokeStyle = '#334155';
-        ctx.lineWidth = 15;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, outerRadius - 10, 0, 2 * Math.PI);
-        ctx.stroke();
-        ctx.fillStyle = '#64748b';
-        ctx.font = '11px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('Sin datos', centerX, centerY + 4);
-        return;
-      }
-
-      let startAngle = -Math.PI / 2;
-
-      items.forEach(item => {
-        const sliceAngle = (item.valor / total) * (2 * Math.PI);
-        const endAngle = startAngle + sliceAngle;
-
-        ctx.fillStyle = item.color;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
-        ctx.arc(centerX, centerY, innerRadius, endAngle, startAngle, true);
-        ctx.closePath();
-        ctx.fill();
-
-        startAngle = endAngle;
-      });
-
-      // Leyenda
-      let legX = 20;
-      const legY = h - 15;
-      items.forEach(item => {
-        ctx.fillStyle = item.color;
-        ctx.fillRect(legX, legY - 8, 10, 10);
-
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '10px sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText(`${item.label}: $${item.valor.toFixed(0)}`, legX + 14, legY);
-
-        legX += (w / 2);
-      });
+      document.getElementById('metrica-choferes-pendientes').innerText = choferesPendientesCount;
+      document.getElementById('cant-admin-choferes-badge').innerText = choferesPendientesCount;
     }
 
     function renderizarTablaPedidos() {
@@ -766,51 +599,51 @@
 
       const filtrados = keys.filter(id => {
         const p = todosLosPedidosAdmin[id];
-        if (!p) return false;
+        const nom = (p.cliente || p.nombre || '').toLowerCase();
+        const tel = (p.telefono || '').toLowerCase();
+        const ord = (p.orden || id).toLowerCase();
 
-        const textoCompleto = JSON.stringify(p).toLowerCase();
-        const matchQuery = query === '' || textoCompleto.includes(query);
-        
-        const estadoPed = (p.estado || 'pendiente').toLowerCase();
-        const matchEstado = (estadoFiltroActual === 'todos') || (estadoPed === estadoFiltroActual);
+        const matchQuery = nom.includes(query) || tel.includes(query) || ord.includes(query);
+        const matchEstado = (estadoFiltroActual === 'todos') || (p.estado === estadoFiltroActual);
 
         return matchQuery && matchEstado;
       });
 
       if (filtrados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-500">No hay registros que coincidan con el filtro actual.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-500">No hay registros de pedidos.</td></tr>`;
         return;
       }
 
       filtrados.forEach(id => {
         const p = todosLosPedidosAdmin[id];
-        const numOrden = p.orden || p.idOrden || id.substring(0, 8);
-        const nombreCliente = obtenerNombreCliente(p);
-        const telCliente = obtenerTelefonoCliente(p);
-        const monto = parseFloat(p.total || p.montoTotal || p.monto || p.precioTotal || 0).toFixed(2);
-        const metodo = p.metodoPago || p.pago || p.formaPago || 'Efectivo';
-        const chofer = p.chofer || p.nombreChofer || 'Sin Asignar';
-        const estadoActual = p.estado || 'pendiente';
+        const numOrden = p.orden || id.substring(0, 8);
+        const nombreCliente = p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente');
+        const telCliente = p.telefono || (p.cliente ? p.cliente.telefono : '') || 'Sin tel';
+        const monto = parseFloat(p.total || p.montoTotal || p.monto || 0).toFixed(2);
+        const metodo = p.metodoPago || p.pago || 'Efectivo';
+        const chofer = p.chofer || 'Sin Asignar';
+        const nombreTienda = p.tienda || (p.items && p.items[0] ? p.items[0].tienda : 'Tienda Aliada');
 
         let badgeEstado = 'bg-slate-800 text-slate-300';
-        if (estadoActual === 'pendiente') badgeEstado = 'bg-amber-500/20 text-accent-yellow border-amber-500/30';
-        if (estadoActual === 'aceptado' || estadoActual === 'en_camino') badgeEstado = 'bg-cyan-500/20 text-accent-cyan border-cyan-500/30';
-        if (estadoActual === 'entregado') badgeEstado = 'bg-emerald-500/20 text-accent-emerald border-emerald-500/30';
+        if (p.estado === 'pendiente') badgeEstado = 'bg-amber-500/20 text-accent-yellow border-amber-500/30';
+        if (p.estado === 'aceptado' || p.estado === 'en_camino') badgeEstado = 'bg-cyan-500/20 text-accent-cyan border-cyan-500/30';
+        if (p.estado === 'entregado') badgeEstado = 'bg-emerald-500/20 text-accent-emerald border-emerald-500/30';
 
         tbody.innerHTML += `
           <tr class="hover:bg-slate-800/40 transition">
             <td class="p-3.5 font-bold text-white">${numOrden}</td>
+            <td class="p-3.5"><span class="bg-indigo-900/40 text-indigo-300 px-2 py-1 rounded-lg border border-indigo-500/30 text-[10px] font-bold">🏪 ${nombreTienda}</span></td>
             <td class="p-3.5">
               <span class="block font-bold text-white">${nombreCliente}</span>
               <span class="text-[10px] text-slate-400">${telCliente}</span>
             </td>
             <td class="p-3.5 font-bold">${metodo}</td>
             <td class="p-3.5 font-black text-accent-yellow">$${monto}</td>
-            <td class="p-3.5"><span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-md border ${badgeEstado}">${estadoActual}</span></td>
+            <td class="p-3.5"><span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-md border ${badgeEstado}">${p.estado || 'PENDIENTE'}</span></td>
             <td class="p-3.5 font-bold text-slate-300">${chofer}</td>
             <td class="p-3.5 text-center">
               <button onclick="abrirModalAdminDetalle('${id}')" class="bg-indigo-600/30 hover:bg-indigo-600 text-accent-cyan hover:text-white font-bold px-2.5 py-1.5 rounded-lg text-[10px] border border-indigo-500/30 transition">
-                Editar
+                Ver / Enviar
               </button>
             </td>
           </tr>
@@ -819,204 +652,184 @@
       lucide.createIcons();
     }
 
-    function renderizarChoferesAdmin() {
-      const grid = document.getElementById('grid-choferes-admin');
-      const contNotificaciones = document.getElementById('contenedor-notificaciones-retiro');
-      const listaNotificaciones = document.getElementById('lista-notificaciones-retiro');
+    function registrarNuevaTiendaAdmin(e) {
+      e.preventDefault();
+      const nombre = document.getElementById('reg-tienda-nombre').value.trim();
+      const categoria = document.getElementById('reg-tienda-categoria').value;
+      const telefono = document.getElementById('reg-tienda-telefono').value.trim();
+      const rif = document.getElementById('reg-tienda-rif').value.trim();
 
+      if (!nombre || !telefono) return;
+
+      const idTienda = nombre.toLowerCase().replace(/[^a-z0-9]/g, '_');
+
+      db.ref(`tiendas/${idTienda}`).set({
+        id: idTienda,
+        nombre,
+        categoria,
+        telefono,
+        rif: rif || 'Sin RIF',
+        estado: 'autorizado',
+        totalPagado: 0,
+        fechaRegistro: new Date().toISOString()
+      }).then(() => {
+        alert(`¡Tienda "${nombre}" registrada con éxito!`);
+        e.target.reset();
+      });
+    }
+
+    function renderizarTiendasAdmin() {
+      const grid = document.getElementById('grid-tiendas-admin');
+      if (!grid) return;
       grid.innerHTML = "";
-      listaNotificaciones.innerHTML = "";
 
-      const keys = Object.keys(choferesBD);
-      let retirosPendientesCount = 0;
+      const keys = Object.keys(tiendasBD);
+      document.getElementById('cant-admin-tiendas-badge').innerText = keys.length;
 
-      if (keys.length === 0) {
-        grid.innerHTML = `<div class="text-slate-500 text-xs py-6 text-center col-span-full">No hay choferes registrados en la base de datos.</div>`;
-        document.getElementById('metrica-retiros-pendientes').innerText = 0;
-        document.getElementById('cant-admin-choferes-badge').innerText = 0;
-        contNotificaciones.classList.add('hidden');
-        return;
-      }
+      keys.forEach(idTienda => {
+        const t = tiendasBD[idTienda];
 
-      keys.forEach(tel => {
-        const c = choferesBD[tel];
-        const esPendiente = c.estado === 'pendiente';
-
-        let totalProducidoChofer = 0;
-        let carrerasFinalizadas = 0;
-        let gananciaAcumulada = 0;
+        let ventasBrutasTienda = 0;
+        let comisionAppAcumulada = 0;
+        let gananciaTiendaAcumulada = 0;
 
         Object.keys(todosLosPedidosAdmin).forEach(idPed => {
           const ped = todosLosPedidosAdmin[idPed];
-          if (ped.choferTelefono === tel && ped.estado === 'entregado') {
-            carrerasFinalizadas++;
-            totalProducidoChofer += parseFloat(ped.total || ped.montoTotal || ped.monto || ped.precioTotal || 0);
-            gananciaAcumulada += parseFloat(ped.gananciaChofer || 0.70);
+          if ((ped.tiendaId === idTienda || (ped.tienda && ped.tienda.toLowerCase().includes(t.nombre.toLowerCase()))) && ped.estado === 'entregado') {
+            const montoProds = parseFloat(ped.montoProductos || ped.total || 0);
+            ventasBrutasTienda += montoProds;
+            comisionAppAcumulada += (montoProds * 0.08);
+            gananciaTiendaAcumulada += (montoProds * 0.92);
           }
         });
 
-        const pagadoChofer = parseFloat(c.totalPagado || 0);
-        const saldoPendienteLiquidar = Math.max(0, gananciaAcumulada - pagadoChofer);
-
-        if (c.solicitudRetiro && c.solicitudRetiro.estado === 'pendiente') {
-          retirosPendientesCount++;
-          listaNotificaciones.innerHTML += `
-            <div class="bg-slate-900 border border-amber-500/40 p-3 rounded-xl flex justify-between items-center text-xs">
-              <div>
-                <span class="font-black text-white block">🛵 ${c.nombre}</span>
-                <span class="text-[10px] text-slate-400">Solicitó: <strong class="text-accent-yellow">$${parseFloat(c.solicitudRetiro.monto).toFixed(2)}</strong> (${c.solicitudRetiro.metodo})</span>
-                <p class="text-[10px] text-slate-300 mt-0.5">📄 ${c.solicitudRetiro.datos}</p>
-              </div>
-              <div class="flex gap-1.5">
-                <button onclick="liquidarSaldoChofer('${c.telefono}', ${c.solicitudRetiro.monto}, ${gananciaAcumulada})" class="bg-accent-emerald hover:bg-emerald-400 text-slate-950 font-black px-2.5 py-1.5 rounded-lg text-[10px] transition">
-                  ✓ Aprobar y Pagar
-                </button>
-              </div>
-            </div>
-          `;
-        }
+        const pagadoTienda = parseFloat(t.totalPagado || 0);
+        const saldoPendienteLiquidar = Math.max(0, gananciaTiendaAcumulada - pagadoTienda);
 
         grid.innerHTML += `
-          <div class="bg-slate-950 p-4 rounded-2xl border ${esPendiente ? 'border-amber-500/60 shadow-[0_0_15px_rgba(255,184,0,0.2)]' : 'border-slate-800'} space-y-3">
-            <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+          <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
               <div>
-                <h4 class="font-black text-white text-xs">🛵 ${c.nombre}</h4>
-                <p class="text-[10px] text-slate-400">📱 Tel: ${c.telefono}</p>
+                <h4 class="font-black text-white text-xs">🏪 ${t.nombre}</h4>
+                <p class="text-[10px] text-slate-400">📱 ${t.telefono} • ${t.rif || 'Sin RIF'}</p>
               </div>
-              <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${esPendiente ? 'bg-amber-500/20 text-accent-yellow border border-amber-500/30' : 'bg-emerald-500/20 text-accent-emerald border border-emerald-500/30'}">
-                ${esPendiente ? '⏳ PENDIENTE' : '🟢 AUTORIZADO'}
-              </span>
+              <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-accent-emerald border border-emerald-500/30">ACTIVA</span>
             </div>
 
             <div class="bg-slate-900 p-2.5 rounded-xl text-xs space-y-1.5 border border-indigo-500/20">
               <div class="flex justify-between items-center">
-                <span class="text-slate-400 text-[10px] font-bold">Total Producido (Ventas):</span>
-                <span class="font-black text-accent-yellow">$${totalProducidoChofer.toFixed(2)}</span>
+                <span class="text-slate-400 text-[10px] font-bold">Ventas Totales:</span>
+                <span class="font-black text-white">$${ventasBrutasTienda.toFixed(2)}</span>
               </div>
-              <div class="flex justify-between items-center">
-                <span class="text-slate-400 text-[10px] font-bold">Carreras Finalizadas:</span>
-                <span class="font-bold text-white">${carrerasFinalizadas} viajes</span>
+              <div class="flex justify-between items-center text-accent-cyan">
+                <span class="text-[10px] font-bold">Comisión App (8%):</span>
+                <span class="font-black">+$${comisionAppAcumulada.toFixed(2)}</span>
               </div>
               <div class="flex justify-between items-center border-t border-slate-800 pt-1">
-                <span class="text-slate-400 text-[10px] font-bold">Ganancia Chofer (Envío):</span>
-                <span class="font-black text-accent-emerald">$${gananciaAcumulada.toFixed(2)}</span>
+                <span class="text-slate-400 text-[10px] font-bold">Ganancia Tienda (92%):</span>
+                <span class="font-black text-accent-emerald">$${gananciaTiendaAcumulada.toFixed(2)}</span>
               </div>
               <div class="flex justify-between items-center bg-slate-950 p-1.5 rounded-lg border border-slate-800 mt-1">
-                <span class="text-slate-300 text-[10px] font-bold">Saldo Pendiente por Pagar:</span>
-                <span class="font-black text-accent-cyan">$${saldoPendienteLiquidar.toFixed(2)}</span>
+                <span class="text-slate-300 text-[10px] font-bold">Saldo Por Pagar:</span>
+                <span class="font-black text-accent-yellow">$${saldoPendienteLiquidar.toFixed(2)}</span>
               </div>
             </div>
 
-            <div class="bg-slate-900/60 p-2 rounded-xl text-[10px] text-slate-300">
-              <p>🔑 Clave: <strong class="text-accent-cyan">${c.clave || 'No asignada'}</strong></p>
-            </div>
-
-            <div class="flex gap-2 pt-1">
-              ${esPendiente ? `
-                <button onclick="cambiarEstadoChoferBD('${c.telefono}', 'autorizado')" class="flex-1 bg-accent-emerald hover:bg-emerald-400 text-slate-950 font-black py-2 rounded-xl text-xs transition shadow-md">
-                  ✓ APROBAR
-                </button>
-              ` : `
-                <button onclick="liquidarSaldoChofer('${c.telefono}', ${saldoPendienteLiquidar}, ${gananciaAcumulada})" class="flex-1 bg-accent-cyan hover:bg-cyan-400 text-slate-950 font-black py-2 rounded-xl text-xs transition shadow-md">
-                  💸 Liquidar / Pagar
-                </button>
-              `}
-              <button onclick="eliminarChoferBD('${c.telefono}')" class="bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 font-bold px-3 py-2 rounded-xl text-xs border border-rose-500/30 transition">
-                Eliminar
+            <div class="flex flex-col gap-1.5 pt-1">
+              <a href="https://wa.me/${t.telefono.replace(/[^0-9]/g, '')}?text=Hola%20${encodeURIComponent(t.nombre)},%20te%20escribimos%20desde%20el%20Panel%20Admin%20de%20Pedidos%20Flash." target="_blank" class="w-full bg-emerald-600/20 hover:bg-emerald-600 text-accent-emerald hover:text-white font-bold py-1.5 rounded-xl text-center text-xs border border-emerald-500/30 transition">
+                💬 Contactar Tienda (WhatsApp)
+              </a>
+              <button onclick="liquidarSaldoTienda('${idTienda}', ${saldoPendienteLiquidar}, ${gananciaTiendaAcumulada})" class="w-full bg-accent-cyan hover:bg-cyan-400 text-slate-950 font-black py-2 rounded-xl text-xs shadow-md">
+                💸 Pagar Saldo (92%)
               </button>
             </div>
           </div>
         `;
       });
-
-      if (retirosPendientesCount > 0) {
-        contNotificaciones.classList.remove('hidden');
-      } else {
-        contNotificaciones.classList.add('hidden');
-      }
-
-      document.getElementById('metrica-retiros-pendientes').innerText = retirosPendientesCount;
-      document.getElementById('cant-admin-choferes-badge').innerText = retirosPendientesCount;
       lucide.createIcons();
     }
 
-    function liquidarSaldoChofer(telefono, saldoPendiente, totalAcumulado) {
+    function liquidarSaldoTienda(idTienda, saldoPendiente, totalAcumulado) {
       if (saldoPendiente <= 0) {
-        alert("Este chofer no tiene saldo pendiente por liquidar.");
+        alert("Esta tienda no tiene saldo pendiente por pagar.");
         return;
       }
-      if (confirm(`¿Confirmas que le has pagado $${parseFloat(saldoPendiente).toFixed(2)} al chofer? Su saldo pendiente volverá a $0.00.`)) {
-        db.ref(`choferes/${telefono}`).update({
+      if (confirm(`¿Confirmas que le has transferido $${saldoPendiente.toFixed(2)} a la tienda?`)) {
+        db.ref(`tiendas/${idTienda}`).update({
           totalPagado: totalAcumulado,
-          solicitudRetiro: null,
-          fechaUltimaLiquidacion: new Date().toISOString()
-        }).then(() => {
-          alert("Liquidación registrada con éxito.");
-        });
+          fechaUltimoPago: new Date().toISOString()
+        }).then(() => alert("Pago registrado exitosamente."));
       }
     }
 
-    function cambiarEstadoChoferBD(telefono, nuevoEstado) {
-      db.ref(`choferes/${telefono}`).update({ estado: nuevoEstado }).then(() => {
-        alert(`Estado del chofer actualizado a: ${nuevoEstado.toUpperCase()}`);
+    function actualizarSelectorTiendasProductos() {
+      const select = document.getElementById('prod-select-tienda');
+      if (!select) return;
+      select.innerHTML = "";
+      Object.keys(tiendasBD).forEach(id => {
+        select.innerHTML += `<option value="${id}">${tiendasBD[id].nombre}</option>`;
       });
     }
 
-    function eliminarChoferBD(telefono) {
-      if (confirm("¿Estás seguro de eliminar este chofer?")) {
-        db.ref(`choferes/${telefono}`).remove();
-      }
-    }
-
-    function registrarGastoAdmin(e) {
+    function guardarNuevoProductoAdmin(e) {
       e.preventDefault();
-      const concepto = document.getElementById('gasto-concepto').value.trim();
-      const monto = parseFloat(document.getElementById('gasto-monto').value);
+      const idTienda = document.getElementById('prod-select-tienda').value;
+      const nombre = document.getElementById('prod-nombre').value.trim();
+      const precio = parseFloat(document.getElementById('prod-precio').value);
+      const imagen = document.getElementById('prod-imagen').value.trim() || 'img/logo.jfif';
 
-      if (!concepto || isNaN(monto)) return;
+      if (!idTienda || !nombre || isNaN(precio)) return;
 
-      db.ref('gastos').push({
-        concepto,
-        monto,
-        fecha: new Date().toISOString()
+      const prodId = `prod_${Date.now()}`;
+
+      db.ref(`productos/${prodId}`).set({
+        id: prodId,
+        tiendaId: idTienda,
+        tiendaNombre: tiendasBD[idTienda] ? tiendasBD[idTienda].nombre : 'Tienda Aliada',
+        nombre,
+        precioBase: precio,
+        imagen
       }).then(() => {
-        document.getElementById('gasto-concepto').value = "";
-        document.getElementById('gasto-monto').value = "";
+        alert("¡Producto añadido con éxito!");
+        document.getElementById('prod-nombre').value = "";
+        document.getElementById('prod-precio').value = "";
       });
     }
 
-    function renderizarGastosAdmin() {
-      const cont = document.getElementById('lista-gastos-admin');
-      cont.innerHTML = "";
+    function renderizarProductosAdmin() {
+      const lista = document.getElementById('lista-productos-admin');
+      if (!lista) return;
+      lista.innerHTML = "";
 
-      if (gastosBD.length === 0) {
-        cont.innerHTML = `<p class="text-slate-500 text-xs text-center py-4">No hay gastos registrados.</p>`;
+      const keys = Object.keys(productosBD);
+      document.getElementById('cant-productos-total').innerText = `${keys.length} productos`;
+
+      if (keys.length === 0) {
+        lista.innerHTML = `<p class="text-slate-500 text-xs text-center py-4 col-span-full">No hay productos adicionales en la base de datos.</p>`;
         return;
       }
 
-      gastosBD.forEach(g => {
-        cont.innerHTML += `
-          <div class="flex justify-between items-center bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-xs">
+      keys.forEach(id => {
+        const p = productosBD[id];
+        lista.innerHTML += `
+          <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
             <div>
-              <span class="font-bold text-white block">${g.concepto}</span>
-              <span class="text-[10px] text-slate-500">${new Date(g.fecha).toLocaleDateString()}</span>
+              <span class="font-bold text-white block">${p.nombre}</span>
+              <span class="text-[10px] text-accent-cyan">🏪 ${p.tiendaNombre || 'Tienda Aliada'}</span>
             </div>
-            <span class="font-black text-rose-400">-$${parseFloat(g.monto).toFixed(2)}</span>
+            <div class="flex items-center gap-2">
+              <span class="font-black text-accent-yellow">$${parseFloat(p.precioBase || 0).toFixed(2)}</span>
+              <button onclick="eliminarProductoAdmin('${id}')" class="text-rose-400 hover:text-rose-300 font-bold">✕</button>
+            </div>
           </div>
         `;
       });
     }
 
-    function actualizarSelectorChoferes() {
-      const select = document.getElementById('adm-select-chofer');
-      select.innerHTML = `<option value="">Sin Asignar</option>`;
-
-      Object.keys(choferesBD).forEach(tel => {
-        const c = choferesBD[tel];
-        if (c.estado === 'autorizado') {
-          select.innerHTML += `<option value="${tel}">${c.nombre}</option>`;
-        }
-      });
+    function eliminarProductoAdmin(id) {
+      if (confirm("¿Eliminar este producto?")) {
+        db.ref(`productos/${id}`).remove();
+      }
     }
 
     function abrirModalAdminDetalle(id) {
@@ -1024,21 +837,34 @@
       const p = todosLosPedidosAdmin[id];
       if (!p) return;
 
-      document.getElementById('adm-modal-orden-id').innerText = `Orden: ${p.orden || p.idOrden || id}`;
+      document.getElementById('adm-modal-orden-id').innerText = `Orden: ${p.orden || id}`;
       document.getElementById('adm-modal-fecha').innerText = p.fecha ? new Date(p.fecha).toLocaleString() : 'Reciente';
-      document.getElementById('adm-modal-cliente').innerText = obtenerNombreCliente(p);
-      document.getElementById('adm-modal-telefono').innerText = obtenerTelefonoCliente(p);
-      document.getElementById('adm-modal-direccion').innerText = obtenerDireccionCliente(p);
-      document.getElementById('adm-modal-total').innerText = `$${parseFloat(p.total || p.montoTotal || p.monto || p.precioTotal || 0).toFixed(2)}`;
+      document.getElementById('adm-modal-cliente').innerText = p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente');
+      document.getElementById('adm-modal-telefono').innerText = p.telefono || 'Sin especificar';
+      document.getElementById('adm-modal-direccion').innerText = p.direccion || 'Sin dirección';
+      document.getElementById('adm-modal-total').innerText = `$${parseFloat(p.total || p.montoTotal || p.monto || 0).toFixed(2)}`;
 
       const lista = document.getElementById('adm-modal-items-lista');
       lista.innerHTML = "";
-      if (p.items && Array.isArray(p.items)) {
+
+      if (p.items && Array.isArray(p.items) && p.items.length > 0) {
         p.items.forEach(it => {
-          lista.innerHTML += `<div class="flex justify-between font-medium"><span>• ${it.cantidad || 1}x ${it.nombre || it.titulo || 'Producto'}</span><span>$${((it.cantidad||1)*(it.precio||0)).toFixed(2)}</span></div>`;
+          const cant = it.cantidad || 1;
+          const precioUnit = parseFloat(it.precio || 0);
+          const subtotal = cant * precioUnit;
+          
+          lista.innerHTML += `
+            <div class="flex justify-between items-center bg-slate-900 p-2 rounded-xl border border-slate-800 text-xs">
+              <div>
+                <span class="font-bold text-white block">🍔 ${it.nombre}</span>
+                <span class="text-[10px] text-slate-400">Cantidad: x${cant} | Precio: $${precioUnit.toFixed(2)}</span>
+              </div>
+              <span class="font-black text-accent-yellow">$${subtotal.toFixed(2)}</span>
+            </div>
+          `;
         });
       } else {
-        lista.innerHTML = `<p>${p.detalle || p.productos || 'Carrera de Transporte Flash'}</p>`;
+        lista.innerHTML = `<div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 text-xs text-white">${p.productos || p.detalle || 'Consumo en Tienda Aliada'}</div>`;
       }
 
       document.getElementById('adm-select-estado').value = p.estado || 'pendiente';
@@ -1050,6 +876,49 @@
     function cerrarModalAdminDetalle() {
       document.getElementById('modal-admin-detalle-pedido').classList.add('hidden');
       pedidoSeleccionadoId = null;
+    }
+
+    function enviarPedidoATiendaWhatsApp() {
+      if (!pedidoSeleccionadoId) return;
+      const p = todosLosPedidosAdmin[pedidoSeleccionadoId];
+      if (!p) return;
+
+      let telefonoTienda = "";
+      let nombreTienda = p.tienda || "Moraus Café";
+
+      Object.keys(tiendasBD).forEach(idT => {
+        if (tiendasBD[idT].nombre.toLowerCase().includes(nombreTienda.toLowerCase())) {
+          telefonoTienda = tiendasBD[idT].telefono;
+        }
+      });
+
+      if (!telefonoTienda) {
+        telefonoTienda = prompt(`WhatsApp de la tienda (${nombreTienda}):`, "04121234567");
+        if (!telefonoTienda) return;
+      }
+
+      let detalleProductos = "";
+      if (p.items && Array.isArray(p.items)) {
+        p.items.forEach(it => {
+          detalleProductos += `• ${it.cantidad || 1}x ${it.nombre}\n`;
+        });
+      } else {
+        detalleProductos = `• ${p.detalle || p.productos || 'Hamburguesa / Consumo'}`;
+      }
+
+      const clienteNom = p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente');
+
+      const texto = `🛍️ *NUEVO PEDIDO DESDE PEDIDOS FLASH*\n` +
+                    `📌 *Orden:* ${p.orden || pedidoSeleccionadoId.substring(0, 8)}\n` +
+                    `🏪 *Tienda:* ${nombreTienda}\n\n` +
+                    `🛒 *PRODUCTOS A PREPARAR:*\n${detalleProductos}\n` +
+                    `👤 *Cliente:* ${clienteNom} (${p.telefono || 'Sin telf'})\n` +
+                    `📍 *Entrega:* ${p.direccion || 'Nirgua'}\n` +
+                    `💵 *Monto Productos:* $${parseFloat(p.total || 0).toFixed(2)}\n\n` +
+                    `⚡ *Favor confirmar recepción para despachar chofer.*`;
+
+      const numLimpio = telefonoTienda.replace(/[^0-9]/g, '');
+      window.open(`https://wa.me/${numLimpio}?text=${encodeURIComponent(texto)}`, '_blank');
     }
 
     function guardarCambiosManualesPedido() {
@@ -1067,21 +936,166 @@
         estado: nuevoEstado,
         chofer: nombreChoferSel || 'Sin Asignar',
         choferTelefono: telChoferSel || ''
+      }).then(() => cerrarModalAdminDetalle());
+    }
+
+    // REGISTRAR CHOFER DIRECTAMENTE COMO ACTIVO
+    function registrarChoferAdminDirecto(e) {
+      e.preventDefault();
+      const nombre = document.getElementById('reg-chofer-nombre').value.trim();
+      const telefono = document.getElementById('reg-chofer-telefono').value.trim();
+      const vehiculo = document.getElementById('reg-chofer-vehiculo').value.trim();
+
+      if (!nombre || !telefono) return;
+      const telLimpio = telefono.replace(/[^0-9]/g, '');
+
+      db.ref(`choferes/${telLimpio}`).set({
+        nombre,
+        telefono: telLimpio,
+        vehiculo: vehiculo || 'Moto',
+        estado: 'activo',
+        fechaRegistro: new Date().toISOString()
       }).then(() => {
-        cerrarModalAdminDetalle();
+        alert(`¡Chofer "${nombre}" registrado y activado!`);
+        e.target.reset();
+      });
+    }
+
+    // APROBAR CHOFER PENDIENTE
+    function aprobarChofer(tel) {
+      db.ref(`choferes/${tel}`).update({
+        estado: 'activo'
+      }).then(() => {
+        alert("¡Chofer aprobado exitosamente!");
+      });
+    }
+
+    function eliminarChoferAdmin(tel) {
+      if (confirm("¿Seguro que deseas eliminar este chofer?")) {
+        db.ref(`choferes/${tel}`).remove();
+      }
+    }
+
+    function renderizarChoferesAdmin() {
+      const gridActivos = document.getElementById('grid-choferes-admin');
+      const gridPendientes = document.getElementById('grid-choferes-pendientes');
+      const contPendientes = document.getElementById('contenedor-choferes-pendientes');
+      
+      if (!gridActivos || !gridPendientes) return;
+
+      gridActivos.innerHTML = "";
+      gridPendientes.innerHTML = "";
+
+      const keys = Object.keys(choferesBD);
+      let hayPendientes = false;
+      let cantPendientes = 0;
+      let cantActivos = 0;
+
+      keys.forEach(tel => {
+        const c = choferesBD[tel];
+        const esPendiente = (c.estado === 'pendiente' || c.aprobado === false);
+
+        if (esPendiente) {
+          hayPendientes = true;
+          cantPendientes++;
+          gridPendientes.innerHTML += `
+            <div class="bg-slate-900 p-3.5 rounded-2xl border border-amber-500/40 space-y-2.5 text-xs shadow-md">
+              <div>
+                <span class="text-[10px] bg-amber-500/20 text-accent-yellow font-black px-2 py-0.5 rounded border border-amber-500/30">PENDIENTE</span>
+                <h4 class="font-black text-white text-sm mt-1">🛵 ${c.nombre}</h4>
+                <p class="text-slate-400">📱 ${c.telefono} • ${c.vehiculo || 'Moto'}</p>
+              </div>
+              <div class="flex gap-2 pt-1">
+                <button onclick="aprobarChofer('${tel}')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2 rounded-xl transition shadow">
+                  ✅ Aceptar
+                </button>
+                <button onclick="eliminarChoferAdmin('${tel}')" class="bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white font-bold px-3 py-2 rounded-xl transition border border-rose-500/30">
+                  ✕
+                </button>
+              </div>
+            </div>
+          `;
+        } else {
+          cantActivos++;
+          gridActivos.innerHTML += `
+            <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 space-y-2 text-xs flex justify-between items-center">
+              <div>
+                <h4 class="font-black text-white">🛵 ${c.nombre}</h4>
+                <p class="text-[10px] text-slate-400">📱 ${c.telefono} • ${c.vehiculo || 'Moto'}</p>
+              </div>
+              <button onclick="eliminarChoferAdmin('${tel}')" class="text-rose-400 hover:text-rose-300 font-bold p-2">✕ Eliminar</button>
+            </div>
+          `;
+        }
+      });
+
+      document.getElementById('badge-num-pendientes').innerText = cantPendientes;
+
+      if (hayPendientes) {
+        contPendientes.classList.remove('hidden');
+      } else {
+        contPendientes.classList.add('hidden');
+        gridPendientes.innerHTML = `<div class="text-slate-500 text-xs py-2 col-span-full">No hay solicitudes pendientes.</div>`;
+      }
+
+      if (cantActivos === 0) {
+        gridActivos.innerHTML = `<div class="text-slate-500 text-xs py-6 text-center col-span-full">No hay choferes activos.</div>`;
+      }
+      
+      lucide.createIcons();
+    }
+
+    function registrarGastoAdmin(e) {
+      e.preventDefault();
+      const concepto = document.getElementById('gasto-concepto').value.trim();
+      const monto = parseFloat(document.getElementById('gasto-monto').value);
+
+      if (!concepto || isNaN(monto)) return;
+
+      db.ref('gastos').push({ concepto, monto, fecha: new Date().toISOString() }).then(() => {
+        document.getElementById('gasto-concepto').value = "";
+        document.getElementById('gasto-monto').value = "";
+      });
+    }
+
+    function renderizarGastosAdmin() {
+      const cont = document.getElementById('lista-gastos-admin');
+      if (!cont) return;
+      cont.innerHTML = "";
+      gastosBD.forEach(g => {
+        cont.innerHTML += `
+          <div class="flex justify-between items-center bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-xs">
+            <span class="font-bold text-white">${g.concepto}</span>
+            <span class="font-black text-rose-400">-$${parseFloat(g.monto).toFixed(2)}</span>
+          </div>
+        `;
+      });
+    }
+
+    function actualizarSelectorChoferes() {
+      const select = document.getElementById('adm-select-chofer');
+      if (!select) return;
+      select.innerHTML = `<option value="">Sin Asignar</option>`;
+      Object.keys(choferesBD).forEach(tel => {
+        const c = choferesBD[tel];
+        if (c.estado === 'activo') {
+          select.innerHTML += `<option value="${tel}">${c.nombre}</option>`;
+        }
       });
     }
 
     function cambiarPestana(pestana) {
-      ['pedidos', 'choferes', 'gastos', 'ajustes'].forEach(p => {
-        document.getElementById(`sec-admin-${p}`).classList.add('hidden');
+      ['pedidos', 'tiendas', 'productos', 'choferes', 'gastos'].forEach(p => {
+        const sec = document.getElementById(`sec-admin-${p}`);
+        if(sec) sec.classList.add('hidden');
         const btn = document.getElementById(`tab-admin-${p}`);
-        btn.className = "px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition";
+        if(btn) btn.className = "px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition";
       });
 
-      document.getElementById(`sec-admin-${pestana}`).classList.remove('hidden');
+      const secActiva = document.getElementById(`sec-admin-${pestana}`);
+      if(secActiva) secActiva.classList.remove('hidden');
       const btnActivo = document.getElementById(`tab-admin-${pestana}`);
-      btnActivo.className = "px-4 py-2.5 rounded-xl text-xs font-black bg-indigo-600 text-white flex items-center gap-2 whitespace-nowrap transition";
+      if(btnActivo) btnActivo.className = "px-4 py-2.5 rounded-xl text-xs font-black bg-indigo-600 text-white flex items-center gap-2 whitespace-nowrap transition";
     }
 
     function filtrarEstadoPedido(est) {
