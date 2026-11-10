@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Pedidos Flash - Panel de Administración & Comercios</title>
+  <title>Pedidos Flash - Panel de Administración & Control</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -76,9 +76,9 @@
         </div>
         <div>
           <h1 class="text-base sm:text-lg font-black font-orbitron text-white leading-tight flex items-center gap-2">
-            PEDIDOS FLASH <span class="bg-accent-magenta/20 text-accent-magenta border border-accent-magenta/30 text-[9px] font-black px-2 py-0.5 rounded-full uppercase">ADMIN & COMERCIOS</span>
+            PEDIDOS FLASH <span class="bg-accent-magenta/20 text-accent-magenta border border-accent-magenta/30 text-[9px] font-black px-2 py-0.5 rounded-full uppercase">CENTRO DE CONTROL</span>
           </h1>
-          <p class="text-[10px] text-slate-400 font-semibold">Nirgua, Yaracuy • Centro de Control de Tiendas, Choferes y Finanzas</p>
+          <p class="text-[10px] text-slate-400 font-semibold">Nirgua, Yaracuy • Gestión de Precios, Productos, Comercios y Finanzas</p>
         </div>
       </div>
 
@@ -96,7 +96,7 @@
   <!-- CONTENIDO PRINCIPAL -->
   <div class="max-w-7xl w-full mx-auto p-3 sm:p-6 flex-1 space-y-5">
 
-    <!-- RESUMEN DE MÉTRICAS Y FINANZAS (CON COMISIONES DE TIENDAS) -->
+    <!-- RESUMEN DE MÉTRICAS Y FINANZAS -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
       <!-- 1. Ventas Brutas -->
       <div class="bg-slate-900/80 border border-indigo-500/20 p-3.5 rounded-2xl shadow-lg space-y-1">
@@ -107,10 +107,10 @@
         <p id="metrica-ventas" class="text-base sm:text-xl font-black text-accent-yellow">$0.00</p>
       </div>
 
-      <!-- 2. Comisiones Tiendas Ganadas -->
+      <!-- 2. Comisiones Tiendas -->
       <div class="bg-slate-900/80 border border-accent-cyan/40 p-3.5 rounded-2xl shadow-lg space-y-1 glow-cyan">
         <div class="flex justify-between items-center text-slate-400">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-accent-cyan">Comisiones Tiendas</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-accent-cyan">Comisiones Locales</span>
           <i data-lucide="store" class="w-4 h-4 text-accent-cyan"></i>
         </div>
         <p id="metrica-comisiones" class="text-base sm:text-xl font-black text-accent-cyan">$0.00</p>
@@ -143,20 +143,23 @@
         <p id="metrica-pedidos" class="text-base sm:text-xl font-black text-white">0</p>
       </div>
 
-      <!-- 6. Deuda / Saldo Comercios -->
-      <div class="bg-slate-900/80 border border-amber-500/20 p-3.5 rounded-2xl shadow-lg space-y-1">
+      <!-- 6. Productos en Venta -->
+      <div class="bg-slate-900/80 border border-indigo-500/20 p-3.5 rounded-2xl shadow-lg space-y-1">
         <div class="flex justify-between items-center text-slate-400">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-amber-300">Saldo a Comercios</span>
-          <i data-lucide="receipt" class="w-4 h-4 text-accent-yellow"></i>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-accent-cyan">Productos Flash</span>
+          <i data-lucide="package" class="w-4 h-4 text-accent-cyan"></i>
         </div>
-        <p id="metrica-deuda-comercios" class="text-base sm:text-xl font-black text-accent-yellow">$0.00</p>
+        <p id="metrica-productos-total" class="text-base sm:text-xl font-black text-accent-cyan">0</p>
       </div>
     </div>
 
     <!-- PESTAÑAS DE NAVEGACIÓN -->
     <div class="flex border-b border-slate-800 gap-2 overflow-x-auto no-scrollbar pb-1">
-      <button onclick="cambiarPestana('comercios')" id="tab-admin-comercios" class="px-4 py-2.5 rounded-xl text-xs font-black bg-indigo-600 text-white flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="store" class="w-4 h-4 text-accent-cyan"></i> Tiendas & Comisiones (<span id="cant-admin-comercios-badge" class="font-black">0</span>)
+      <button onclick="cambiarPestana('productos')" id="tab-admin-productos" class="px-4 py-2.5 rounded-xl text-xs font-black bg-indigo-600 text-white flex items-center gap-2 whitespace-nowrap transition">
+        <i data-lucide="package" class="w-4 h-4 text-accent-cyan"></i> Catálogo y Precios Flash (<span id="cant-admin-prods-badge" class="font-black">0</span>)
+      </button>
+      <button onclick="cambiarPestana('comercios')" id="tab-admin-comercios" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
+        <i data-lucide="store" class="w-4 h-4 text-accent-yellow"></i> Comida Rápida & Tiendas (<span id="cant-admin-comercios-badge" class="font-black">0</span>)
       </button>
       <button onclick="cambiarPestana('pedidos')" id="tab-admin-pedidos" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
         <i data-lucide="list-ordered" class="w-4 h-4"></i> Pedidos y Carreras (<span id="cant-admin-pedidos">0</span>)
@@ -168,36 +171,77 @@
         <i data-lucide="receipt" class="w-4 h-4"></i> Control de Gastos
       </button>
       <button onclick="cambiarPestana('ajustes')" id="tab-admin-ajustes" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="settings" class="w-4 h-4"></i> Configuración y Clave
+        <i data-lucide="settings" class="w-4 h-4"></i> Configuración
       </button>
     </div>
 
-    <!-- ================= PESTAÑA: TIENDAS & COMISIONES (SOLUCIÓN PRINCIPAL) ================= -->
-    <section id="sec-admin-comercios" class="space-y-4">
+    <!-- ================= PESTAÑA 1: CATÁLOGO Y EDICIÓN DE PRECIOS FLASH ================= -->
+    <section id="sec-admin-productos" class="space-y-4">
       
-      <!-- BARRA DE ACCIÓN: BOTÓN PARA REGISTRAR NUEVA TIENDA -->
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-900/90 border border-indigo-500/30 p-4 rounded-2xl shadow-xl">
-        <div>
-          <h2 class="text-base font-black text-white flex items-center gap-2">
-            <i data-lucide="badge-percent" class="w-5 h-5 text-accent-cyan"></i> Registro y Cuentas Corrientes de Comercios
-          </h2>
-          <p class="text-xs text-slate-400">Registra tiendas (ej: Moravos Café), fija tu porcentaje de comisión (ej: 8%) y lleva el control exacto de lo que se le vende y se le liquida.</p>
+      <!-- BARRA DE ACCIÓN Y BUSCADOR -->
+      <div class="bg-slate-900/90 border border-indigo-500/30 p-4 rounded-2xl shadow-xl space-y-3">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div>
+            <h2 class="text-base font-black text-white flex items-center gap-2">
+              <i data-lucide="tag" class="w-5 h-5 text-accent-cyan"></i> Catálogo de Productos Pedidos Flash
+            </h2>
+            <p class="text-xs text-slate-400">Todos los víveres, bebidas, charcutería, carnes y productos son de Pedidos Flash. Cambia los precios al instante y se actualizarán en vivo para todos los clientes.</p>
+          </div>
+          
+          <div class="flex flex-wrap gap-2">
+            <button onclick="abrirModalNuevoProductoFlash()" class="bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition shadow-lg glow-cyan whitespace-nowrap">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i> + Nuevo Producto
+            </button>
+            <button onclick="sincronizarTodoElCatalogoBaseAFirebase()" title="Subir todos los productos base a Firebase" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold px-3 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition whitespace-nowrap">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-accent-cyan"></i> Respaldar Catálogo
+            </button>
+          </div>
         </div>
-        <button onclick="abrirModalRegistrarTienda()" class="bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition shadow-lg glow-cyan whitespace-nowrap">
-          <i data-lucide="plus-circle" class="w-4 h-4"></i> Registrar Nuevo Comercio
-        </button>
+
+        <!-- FILTROS Y BÚSQUEDA RÁPIDA -->
+        <div class="flex flex-col sm:flex-row gap-2 pt-2 border-t border-slate-800">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-4 h-4 text-indigo-400 absolute left-3.5 top-3"></i>
+            <input type="text" id="busqueda-admin-catalogo" oninput="filtrarCatalogoAdmin()" placeholder="Buscar producto... Ej: Harina PAN, Queso, Polar, Carne, Aceite..." class="w-full pl-10 pr-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-accent-cyan">
+          </div>
+
+          <div class="flex gap-1 overflow-x-auto no-scrollbar py-0.5">
+            <button onclick="filtrarCategoriaCatalogo('todos')" id="cat-btn-todos" class="btn-cat-fil text-[11px] font-black bg-indigo-600 text-white px-3 py-1.5 rounded-lg whitespace-nowrap">Todos</button>
+            <button onclick="filtrarCategoriaCatalogo('viveres')" id="cat-btn-viveres" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Víveres</button>
+            <button onclick="filtrarCategoriaCatalogo('bebidas')" id="cat-btn-bebidas" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Bebidas</button>
+            <button onclick="filtrarCategoriaCatalogo('carnes')" id="cat-btn-carnes" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Carnes</button>
+            <button onclick="filtrarCategoriaCatalogo('charcuteria')" id="cat-btn-charcuteria" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Charcutería</button>
+            <button onclick="filtrarCategoriaCatalogo('panaderia')" id="cat-btn-panaderia" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Panadería</button>
+            <button onclick="filtrarCategoriaCatalogo('verduras')" id="cat-btn-verduras" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Verduras</button>
+            <button onclick="filtrarCategoriaCatalogo('limpieza')" id="cat-btn-limpieza" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Limpieza</button>
+          </div>
+        </div>
       </div>
 
-      <!-- LISTADO DE COMERCIOS REGISTRADOS -->
-      <div id="grid-comercios-admin" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div class="col-span-full text-center py-10 text-slate-500 text-xs">
-          <i data-lucide="loader-2" class="w-7 h-7 animate-spin mx-auto mb-2 text-accent-cyan"></i>
-          Cargando comercios y balances contables...
-        </div>
+      <!-- LISTADO / CUADRÍCULA DE PRODUCTOS -->
+      <div id="grid-catalogo-admin" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <!-- Render dinámico de productos con sus precios y botón de edición -->
       </div>
     </section>
 
-    <!-- ================= PESTAÑA: GESTIÓN DE PEDIDOS ================= -->
+    <!-- ================= PESTAÑA 2: COMIDA RÁPIDA & LOCALES REGISTRADOS ================= -->
+    <section id="sec-admin-comercios" class="space-y-4 hidden">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-900/90 border border-indigo-500/30 p-4 rounded-2xl shadow-xl">
+        <div>
+          <h2 class="text-base font-black text-white flex items-center gap-2">
+            <i data-lucide="store" class="w-5 h-5 text-accent-yellow"></i> Restaurantes & Locales de Comida Rápida
+          </h2>
+          <p class="text-xs text-slate-400">Registra locales comerciales (Moravos Café, Burgers, etc.), establece tu porcentaje de comisión (ej: 8%) y gestiona sus cuentas corrientes.</p>
+        </div>
+        <button onclick="abrirModalRegistrarTienda()" class="bg-gradient-to-r from-accent-yellow via-amber-500 to-orange-500 hover:brightness-110 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition shadow-lg glow-yellow whitespace-nowrap">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i> Registrar Local Comercial
+        </button>
+      </div>
+
+      <div id="grid-comercios-admin" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ================= PESTAÑA 3: GESTIÓN DE PEDIDOS ================= -->
     <section id="sec-admin-pedidos" class="space-y-4 hidden">
       <div class="flex flex-col sm:flex-row gap-2 justify-between items-stretch sm:items-center">
         <div class="relative flex-1 max-w-md">
@@ -220,7 +264,7 @@
               <tr>
                 <th class="p-3.5">Orden</th>
                 <th class="p-3.5">Cliente / Teléfono</th>
-                <th class="p-3.5">Tienda / Comercio</th>
+                <th class="p-3.5">Tipo / Local</th>
                 <th class="p-3.5">Monto Total</th>
                 <th class="p-3.5">Comisión (%)</th>
                 <th class="p-3.5">Estado</th>
@@ -241,7 +285,7 @@
       </div>
     </section>
 
-    <!-- ================= PESTAÑA: CHOFERES Y RETIROS ================= -->
+    <!-- ================= PESTAÑA 4: CHOFERES Y RETIROS ================= -->
     <section id="sec-admin-choferes" class="space-y-4 hidden">
       <div id="contenedor-notificaciones-retiro" class="bg-amber-950/30 border-2 border-amber-500/50 rounded-2xl p-4 shadow-xl space-y-3 hidden">
         <div class="flex items-center justify-between border-b border-amber-500/30 pb-2">
@@ -271,7 +315,7 @@
       </div>
     </section>
 
-    <!-- ================= PESTAÑA: REGISTRO DE GASTOS ================= -->
+    <!-- ================= PESTAÑA 5: REGISTRO DE GASTOS ================= -->
     <section id="sec-admin-gastos" class="space-y-4 hidden">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
@@ -304,7 +348,7 @@
       </div>
     </section>
 
-    <!-- ================= PESTAÑA: AJUSTES ================= -->
+    <!-- ================= PESTAÑA 6: AJUSTES ================= -->
     <section id="sec-admin-ajustes" class="space-y-4 hidden">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         
@@ -355,17 +399,147 @@
 
   </div>
 
+  <!-- ================= MODAL: CAMBIAR PRECIO DE PRODUCTO FLASH ================= -->
+  <div id="modal-cambiar-precio" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border-2 border-indigo-500/40 w-full max-w-sm rounded-3xl p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+        <div class="flex items-center gap-2">
+          <div class="p-2 bg-accent-cyan/15 text-accent-cyan rounded-xl">
+            <i data-lucide="tag" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-xs font-black text-white uppercase tracking-wider">Modificar Precio</h3>
+            <span class="text-[10px] text-accent-cyan font-bold">Actualización instantánea</span>
+          </div>
+        </div>
+        <button onclick="cerrarModalCambiarPrecio()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center space-y-1">
+        <p id="precio-edit-nombre" class="text-xs font-black text-white leading-tight">Nombre del Producto</p>
+        <span id="precio-edit-categoria" class="text-[10px] font-bold text-indigo-300 block uppercase">Víveres</span>
+        <div class="pt-1 text-slate-400 text-[11px]">
+          Precio actual: <span id="precio-edit-actual" class="font-black text-accent-yellow">$0.00</span>
+        </div>
+      </div>
+
+      <form onsubmit="guardarNuevoPrecioProducto(event)" class="space-y-3 text-xs">
+        <input type="hidden" id="precio-edit-id" value="">
+
+        <div>
+          <label class="block font-bold text-slate-300 mb-1 text-center">Nuevo Precio en Dólares ($):</label>
+          <div class="relative max-w-[200px] mx-auto">
+            <span class="absolute left-3.5 top-2.5 text-base font-black text-accent-yellow">$</span>
+            <input type="number" step="0.01" min="0" id="input-nuevo-precio" required placeholder="0.00" class="w-full bg-slate-950 border-2 border-indigo-500/60 rounded-2xl py-2 pl-8 pr-3 text-center text-lg font-black text-accent-yellow focus:outline-none focus:border-accent-cyan">
+          </div>
+        </div>
+
+        <!-- BOTONES DE AJUSTE RÁPIDO (+ / -) -->
+        <div class="flex justify-center gap-1.5 pt-1">
+          <button type="button" onclick="ajustarPrecioInput(-0.10)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] font-bold">-0.10</button>
+          <button type="button" onclick="ajustarPrecioInput(-0.05)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] font-bold">-0.05</button>
+          <button type="button" onclick="ajustarPrecioInput(0.05)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] font-bold">+0.05</button>
+          <button type="button" onclick="ajustarPrecioInput(0.10)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] font-bold">+0.10</button>
+          <button type="button" onclick="ajustarPrecioInput(0.50)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] font-bold">+0.50</button>
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="cerrarModalCambiarPrecio()" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2.5 rounded-xl text-xs">Cancelar</button>
+          <button type="submit" class="flex-1 bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black py-2.5 rounded-xl text-xs shadow-md glow-cyan">
+            💾 Guardar Precio
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: AGREGAR NUEVO PRODUCTO A PEDIDOS FLASH ================= -->
+  <div id="modal-nuevo-producto-flash" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border-2 border-indigo-500/40 w-full max-w-sm rounded-3xl p-5 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+        <div class="flex items-center gap-2">
+          <div class="p-2 bg-accent-cyan/15 text-accent-cyan rounded-xl">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-xs font-black text-white uppercase tracking-wider">Añadir Producto a Flash</h3>
+            <span class="text-[10px] text-accent-cyan font-bold">Se agregará a la app del cliente</span>
+          </div>
+        </div>
+        <button onclick="cerrarModalNuevoProductoFlash()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form onsubmit="guardarNuevoProductoFlashFirebase(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Nombre del Producto:</label>
+          <input type="text" id="nuevo-prod-nombre" required placeholder="Ej: Café Molido 500g, Harina, etc." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-cyan font-bold">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Categoría:</label>
+            <select id="nuevo-prod-categoria" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
+              <option value="viveres">Víveres</option>
+              <option value="bebidas">Bebidas</option>
+              <option value="carnes">Carnes & Pollo</option>
+              <option value="charcuteria">Charcutería</option>
+              <option value="panaderia">Panadería</option>
+              <option value="verduras">Verduras</option>
+              <option value="limpieza">Limpieza</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Precio en Dólares ($):</label>
+            <input type="number" step="0.01" min="0" id="nuevo-prod-precio" required placeholder="0.00" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-accent-yellow font-black focus:outline-none text-sm">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Badge / Etiqueta:</label>
+            <input type="text" id="nuevo-prod-badge" placeholder="Ej: PROMO, TOP" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Subcategoría (opcional):</label>
+            <input type="text" id="nuevo-prod-sub" placeholder="Ej: harinas, lacteos..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Ruta o URL de Imagen (opcional):</label>
+          <input type="text" id="nuevo-prod-imagen" placeholder="Ej: img/v_harina_pan_blanca.png" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white focus:outline-none text-[11px]">
+        </div>
+
+        <div class="flex items-center gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+          <input type="checkbox" id="nuevo-prod-granel" class="w-4 h-4 accent-accent-cyan rounded cursor-pointer">
+          <label for="nuevo-prod-granel" class="text-[11px] font-bold text-slate-300 cursor-pointer">¿Se vende por peso / granel (kilos/gramos)?</label>
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="cerrarModalNuevoProductoFlash()" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2.5 rounded-xl text-xs">Cancelar</button>
+          <button type="submit" class="flex-1 bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black py-2.5 rounded-xl text-xs shadow-md glow-cyan">
+            💾 Guardar Producto
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- ================= MODAL: REGISTRAR O EDITAR TIENDA / COMERCIO ================= -->
   <div id="modal-registrar-tienda" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border-2 border-indigo-500/40 w-full max-w-md rounded-3xl p-5 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <div class="flex items-center gap-2">
-          <div class="p-2 bg-accent-cyan/15 text-accent-cyan rounded-xl">
+          <div class="p-2 bg-accent-yellow/15 text-accent-yellow rounded-xl">
             <i data-lucide="store" class="w-5 h-5"></i>
           </div>
           <div>
-            <h3 id="titulo-modal-tienda" class="text-sm font-black text-white">Registrar Tienda o Comercio</h3>
-            <span class="text-[10px] text-accent-cyan font-bold">Fija el porcentaje (%) que le cobras al negocio</span>
+            <h3 id="titulo-modal-tienda" class="text-sm font-black text-white">Registrar Local Comercial</h3>
+            <span class="text-[10px] text-accent-yellow font-bold">Fija el porcentaje (%) que le cobras al negocio</span>
           </div>
         </div>
         <button onclick="cerrarModalRegistrarTienda()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
@@ -377,8 +551,8 @@
         <input type="hidden" id="tienda-edit-id" value="">
 
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Nombre del Comercio / Tienda:</label>
-          <input type="text" id="tienda-nombre" required placeholder="Ej: Moravos Café, Pizzería, Bodega..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-cyan font-bold">
+          <label class="block font-bold text-slate-300 mb-1">Nombre del Local Comercial:</label>
+          <input type="text" id="tienda-nombre" required placeholder="Ej: Moravos Café, Burger King..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-yellow font-bold">
         </div>
 
         <div>
@@ -390,16 +564,13 @@
             <input type="number" step="0.5" min="0" max="100" id="tienda-comision" required placeholder="Ej: 8" class="w-28 bg-slate-950 border border-amber-500/60 rounded-xl p-2.5 text-accent-yellow font-black text-base focus:outline-none text-center">
             <span class="text-sm font-black text-accent-yellow">%</span>
 
-            <!-- Botones de acceso rápido para porcentajes comunes -->
             <div class="flex gap-1 flex-1 justify-end">
               <button type="button" onclick="fijarPorcentajeRapido(5)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] font-bold">5%</button>
               <button type="button" onclick="fijarPorcentajeRapido(8)" class="px-2 py-1 bg-amber-500/20 text-accent-yellow border border-amber-500/40 rounded-lg text-[10px] font-black">8%</button>
               <button type="button" onclick="fijarPorcentajeRapido(10)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] font-bold">10%</button>
               <button type="button" onclick="fijarPorcentajeRapido(12)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] font-bold">12%</button>
-              <button type="button" onclick="fijarPorcentajeRapido(15)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] font-bold">15%</button>
             </div>
           </div>
-          <p class="text-[10px] text-slate-400 mt-1 italic">💡 Si la tienda vende un café de $2.00 con 8%, la tienda recibe $1.84 y tú ganas $0.16 de comisión.</p>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
@@ -408,12 +579,7 @@
             <select id="tienda-categoria" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
               <option value="comida">Comida Rápida / Café</option>
               <option value="panaderia">Panadería & Dulces</option>
-              <option value="viveres">Víveres & Alimentos</option>
-              <option value="carnes">Carnicería</option>
-              <option value="charcuteria">Charcutería</option>
-              <option value="bebidas">Licores / Bebidas</option>
-              <option value="farmacia">Farmacia / Medicina</option>
-              <option value="varios">Otro Comercio</option>
+              <option value="varios">Otro Local</option>
             </select>
           </div>
           <div>
@@ -423,21 +589,21 @@
         </div>
 
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Dirección / Ubicación del Local:</label>
-          <input type="text" id="tienda-direccion" placeholder="Ej: Calle Bolívar frente a la plaza, Nirgua" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
+          <label class="block font-bold text-slate-300 mb-1">Dirección del Local:</label>
+          <input type="text" id="tienda-direccion" placeholder="Ej: Nirgua centro" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
         </div>
 
         <div>
           <label class="block font-bold text-slate-300 mb-1">Ruta o URL del Logo / Foto (Opcional):</label>
-          <input type="text" id="tienda-logo" placeholder="Ej: img/moravos.jpg o link web" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none text-[11px]">
+          <input type="text" id="tienda-logo" placeholder="Ej: img/moravos.jpg o enlace web" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none text-[11px]">
         </div>
 
         <div class="flex gap-2 pt-2">
           <button type="button" onclick="cerrarModalRegistrarTienda()" class="flex-1 bg-slate-800 text-slate-300 font-bold py-3 rounded-xl text-xs">
             Cancelar
           </button>
-          <button type="submit" class="flex-1 bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black py-3 rounded-xl text-xs shadow-lg glow-cyan">
-            💾 Guardar Comercio
+          <button type="submit" class="flex-1 bg-gradient-to-r from-accent-yellow via-amber-500 to-orange-500 hover:brightness-110 text-slate-950 font-black py-3 rounded-xl text-xs shadow-lg glow-yellow">
+            💾 Guardar Local
           </button>
         </div>
       </form>
@@ -447,8 +613,6 @@
   <!-- ================= MODAL: ESTADO DE CUENTA / MOVIMIENTOS DE LA TIENDA ================= -->
   <div id="modal-cuenta-comercio" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4 hidden">
     <div class="bg-slate-900 border-2 border-indigo-500/40 w-full max-w-2xl rounded-3xl p-5 space-y-4 shadow-2xl max-h-[92vh] flex flex-col">
-      
-      <!-- HEADER MODAL CUENTA -->
       <div class="flex justify-between items-center border-b border-slate-800 pb-3 shrink-0">
         <div class="flex items-center gap-3">
           <img id="cta-tienda-img" src="img/logo.jfif" class="w-11 h-11 rounded-2xl object-cover border border-amber-500/40" onerror="this.src='img/logo.jfif';">
@@ -465,7 +629,6 @@
         </button>
       </div>
 
-      <!-- TARJETAS DE RESUMEN CONTABLE DE LA TIENDA -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 shrink-0">
         <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-center">
           <span class="text-[10px] text-slate-400 font-bold block uppercase">Ventas Totales</span>
@@ -485,7 +648,6 @@
         </div>
       </div>
 
-      <!-- BOTONES DE ACCIONES RÁPIDAS EN LA CUENTA -->
       <div class="flex flex-wrap gap-2 shrink-0">
         <button onclick="abrirModalAnotarVentaManual()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow">
           <i data-lucide="plus" class="w-3.5 h-3.5"></i> Anotar Pedido / Venta a la Cuenta
@@ -493,12 +655,8 @@
         <button onclick="abrirModalLiquidarPagoTienda()" class="bg-accent-emerald hover:bg-emerald-400 text-slate-950 font-black px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow glow-emerald">
           <i data-lucide="hand-coins" class="w-3.5 h-3.5"></i> Registrar Pago / Liquidar Saldo
         </button>
-        <button onclick="abrirModalNuevoProductoTienda()" class="bg-slate-800 hover:bg-slate-700 text-accent-yellow border border-amber-500/30 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5">
-          <i data-lucide="utensils" class="w-3.5 h-3.5"></i> + Añadir Producto al Menú
-        </button>
       </div>
 
-      <!-- HISTORIAL / LIBRO CONTABLE DE MOVIMIENTOS -->
       <div class="flex-1 overflow-y-auto no-scrollbar space-y-2 border border-slate-800 rounded-2xl bg-slate-950/80 p-3">
         <h4 class="text-xs font-black text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
           <i data-lucide="history" class="w-4 h-4 text-accent-cyan"></i> Movimientos Anotados a la Cuenta
@@ -508,7 +666,6 @@
         </div>
       </div>
 
-      <!-- PIE DE MODAL -->
       <div class="pt-2 border-t border-slate-800 flex justify-between items-center shrink-0">
         <button onclick="contactarTiendaWhatsAppActual()" class="text-xs font-bold text-accent-emerald hover:underline flex items-center gap-1">
           <i data-lucide="message-circle" class="w-4 h-4"></i> Enviar Estado de Cuenta por WhatsApp
@@ -520,7 +677,7 @@
     </div>
   </div>
 
-  <!-- ================= MODAL: ANOTAR PEDIDO O VENTA MANUAL A LA CUENTA ================= -->
+  <!-- ================= MODAL: ANOTAR VENTA MANUAL ================= -->
   <div id="modal-anotar-venta-manual" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border-2 border-indigo-500/40 w-full max-w-sm rounded-3xl p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
@@ -544,7 +701,6 @@
           <input type="number" step="0.01" id="manual-monto" required oninput="calcularPrevisualizacionComision()" placeholder="0.00" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold text-sm focus:outline-none focus:border-accent-yellow">
         </div>
 
-        <!-- CÁLCULO DE COMISIÓN EN VIVO -->
         <div class="bg-slate-950 p-2.5 rounded-xl border border-indigo-500/20 space-y-1">
           <div class="flex justify-between text-[11px]">
             <span class="text-slate-400">Porcentaje pactado:</span>
@@ -575,7 +731,7 @@
     </div>
   </div>
 
-  <!-- ================= MODAL: LIQUIDAR / PAGAR SALDO AL COMERCIO ================= -->
+  <!-- ================= MODAL: LIQUIDAR SALDO ================= -->
   <div id="modal-liquidar-pago-tienda" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border-2 border-emerald-500/40 w-full max-w-sm rounded-3xl p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
@@ -624,51 +780,6 @@
     </div>
   </div>
 
-  <!-- ================= MODAL: AGREGAR PRODUCTO AL MENÚ DE LA TIENDA ================= -->
-  <div id="modal-nuevo-producto-tienda" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-900 border-2 border-indigo-500/40 w-full max-w-sm rounded-3xl p-5 space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
-        <div>
-          <h3 class="text-xs font-black text-white uppercase tracking-wider">Añadir Producto al Menú</h3>
-          <p id="sub-nuevo-prod-tienda" class="text-[10px] text-accent-yellow font-bold">Moravos Café</p>
-        </div>
-        <button onclick="cerrarModalNuevoProductoTienda()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <form onsubmit="guardarProductoEnTienda(event)" class="space-y-3 text-xs">
-        <div>
-          <label class="block font-bold text-slate-300 mb-1">Nombre del Producto / Plato:</label>
-          <input type="text" id="prod-nombre" required placeholder="Ej: Café Moccachino, Pastelito de Queso..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-cyan">
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block font-bold text-slate-300 mb-1">Precio al Público ($):</label>
-            <input type="number" step="0.01" id="prod-precio" required placeholder="0.00" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-accent-yellow font-black text-sm focus:outline-none">
-          </div>
-          <div>
-            <label class="block font-bold text-slate-300 mb-1">Etiqueta / Badge:</label>
-            <input type="text" id="prod-badge" placeholder="Ej: POPULAR, NUEVO" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
-          </div>
-        </div>
-
-        <div>
-          <label class="block font-bold text-slate-300 mb-1">Imagen / Foto (Ruta o URL opcional):</label>
-          <input type="text" id="prod-imagen" placeholder="Ej: img/c1.png o enlace web" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white focus:outline-none text-[11px]">
-        </div>
-
-        <div class="flex gap-2 pt-1">
-          <button type="button" onclick="cerrarModalNuevoProductoTienda()" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2.5 rounded-xl text-xs">Cancelar</button>
-          <button type="submit" class="flex-1 bg-gradient-to-r from-accent-cyan to-brand-600 text-slate-950 font-black py-2.5 rounded-xl text-xs shadow-md">
-            + Agregar al Menú
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <!-- ================= MODAL: DETALLE Y EDICIÓN DE ORDEN ================= -->
   <div id="modal-admin-detalle-pedido" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border border-indigo-500/40 w-full max-w-lg rounded-3xl p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
@@ -694,10 +805,9 @@
           <p class="text-slate-400 font-bold">Dirección: <span id="adm-modal-direccion" class="text-slate-200">---</span></p>
         </div>
 
-        <!-- DESGLOSE DE TIENDA Y COMISIÓN -->
         <div id="adm-caja-tienda-comision" class="bg-slate-950 p-3 rounded-2xl border border-amber-500/30 space-y-1.5">
           <div class="flex justify-between items-center">
-            <span class="text-slate-400 font-bold">Tienda / Comercio:</span>
+            <span class="text-slate-400 font-bold">Local / Tienda:</span>
             <span id="adm-modal-tienda-nombre" class="text-accent-yellow font-black">Moravos Café</span>
           </div>
           <div class="flex justify-between items-center text-[11px]">
@@ -711,11 +821,6 @@
           <div class="flex justify-between items-center text-[11px]">
             <span class="text-emerald-400 font-bold">Neto que le queda a la Tienda:</span>
             <span id="adm-modal-neto-tienda" class="text-emerald-400 font-black">$0.00</span>
-          </div>
-          <div class="pt-1.5">
-            <button id="btn-anotar-orden-a-tienda" onclick="anotarOrdenActualATienda()" class="w-full bg-amber-500/20 hover:bg-amber-500/30 text-accent-yellow border border-amber-500/40 font-black py-2 rounded-xl text-[11px] flex items-center justify-center gap-1.5 transition">
-              <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Anotar a la Cuenta de la Tienda
-            </button>
           </div>
         </div>
 
@@ -777,18 +882,125 @@
     let gastosBD = [];
     let tiendasBD = {};
     let cuentasTiendasBD = {};
+    let catalogoFlashBD = {}; // Todos los productos de Pedidos Flash
     let estadoFiltroActual = 'todos';
+    let categoriaFiltroCatalogo = 'todos';
     let pedidoSeleccionadoId = null;
     let tiendaActualSeleccionadaId = null;
 
-    // COMERCIOS PREDETERMINADOS (Ejemplo Moravos al 8%)
+    // ================= CATÁLOGO BASE DE PRODUCTOS PROPIOS FLASH =================
+    const CATALOGO_BASE_INICIAL = [
+      // VÍVERES
+      { id: 'v_harina_bellini', nombre: 'Harina de Maíz Bellini 1kg', precioBase: 0.75, categoria: 'viveres', sub: 'harinas', imagen: 'img/v_harina_bellini.png' },
+      { id: 'v_harina_belen', nombre: 'Harina de Maíz Belén 1kg', precioBase: 0.99, categoria: 'viveres', sub: 'harinas', imagen: 'img/v_harina_belen.png' },
+      { id: 'v_harina_pan_mezcla', nombre: 'Harina PAN Mezcla Maíz y Arroz 1kg', precioBase: 1.26, categoria: 'viveres', sub: 'harinas', imagen: 'img/v_harina_pan_mezcla.png' },
+      { id: 'v_harina_pan_blanca', nombre: 'Harina PAN Maíz Blanco 1kg', precioBase: 1.31, categoria: 'viveres', sub: 'harinas', badge: 'MÁS VENDIDA', imagen: 'img/v_harina_pan_blanca.png' },
+      { id: 'v_harina_pan_amarilla', nombre: 'Harina de Maíz Amarillo 1kg', precioBase: 1.18, categoria: 'viveres', sub: 'harinas', imagen: 'img/v_harina_pan_amarilla.png' },
+      { id: 'v_harina_juana', nombre: 'Harina de Maíz Juana 1kg', precioBase: 1.10, categoria: 'viveres', sub: 'harinas', imagen: 'img/v_harina_juana.png' },
+      { id: 'v_harina_fina', nombre: 'Harina Fina 1kg', precioBase: 0.89, categoria: 'viveres', sub: 'harinas', imagen: 'img/v_harina_fina.png' },
+      { id: 'v_harina_emilia', nombre: 'Harina de Maíz Doña Emilia 1kg', precioBase: 1.00, categoria: 'viveres', sub: 'harinas', imagen: 'img/v_harina_emilia.png' },
+      { id: 'v_trigo_domaria', nombre: 'Harina de Trigo Leudante Doña María 1kg', precioBase: 1.40, categoria: 'viveres', sub: 'harinas', imagen: 'img/v_trigo_domaria.png' },
+      { id: 'v_trigo_mary_leu', nombre: 'Harina de Trigo Leudante Mary 900g', precioBase: 1.35, categoria: 'viveres', sub: 'harinas', imagen: 'img/v_trigo_mary_leu.png' },
+      { id: 'v_trigo_mary_tu', nombre: 'Harina de Trigo Todo Uso Mary 900g', precioBase: 1.24, categoria: 'viveres', sub: 'harinas', imagen: 'img/v_trigo_mary_tu.png' },
+      { id: 'v_trigo_dulcemar', nombre: 'Harina de Trigo Leudante Dulce Mar 1kg', precioBase: 1.33, categoria: 'viveres', sub: 'harinas', imagen: 'img/v_trigo_dulcemar.png' },
+      { id: 'v_levadura_gloripan', nombre: 'Levadura Gloripan 500g', precioBase: 3.75, categoria: 'viveres', sub: 'harinas', imagen: 'img/v_levadura_gloripan.png' },
+      { id: 'v_trigo_aveiro_kg', nombre: 'Harina de Trigo Aveiro (kg)', precioBase: 1.00, categoria: 'viveres', sub: 'harinas', imagen: 'img/v_trigo_aveiro_kg.png' },
+
+      { id: 'v_pasta_primavera', nombre: 'Pasata Primavera Larga 1kg', precioBase: 0.78, categoria: 'viveres', sub: 'pastas', imagen: 'img/v_pasta_primavera.png' },
+      { id: 'v_pasta_veneciana', nombre: 'Pasta Veneciana Corta 1kg', precioBase: 1.32, categoria: 'viveres', sub: 'pastas', imagen: 'img/v_pasta_veneciana.png' },
+      { id: 'v_pasta_mary_larga', nombre: 'Pasta Mary Larga 1kg', precioBase: 1.40, categoria: 'viveres', sub: 'pastas', imagen: 'img/v_pasta_mary_larga.png' },
+      { id: 'v_pasta_esp_500g', nombre: 'Pasta Especial Larga 500g', precioBase: 0.77, categoria: 'viveres', sub: 'pastas', imagen: 'img/v_pasta_esp_500g.png' },
+      { id: 'v_pasta_esp_l_1kg', nombre: 'Pasta Especial Larga 1kg', precioBase: 1.27, categoria: 'viveres', sub: 'pastas', imagen: 'img/v_pasta_esp_l_1kg.png' },
+      { id: 'v_pasta_esp_c_1kg', nombre: 'Pasta Especial Corta 1kg', precioBase: 1.27, categoria: 'viveres', sub: 'pastas', imagen: 'img/v_pasta_esp_c_1kg.png' },
+      { id: 'v_pasta_horiz_l', nombre: 'Pasta Larga Horizonte 1kg', precioBase: 1.10, categoria: 'viveres', sub: 'pastas', imagen: 'img/v_pasta_horiz_l.png' },
+      { id: 'v_pasta_horiz_c', nombre: 'Pasta Corta Horizonte 1kg', precioBase: 1.45, categoria: 'viveres', sub: 'pastas', imagen: 'img/v_pasta_horiz_c.png' },
+      { id: 'v_pasta_allegri_l', nombre: 'Pasta Larga Allegri 1kg', precioBase: 1.50, categoria: 'viveres', sub: 'pastas', imagen: 'img/v_pasta_allegri_l.png' },
+      { id: 'v_pasta_allegri_c', nombre: 'Pasta Corta Allegri 1kg', precioBase: 1.58, categoria: 'viveres', sub: 'pastas', imagen: 'img/v_pasta_allegri_c.png' },
+      { id: 'v_pasta_sindoni_l', nombre: 'Pasta Larga Sindoni 1kg', precioBase: 1.34, categoria: 'viveres', sub: 'pastas', imagen: 'img/v_pasta_sindoni_l.png' },
+      { id: 'v_pasta_sindoni_c', nombre: 'Pasta Corta Sindoni 1kg', precioBase: 1.34, categoria: 'viveres', sub: 'pastas', imagen: 'img/v_pasta_sindoni_c.png' },
+      { id: 'v_pasta_sindoni_500g', nombre: 'Pasta Corta Sindoni 500g', precioBase: 0.72, categoria: 'viveres', sub: 'pastas', imagen: 'img/v_pasta_sindoni_500g.png' },
+      { id: 'v_pasata_sindoni', nombre: 'Pasata Sindoni 480g', precioBase: 2.24, categoria: 'viveres', sub: 'pastas', imagen: 'img/v_pasata_sindoni.png' },
+      { id: 'v_pasta_oba_500g', nombre: 'Pasta Larga Oba 500g', precioBase: 0.77, categoria: 'viveres', sub: 'pastas', imagen: 'img/v_pasta_oba_500g.png' },
+
+      { id: 'v_arroz_delicia', nombre: 'Arroz Delicia 1kg', precioBase: 0.96, categoria: 'viveres', sub: 'granos', imagen: 'img/v_arroz_delicia.png' },
+      { id: 'v_arroz_mary_trad', nombre: 'Arroz Blanco Mary Tradicional 1kg', precioBase: 0.95, categoria: 'viveres', sub: 'granos', imagen: 'img/v_arroz_mary_trad.png' },
+      { id: 'v_arroz_mary_sup', nombre: 'Arroz Blanco Mary Superior 1kg', precioBase: 1.02, categoria: 'viveres', sub: 'granos', imagen: 'img/v_arroz_mary_sup.png' },
+      { id: 'v_arroz_mary_prem', nombre: 'Arroz Blanco Mary Premium 1kg', precioBase: 1.08, categoria: 'viveres', sub: 'granos', imagen: 'img/v_arroz_mary_prem.png' },
+      { id: 'v_arroz_mary_esm', nombre: 'Arroz Blanco Mary Esmeralda 1kg', precioBase: 1.19, categoria: 'viveres', sub: 'granos', badge: 'TOP', imagen: 'img/v_arroz_mary_esm.png' },
+      { id: 'v_arroz_llano_verde', nombre: 'Arroz Llano Verde 1kg', precioBase: 0.96, categoria: 'viveres', sub: 'granos', imagen: 'img/v_arroz_llano_verde.png' },
+      { id: 'v_arroz_molienda', nombre: 'Arroz La Molienda 1kg', precioBase: 0.90, categoria: 'viveres', sub: 'granos', imagen: 'img/v_arroz_molienda.png' },
+      { id: 'v_arroz_emilia', nombre: 'Arroz Doña Emilia 1kg', precioBase: 0.96, categoria: 'viveres', sub: 'granos', imagen: 'img/v_arroz_emilia.png' },
+
+      { id: 'v_azucar_miangel', nombre: 'Azúcar Mi Ángel 1kg', precioBase: 1.03, categoria: 'viveres', sub: 'granos', imagen: 'img/v_azucar_miangel.png' },
+      { id: 'v_azucar_montalban', nombre: 'Azúcar Montalbán 1kg', precioBase: 1.18, categoria: 'viveres', sub: 'granos', imagen: 'img/v_azucar_montalban.png' },
+      { id: 'v_azucar_konfit', nombre: 'Azúcar Blanca Konfit 1kg', precioBase: 1.23, categoria: 'viveres', sub: 'granos', imagen: 'img/v_azucar_konfit.png' },
+      { id: 'v_azucar_sonora', nombre: 'Azúcar Blanca Sonora 1kg', precioBase: 1.10, categoria: 'viveres', sub: 'granos', imagen: 'img/v_azucar_sonora.png' },
+      { id: 'v_sal_prosanca_1kg', nombre: 'Sal Blanca Refinada Prosanca 1kg', precioBase: 0.19, categoria: 'viveres', sub: 'granos', imagen: 'img/v_sal_prosanca_1kg.png' },
+
+      { id: 'v_margarina_delicia_500g', nombre: 'Margarina Delicia (500g)', precioBase: 0.73, categoria: 'viveres', sub: 'lacteos', imagen: 'img/v_margarina_delicia_500g.png' },
+      { id: 'v_aceite_oriental_760ml', nombre: 'Aceite Oriental 760ml', precioBase: 2.18, categoria: 'viveres', sub: 'lacteos', imagen: 'img/v_aceite_oriental_760ml.png' },
+      { id: 'v_mazeite_1l', nombre: 'Aceite Mazeite 1L', precioBase: 5.28, categoria: 'viveres', sub: 'lacteos', badge: 'PROMO', imagen: 'img/v_mazeite_1l.png' },
+
+      // BEBIDAS
+      { id: 'b_solera_azul', nombre: 'Solera Light (Azul)', precioBase: 1.50, categoria: 'bebidas', badge: 'FRÍA', imagen: 'img/b_solera_azul.png' },
+      { id: 'b_solera_verde', nombre: 'Solera Classic (Verde)', precioBase: 1.20, categoria: 'bebidas', badge: 'PREMIUM', imagen: 'img/b_solera_verde.png' },
+      { id: 'b_polar_light_lata', nombre: 'Polar Light (Lata 250ml)', precioBase: 1.00, categoria: 'bebidas', badge: 'FRÍA', imagen: 'img/b_polar_light_lata.png' },
+      { id: 'b_polar_light_botella', nombre: 'Polar Light (Botella)', precioBase: 1.00, categoria: 'bebidas', badge: 'FRÍA', imagen: 'img/b_polar_light_botella.png' },
+      { id: 'b_polar_lata', nombre: 'Polar Pilsen (Lata 250ml)', precioBase: 1.00, categoria: 'bebidas', badge: 'POPULAR', imagen: 'img/b_polar_lata.png' },
+      { id: 'b_polarcita_botella', nombre: 'Polarcita Pilsen (Botella)', precioBase: 1.00, categoria: 'bebidas', badge: 'POPULAR', imagen: 'img/b_polarcita_botella.png' },
+      { id: 'b_carorena_blanca_lata', nombre: 'Sangría Caroreña Blanca', precioBase: 1.50, categoria: 'bebidas', badge: 'SANGRÍA', imagen: 'img/b_carorena_blanca_lata.png' },
+      { id: 'b_carorena_verano_lata', nombre: 'Sangría Caroreña Tinta', precioBase: 1.50, categoria: 'bebidas', badge: 'SANGRÍA', imagen: 'img/b_carorena_verano_lata.png' },
+      { id: 'b_carorena_botella_175l', nombre: 'Sangría Caroreña 1.75L', precioBase: 6.50, categoria: 'bebidas', badge: 'TOP', imagen: 'img/b_carorena_botella_175l.png' },
+      { id: 'b_pepsi_2l', nombre: 'Refresco Pepsi 2L', precioBase: 2.20, categoria: 'bebidas', imagen: 'img/b_pepsi_2l.png' },
+      { id: 'b_pepsi_15l', nombre: 'Refresco Pepsi 1.5L', precioBase: 1.80, categoria: 'bebidas', imagen: 'img/b_pepsi_15l.png' },
+      { id: 'b1', nombre: 'Coca-Cola 1.5L', precioBase: 2.00, categoria: 'bebidas', imagen: 'img/b1.png' },
+      { id: 'b3', nombre: 'Maltín Polar (Pack)', precioBase: 15.00, categoria: 'bebidas', badge: 'PACK', imagen: 'img/b3.png' },
+      { id: 'b5', nombre: 'Agua Mineral 5L', precioBase: 2.50, categoria: 'bebidas', imagen: 'img/b5.png' },
+
+      // CHARCUTERÍA
+      { id: 'ch_queso_blanco_kg', nombre: 'Queso Blanco Duro (kg)', precioBase: 4.40, categoria: 'charcuteria', badge: 'MÁS VENDIDO', esGranel: true, imagen: 'img/ch_queso_blanco_kg.png' },
+      { id: 'ch_jamon_espalda_kg', nombre: 'Jamón de Espalda Don Ramón (kg)', precioBase: 4.18, categoria: 'charcuteria', esGranel: true, imagen: 'img/ch_jamon_espalda_kg.png' },
+      { id: 'ch_salchicha_pollo_kg', nombre: 'Salchicha de Pollo Don Ramón (kg)', precioBase: 1.98, categoria: 'charcuteria', esGranel: true, imagen: 'img/ch_salchicha_pollo_kg.png' },
+      { id: 'ch_mozzarella_oriana_kg', nombre: 'Queso Mozzarella Oriana (kg)', precioBase: 6.38, categoria: 'charcuteria', esGranel: true, imagen: 'img/ch_mozzarella_oriana_kg.png' },
+      { id: 'ch_amarillo_imperial_kg', nombre: 'Queso Amarillo Imperial (kg)', precioBase: 8.85, categoria: 'charcuteria', esGranel: true, imagen: 'img/ch_amarillo_imperial_kg.png' },
+      { id: 'ch_tocineta_pieza_kg', nombre: 'Tocineta Ahumada en Pieza (kg)', precioBase: 8.00, categoria: 'charcuteria', esGranel: true, imagen: 'img/ch_tocineta_pieza_kg.png' },
+      { id: 'ch_suero_bravos', nombre: 'Suero Cremoso Bravos de Apure', precioBase: 2.05, categoria: 'charcuteria', imagen: 'img/ch_suero_bravos.png' },
+
+      // CARNES
+      { id: 'cn_costilla_res_kg', nombre: 'Costilla de Res (kg)', precioBase: 2.50, categoria: 'carnes', esGranel: true, imagen: 'img/cn_costilla_res_kg.png' },
+      { id: 'cn_carne_molida_kg', nombre: 'Carne Molida (kg)', precioBase: 4.20, categoria: 'carnes', badge: 'TOP', esGranel: true, imagen: 'img/cn_carne_molida_kg.png' },
+      { id: 'cn_carne_guisar_kg', nombre: 'Carne para Guisar (kg)', precioBase: 4.20, categoria: 'carnes', esGranel: true, imagen: 'img/cn_carne_guisar_kg.png' },
+      { id: 'cn_carne_mechar_kg', nombre: 'Carne para Mechar (kg)', precioBase: 4.20, categoria: 'carnes', esGranel: true, imagen: 'img/cn_carne_mechar_kg.png' },
+      { id: 'cn_bisteck_kg', nombre: 'Carne de Bisteck (kg)', precioBase: 5.50, categoria: 'carnes', badge: 'POPULAR', esGranel: true, imagen: 'img/cn_bisteck_kg.png' },
+      { id: 'cn_solomo_cuerito_kg', nombre: 'Solomo de Cuerito (kg)', precioBase: 6.00, categoria: 'carnes', esGranel: true, imagen: 'img/cn_solomo_cuerito_kg.png' },
+      { id: 'cn_pollo_milpollos_kg', nombre: 'Pollo Entero Mil Pollos (kg)', precioBase: 2.19, categoria: 'carnes', esGranel: true, imagen: 'img/cn_pollo_milpollos_kg.png' },
+      { id: 'cn_milanesa_pollo_kg', nombre: 'Milanesa de Pollo (kg)', precioBase: 6.00, categoria: 'carnes', badge: 'TOP', esGranel: true, imagen: 'img/cn_milanesa_pollo_kg.png' },
+
+      // VERDURAS
+      { id: 'vf_tomate', nombre: 'Tomate Perita (kg)', precioBase: 1.80, categoria: 'verduras', badge: 'FRESCO', esGranel: true, imagen: 'img/vf_tomate.png' },
+      { id: 'vf_cebolla', nombre: 'Cebolla Blanca (kg)', precioBase: 1.60, categoria: 'verduras', badge: 'FRESCO', esGranel: true, imagen: 'img/vf_cebolla.png' },
+      { id: 'vf_papa', nombre: 'Papa Comercial (kg)', precioBase: 2.00, categoria: 'verduras', esGranel: true, imagen: 'img/vf_papa.png' },
+      { id: 'vf_cambur', nombre: 'Cambur (kg)', precioBase: 1.10, categoria: 'verduras', badge: 'FRUTA', esGranel: true, imagen: 'img/vf_cambur.png' },
+
+      // PANADERÍA
+      { id: 'pa_pan_sobado', nombre: 'Pan Sobado / Piñita Artesanal', precioBase: 1.50, categoria: 'panaderia', badge: 'FRESCO', imagen: 'img/p_pan_sobado.png' },
+      { id: 'pa_pan_baguette', nombre: 'Pan Baguette Francés', precioBase: 1.20, categoria: 'panaderia', imagen: 'img/p_pan_baguette.png' },
+      { id: 'pa_quesillo', nombre: 'Quesillo Casero (Porción)', precioBase: 2.50, categoria: 'panaderia', badge: 'DULCE', imagen: 'img/p_quesillo.png' },
+
+      // LIMPIEZA
+      { id: 'l1', nombre: 'Cloro Desinfección 1L', precioBase: 1.01, categoria: 'limpieza', badge: 'ASEO', imagen: 'img/l1.png' },
+      { id: 'l2', nombre: 'Desinfectante Floral 1L', precioBase: 1.21, categoria: 'limpieza', badge: 'ASEO', imagen: 'img/l2.png' },
+      { id: 'l5', nombre: 'Lavaplatos Limón 1L', precioBase: 2.14, categoria: 'limpieza', badge: 'ASEO', imagen: 'img/l5.png' }
+    ];
+
+    // COMERCIOS DE COMIDA RÁPIDA / LOCALES
     const TIENDAS_DEFAULT = {
       moravos: {
         id: 'moravos',
         nombre: 'Moravos Café',
         sub: 'Café, Postres & Especialidades',
         categoria: 'comida',
-        porcentajeComision: 8, // 8% por defecto pedido por el usuario
+        porcentajeComision: 8,
         telefono: '04262566854',
         direccion: 'Centro de Nirgua, Yaracuy',
         logo: 'img/moravos.jpg'
@@ -822,16 +1034,6 @@
         telefono: '04120000000',
         direccion: 'Nirgua',
         logo: 'img/ziruspizza.webp'
-      },
-      panamericana: {
-        id: 'panamericana',
-        nombre: 'La Panamericana',
-        sub: 'Panadería y Pastelería',
-        categoria: 'panaderia',
-        porcentajeComision: 8,
-        telefono: '04120000000',
-        direccion: 'Nirgua',
-        logo: 'img/panamericana.webp'
       }
     };
 
@@ -871,11 +1073,34 @@
     }
 
     function inicializarSuscripciones() {
-      // 1. Escuchar Tiendas
+      // 1. Escuchar Catálogo Propio de Pedidos Flash
+      db.ref('catalogo_flash').on('value', (snapshot) => {
+        const val = snapshot.val();
+        if (!val || Object.keys(val).length === 0) {
+          // Si está vacío en Firebase, preparar con los productos base
+          const objBase = {};
+          CATALOGO_BASE_INICIAL.forEach(item => {
+            objBase[item.id] = item;
+          });
+          catalogoFlashBD = objBase;
+          // Guardar base automáticamente en Firebase
+          db.ref('catalogo_flash').set(objBase);
+        } else {
+          // Fusionar con el catálogo base por si hay nuevos en base
+          const objFusion = {};
+          CATALOGO_BASE_INICIAL.forEach(item => { objFusion[item.id] = { ...item }; });
+          Object.keys(val).forEach(k => {
+            objFusion[k] = { ...(objFusion[k] || {}), ...val[k] };
+          });
+          catalogoFlashBD = objFusion;
+        }
+        renderizarCatalogoAdmin();
+      });
+
+      // 2. Escuchar Tiendas / Locales Comerciales
       db.ref('tiendas').on('value', (snapshot) => {
         const val = snapshot.val();
         if (!val || Object.keys(val).length === 0) {
-          // Inicializar con las tiendas base si está vacío en Firebase
           db.ref('tiendas').set(TIENDAS_DEFAULT);
           tiendasBD = { ...TIENDAS_DEFAULT };
         } else {
@@ -884,7 +1109,7 @@
         renderizarComerciosAdmin();
       });
 
-      // 2. Escuchar Cuentas de Tiendas (movimientos y pagos)
+      // 3. Escuchar Cuentas de Tiendas
       db.ref('cuentas_tiendas').on('value', (snapshot) => {
         cuentasTiendasBD = snapshot.val() || {};
         renderizarComerciosAdmin();
@@ -893,20 +1118,22 @@
         }
       });
 
-      // 3. Escuchar Pedidos
+      // 4. Escuchar Pedidos
       db.ref('pedidos').on('value', (snapshot) => {
         todosLosPedidosAdmin = snapshot.val() || {};
-        renderizarTodoAdmin();
+        calcularMetricasAdmin();
+        renderizarTablaPedidos();
+        renderizarChoferesAdmin();
       });
 
-      // 4. Escuchar Choferes
+      // 5. Escuchar Choferes
       db.ref('choferes').on('value', (snapshot) => {
         choferesBD = snapshot.val() || {};
         renderizarChoferesAdmin();
         actualizarSelectorChoferes();
       });
 
-      // 5. Escuchar Gastos
+      // 6. Escuchar Gastos
       db.ref('gastos').on('value', (snapshot) => {
         gastosBD = snapshot.val() ? Object.values(snapshot.val()) : [];
         renderizarGastosAdmin();
@@ -914,72 +1141,215 @@
       });
     }
 
-    function renderizarTodoAdmin() {
-      calcularMetricasAdmin();
-      renderizarTablaPedidos();
-      renderizarComerciosAdmin();
-      renderizarChoferesAdmin();
+    // ================= SECCIÓN: CATÁLOGO DE PRODUCTOS FLASH (CAMBIO DE PRECIOS) =================
+    function renderizarCatalogoAdmin() {
+      const grid = document.getElementById('grid-catalogo-admin');
+      if (!grid) return;
+      grid.innerHTML = "";
+
+      const query = (document.getElementById('busqueda-admin-catalogo').value || '').toLowerCase().trim();
+      const keys = Object.keys(catalogoFlashBD);
+
+      document.getElementById('cant-admin-prods-badge').innerText = keys.length;
+      document.getElementById('metrica-productos-total').innerText = keys.length;
+
+      const filtrados = keys.filter(id => {
+        const p = catalogoFlashBD[id];
+        const matchCat = (categoriaFiltroCatalogo === 'todos') || (p.categoria === categoriaFiltroCatalogo);
+        const matchQuery = (p.nombre || '').toLowerCase().includes(query) || (p.categoria || '').toLowerCase().includes(query);
+        return matchCat && matchQuery;
+      });
+
+      if (filtrados.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-12 text-slate-500">
+            <i data-lucide="package-search" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+            <p class="text-xs">No se encontraron productos con esa búsqueda o filtro.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      filtrados.forEach(id => {
+        const p = catalogoFlashBD[id];
+        const precio = parseFloat(p.precioBase || 0).toFixed(2);
+        const img = p.imagen || 'img/logo.jfif';
+        const catBadge = p.categoria ? p.categoria.toUpperCase() : 'GENERAL';
+
+        grid.innerHTML += `
+          <div class="bg-slate-900 border border-slate-800 hover:border-accent-cyan/50 p-3.5 rounded-2xl shadow-lg flex flex-col justify-between transition group">
+            <div>
+              <div class="flex items-center justify-between gap-1 mb-2">
+                <span class="text-[9px] font-black bg-indigo-950 text-indigo-300 border border-indigo-800/40 px-2 py-0.5 rounded uppercase tracking-wider">
+                  ${catBadge}
+                </span>
+                ${p.esGranel ? `<span class="text-[9px] font-bold text-accent-cyan bg-accent-cyan/10 px-1.5 py-0.5 rounded">Por Peso/Kg</span>` : ''}
+              </div>
+
+              <div class="w-full h-24 rounded-xl overflow-hidden bg-slate-950 flex items-center justify-center mb-2.5 p-1 border border-slate-800/80">
+                <img src="${img}" alt="${p.nombre}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" onerror="this.src='img/logo.jfif';">
+              </div>
+
+              <h4 class="font-bold text-white text-xs leading-snug line-clamp-2 mb-1" title="${p.nombre}">${p.nombre}</h4>
+            </div>
+
+            <div class="pt-2 border-t border-slate-800/80 space-y-2">
+              <div class="flex items-baseline justify-between">
+                <span class="text-[10px] text-slate-400 font-bold">Precio actual:</span>
+                <span class="text-base font-black text-accent-yellow">$${precio}</span>
+              </div>
+
+              <div class="flex gap-1.5">
+                <button onclick="abrirModalCambiarPrecio('${id}')" class="flex-1 bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black py-2 rounded-xl text-xs flex items-center justify-center gap-1 shadow-md transition">
+                  <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Cambiar Precio
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      lucide.createIcons();
     }
 
-    // ================= CÁLCULO DE MÉTRICAS GLOBALES =================
-    function calcularMetricasAdmin() {
-      let totalVentas = 0;
-      let totalPedidos = 0;
-      let totalGastos = 0;
-      let totalComisionesTiendas = 0;
-      let totalSaldoPendienteComercios = 0;
-
-      // Calcular comisiones y saldos desde cuentas_tiendas y tiendasBD
-      Object.keys(tiendasBD).forEach(tid => {
-        const cta = cuentasTiendasBD[tid] || {};
-        const movs = cta.movimientos ? Object.values(cta.movimientos) : [];
-        const pagos = cta.liquidaciones ? Object.values(cta.liquidaciones) : [];
-
-        let ventasTienda = 0;
-        let comisionTienda = 0;
-        let pagadoTienda = 0;
-
-        movs.forEach(m => {
-          ventasTienda += parseFloat(m.montoVenta || 0);
-          comisionTienda += parseFloat(m.comisionFlash || 0);
-        });
-
-        pagos.forEach(p => {
-          pagadoTienda += parseFloat(p.montoPagado || 0);
-        });
-
-        const netoTienda = ventasTienda - comisionTienda;
-        const saldoPendiente = Math.max(0, netoTienda - pagadoTienda);
-
-        totalComisionesTiendas += comisionTienda;
-        totalSaldoPendienteComercios += saldoPendiente;
-      });
-
-      // Calcular ventas de pedidos entregados
-      Object.keys(todosLosPedidosAdmin).forEach(id => {
-        const p = todosLosPedidosAdmin[id];
-        totalPedidos++;
-        if (p.estado === 'entregado') {
-          totalVentas += parseFloat(p.total || p.montoTotal || p.monto || 0);
-        }
-      });
-
-      gastosBD.forEach(g => {
-        totalGastos += parseFloat(g.monto || 0);
-      });
-
-      const gananciaNeta = (totalVentas * 0.15) + totalComisionesTiendas - totalGastos;
-
-      document.getElementById('metrica-ventas').innerText = `$${totalVentas.toFixed(2)}`;
-      document.getElementById('metrica-comisiones').innerText = `$${totalComisionesTiendas.toFixed(2)}`;
-      document.getElementById('metrica-ganancia-neta').innerText = `$${Math.max(0, gananciaNeta).toFixed(2)}`;
-      document.getElementById('metrica-gastos').innerText = `$${totalGastos.toFixed(2)}`;
-      document.getElementById('metrica-pedidos').innerText = totalPedidos;
-      document.getElementById('metrica-deuda-comercios').innerText = `$${totalSaldoPendienteComercios.toFixed(2)}`;
-      document.getElementById('cant-admin-pedidos').innerText = totalPedidos;
+    function filtrarCatalogoAdmin() {
+      renderizarCatalogoAdmin();
     }
 
-    // ================= GESTIÓN DE TIENDAS Y COMISIONES =================
+    function filtrarCategoriaCatalogo(cat) {
+      categoriaFiltroCatalogo = cat;
+      document.querySelectorAll('.btn-cat-fil').forEach(btn => {
+        btn.className = "btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap";
+      });
+      const activo = document.getElementById(`cat-btn-${cat}`);
+      if (activo) activo.className = "btn-cat-fil text-[11px] font-black bg-indigo-600 text-white px-3 py-1.5 rounded-lg whitespace-nowrap";
+      renderizarCatalogoAdmin();
+    }
+
+    // ================= MODAL CAMBIO DE PRECIO =================
+    function abrirModalCambiarPrecio(id) {
+      const p = catalogoFlashBD[id];
+      if (!p) return;
+
+      document.getElementById('precio-edit-id').value = id;
+      document.getElementById('precio-edit-nombre').innerText = p.nombre;
+      document.getElementById('precio-edit-categoria').innerText = `Categoría: ${p.categoria || 'Víveres'}`;
+      document.getElementById('precio-edit-actual').innerText = `$${parseFloat(p.precioBase || 0).toFixed(2)}`;
+      document.getElementById('input-nuevo-precio').value = parseFloat(p.precioBase || 0).toFixed(2);
+      
+      document.getElementById('modal-cambiar-precio').classList.remove('hidden');
+      document.getElementById('input-nuevo-precio').focus();
+    }
+
+    function cerrarModalCambiarPrecio() {
+      document.getElementById('modal-cambiar-precio').classList.add('hidden');
+    }
+
+    function ajustarPrecioInput(delta) {
+      const inp = document.getElementById('input-nuevo-precio');
+      let val = parseFloat(inp.value) || 0;
+      val += delta;
+      if (val < 0) val = 0;
+      inp.value = val.toFixed(2);
+    }
+
+    function guardarNuevoPrecioProducto(e) {
+      e.preventDefault();
+      const id = document.getElementById('precio-edit-id').value;
+      const nuevoPrecio = parseFloat(document.getElementById('input-nuevo-precio').value);
+
+      if (isNaN(nuevoPrecio) || nuevoPrecio < 0) {
+        alert("Ingresa un precio válido en dólares.");
+        return;
+      }
+
+      // Guardar en Firebase Realtime Database
+      db.ref(`catalogo_flash/${id}`).update({
+        precioBase: nuevoPrecio,
+        actualizadoEn: new Date().toISOString()
+      }).then(() => {
+        cerrarModalCambiarPrecio();
+        alert(`¡Precio actualizado a $${nuevoPrecio.toFixed(2)} con éxito! Se reflejará automáticamente en la app del cliente.`);
+      }).catch(err => {
+        alert("Error al guardar: " + err.message);
+      });
+    }
+
+    // ================= MODAL NUEVO PRODUCTO FLASH =================
+    function abrirModalNuevoProductoFlash() {
+      document.getElementById('nuevo-prod-nombre').value = "";
+      document.getElementById('nuevo-prod-precio').value = "";
+      document.getElementById('nuevo-prod-badge').value = "";
+      document.getElementById('nuevo-prod-sub').value = "";
+      document.getElementById('nuevo-prod-imagen').value = "";
+      document.getElementById('nuevo-prod-granel').checked = false;
+      document.getElementById('modal-nuevo-producto-flash').classList.remove('hidden');
+    }
+
+    function cerrarModalNuevoProductoFlash() {
+      document.getElementById('modal-nuevo-producto-flash').classList.add('hidden');
+    }
+
+    function guardarNuevoProductoFlashFirebase(e) {
+      e.preventDefault();
+      const nombre = document.getElementById('nuevo-prod-nombre').value.trim();
+      const categoria = document.getElementById('nuevo-prod-categoria').value;
+      const precio = parseFloat(document.getElementById('nuevo-prod-precio').value);
+      const badge = document.getElementById('nuevo-prod-badge').value.trim();
+      const sub = document.getElementById('nuevo-prod-sub').value.trim();
+      const imagen = document.getElementById('nuevo-prod-imagen').value.trim() || 'img/logo.jfif';
+      const esGranel = document.getElementById('nuevo-prod-granel').checked;
+
+      if (!nombre || isNaN(precio) || precio < 0) {
+        alert("Completa el nombre y un precio válido.");
+        return;
+      }
+
+      const idUnico = `flash_${Date.now()}`;
+      const nuevoProd = {
+        id: idUnico,
+        nombre: nombre,
+        categoria: categoria,
+        precioBase: precio,
+        badge: badge || '',
+        sub: sub || 'general',
+        imagen: imagen,
+        esGranel: esGranel,
+        creadoEn: new Date().toISOString()
+      };
+
+      if (esGranel) {
+        nuevoProd.minGranel = 250;
+        nuevoProd.maxGranel = 4000;
+        nuevoProd.pasoGranel = 100;
+        nuevoProd.defGranel = 1000;
+      }
+
+      db.ref(`catalogo_flash/${idUnico}`).set(nuevoProd).then(() => {
+        cerrarModalNuevoProductoFlash();
+        alert(`¡"${nombre}" agregado con éxito al catálogo con precio de $${precio.toFixed(2)}!`);
+      });
+    }
+
+    function sincronizarTodoElCatalogoBaseAFirebase() {
+      if (confirm("¿Deseas respaldar y guardar todo el catálogo base en Firebase?")) {
+        const objBase = {};
+        CATALOGO_BASE_INICIAL.forEach(item => {
+          // No sobreescribir precios si ya existen en Firebase
+          if (catalogoFlashBD[item.id] && catalogoFlashBD[item.id].precioBase) {
+            objBase[item.id] = { ...item, precioBase: catalogoFlashBD[item.id].precioBase };
+          } else {
+            objBase[item.id] = item;
+          }
+        });
+        db.ref('catalogo_flash').update(objBase).then(() => {
+          alert("¡Catálogo sincronizado y guardado con éxito en Firebase!");
+        });
+      }
+    }
+
+    // ================= GESTIÓN DE TIENDAS / LOCALES DE COMIDA RÁPIDA =================
     function renderizarComerciosAdmin() {
       const grid = document.getElementById('grid-comercios-admin');
       if (!grid) return;
@@ -989,7 +1359,7 @@
       document.getElementById('cant-admin-comercios-badge').innerText = keys.length;
 
       if (keys.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500 text-xs">No hay comercios registrados. Toca el botón de arriba para registrar el primero.</div>`;
+        grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500 text-xs">No hay locales registrados.</div>`;
         return;
       }
 
@@ -1015,31 +1385,28 @@
 
         const netoTienda = totalVendido - totalComisionGanada;
         const saldoPendiente = Math.max(0, netoTienda - totalPagado);
-
         const logoImg = t.logo || 'img/logo.jfif';
 
         grid.innerHTML += `
-          <div class="bg-slate-900 border border-slate-800 hover:border-indigo-500/50 rounded-2xl p-4 shadow-xl space-y-3.5 transition flex flex-col justify-between">
+          <div class="bg-slate-900 border border-slate-800 hover:border-amber-500/50 rounded-2xl p-4 shadow-xl space-y-3.5 transition flex flex-col justify-between">
             <div>
-              <!-- ENCABEZADO TARJETA COMERCIO -->
               <div class="flex items-start justify-between gap-2 border-b border-slate-800 pb-2.5">
                 <div class="flex items-center gap-2.5 min-w-0">
                   <img src="${logoImg}" class="w-12 h-12 rounded-2xl object-cover border-2 border-amber-500/40 shrink-0" onerror="this.src='img/logo.jfif';">
                   <div class="min-w-0">
                     <h4 class="font-black text-white text-sm truncate">${t.nombre}</h4>
                     <p class="text-[10px] text-slate-400 truncate">${t.direccion || 'Nirgua'}</p>
-                    <span class="text-[10px] text-accent-cyan font-bold">${t.telefono || 'Sin teléfono'}</span>
+                    <span class="text-[10px] text-accent-yellow font-bold">${t.telefono || 'Sin teléfono'}</span>
                   </div>
                 </div>
-                <span class="bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-accent-yellow border border-amber-500/40 text-[10px] font-black px-2 py-1 rounded-xl shrink-0 shadow-sm">
+                <span class="bg-amber-500/20 text-accent-yellow border border-amber-500/40 text-[10px] font-black px-2 py-1 rounded-xl shrink-0">
                   ${pct}% Comisión
                 </span>
               </div>
 
-              <!-- CUADRICULA DE FINANZAS DE LA TIENDA -->
               <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
                 <div class="bg-slate-950 p-2 rounded-xl border border-slate-800/80">
-                  <span class="text-[9px] text-slate-400 font-bold block uppercase">Ventas por Flash</span>
+                  <span class="text-[9px] text-slate-400 font-bold block uppercase">Ventas</span>
                   <span class="text-xs font-black text-white">$${totalVendido.toFixed(2)}</span>
                 </div>
                 <div class="bg-slate-950 p-2 rounded-xl border border-accent-cyan/30">
@@ -1047,7 +1414,7 @@
                   <span class="text-xs font-black text-accent-cyan">+$${totalComisionGanada.toFixed(2)}</span>
                 </div>
                 <div class="bg-slate-950 p-2 rounded-xl border border-emerald-500/20">
-                  <span class="text-[9px] text-emerald-400 font-bold block uppercase">Neto Tienda</span>
+                  <span class="text-[9px] text-emerald-400 font-bold block uppercase">Neto Local</span>
                   <span class="text-xs font-black text-emerald-400">$${netoTienda.toFixed(2)}</span>
                 </div>
                 <div class="bg-slate-950 p-2 rounded-xl border border-amber-500/40">
@@ -1057,11 +1424,10 @@
               </div>
             </div>
 
-            <!-- BOTONES DE ACCIÓN PARA LA TIENDA -->
             <div class="space-y-1.5 pt-2 border-t border-slate-800">
               <div class="flex gap-2">
                 <button onclick="verCuentaTienda('${tid}')" class="flex-1 bg-indigo-600/30 hover:bg-indigo-600 text-white font-bold py-2 rounded-xl text-[11px] border border-indigo-500/40 flex items-center justify-center gap-1 transition">
-                  <i data-lucide="receipt" class="w-3.5 h-3.5 text-accent-cyan"></i> Ver Cuenta Corriente
+                  <i data-lucide="receipt" class="w-3.5 h-3.5 text-accent-cyan"></i> Cuenta Corriente
                 </button>
                 <button onclick="abrirModalLiquidarPagoDirecto('${tid}', ${saldoPendiente})" class="bg-accent-emerald hover:bg-emerald-400 text-slate-950 font-black px-3 py-2 rounded-xl text-[11px] flex items-center gap-1 transition">
                   Pagar
@@ -1089,7 +1455,7 @@
     }
 
     function abrirModalRegistrarTienda() {
-      document.getElementById('titulo-modal-tienda').innerText = "Registrar Tienda o Comercio";
+      document.getElementById('titulo-modal-tienda').innerText = "Registrar Local Comercial";
       document.getElementById('tienda-edit-id').value = "";
       document.getElementById('tienda-nombre').value = "";
       document.getElementById('tienda-comision').value = "8";
@@ -1143,15 +1509,15 @@
 
       db.ref(`tiendas/${tid}`).update(datosTienda).then(() => {
         cerrarModalRegistrarTienda();
-        alert(`¡Comercio "${nombre}" guardado con ${comision}% de comisión!`);
+        alert(`¡Local "${nombre}" guardado con ${comision}% de comisión!`);
       });
     }
 
     function eliminarTiendaModal(tid) {
       const t = tiendasBD[tid];
-      if (confirm(`¿Estás seguro de eliminar el comercio "${t ? t.nombre : tid}"?`)) {
+      if (confirm(`¿Estás seguro de eliminar "${t ? t.nombre : tid}"?`)) {
         db.ref(`tiendas/${tid}`).remove().then(() => {
-          alert("Comercio eliminado.");
+          alert("Local comercial eliminado.");
         });
       }
     }
@@ -1175,7 +1541,7 @@
       const pct = parseFloat(t.porcentajeComision || 0);
       document.getElementById('cta-tienda-nombre').innerText = t.nombre;
       document.getElementById('cta-tienda-img').src = t.logo || 'img/logo.jfif';
-      document.getElementById('cta-tienda-badge-pct').innerText = `${pct}% Comisión Flash`;
+      document.getElementById('cta-tienda-badge-pct').innerText = `${pct}% Comisión`;
 
       const cta = cuentasTiendasBD[tid] || {};
       const movs = cta.movimientos ? Object.entries(cta.movimientos) : [];
@@ -1205,19 +1571,14 @@
       const contTabla = document.getElementById('cta-tabla-movimientos');
       contTabla.innerHTML = "";
 
-      // Combinar movimientos y pagos cronológicamente
       const historialCombinado = [];
-      movs.forEach(([k, m]) => {
-        historialCombinado.push({ tipo: 'venta', key: k, ...m });
-      });
-      pagos.forEach(([k, p]) => {
-        historialCombinado.push({ tipo: 'pago', key: k, ...p });
-      });
+      movs.forEach(([k, m]) => { historialCombinado.push({ tipo: 'venta', key: k, ...m }); });
+      pagos.forEach(([k, p]) => { historialCombinado.push({ tipo: 'pago', key: k, ...p }); });
 
       historialCombinado.sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
 
       if (historialCombinado.length === 0) {
-        contTabla.innerHTML = `<p class="text-slate-500 text-center py-6">No hay movimientos registrados para ${t.nombre}. Usa los botones de arriba para anotar ventas o pagos.</p>`;
+        contTabla.innerHTML = `<p class="text-slate-500 text-center py-6">No hay movimientos registrados para ${t.nombre}.</p>`;
         return;
       }
 
@@ -1230,7 +1591,7 @@
               <div class="space-y-0.5">
                 <div class="flex items-center gap-1.5">
                   <span class="bg-indigo-500/20 text-accent-cyan text-[9px] font-black px-1.5 py-0.5 rounded uppercase">Venta Anotada</span>
-                  <span class="font-bold text-white">${item.concepto || 'Venta de Productos'}</span>
+                  <span class="font-bold text-white">${item.concepto || 'Venta'}</span>
                 </div>
                 <p class="text-[10px] text-slate-400">Cliente: <strong class="text-slate-300">${item.cliente || 'Directo'}</strong> • ${fechaTxt}</p>
                 <p class="text-[10px] text-indigo-300">Comisión Flash (${item.porcentajeComision || pct}%): <strong class="text-accent-cyan">+$${parseFloat(item.comisionFlash || 0).toFixed(2)}</strong></p>
@@ -1249,7 +1610,7 @@
                   <span class="bg-emerald-500/20 text-accent-emerald text-[9px] font-black px-1.5 py-0.5 rounded uppercase">Pago / Liquidación</span>
                   <span class="font-bold text-emerald-300">${item.metodo || 'Pago entregado'}</span>
                 </div>
-                <p class="text-[10px] text-slate-400">Comprobante: <strong class="text-slate-300">${item.referencia || 'Entregado'}</strong> • ${fechaTxt}</p>
+                <p class="text-[10px] text-slate-400">Ref: <strong class="text-slate-300">${item.referencia || 'Entregado'}</strong> • ${fechaTxt}</p>
               </div>
               <div class="text-right">
                 <span class="text-sm font-black text-accent-emerald block">-$${parseFloat(item.montoPagado || 0).toFixed(2)}</span>
@@ -1262,7 +1623,6 @@
       lucide.createIcons();
     }
 
-    // ================= ANOTAR VENTA MANUAL A LA TIENDA =================
     function abrirModalAnotarVentaManual() {
       if (!tiendaActualSeleccionadaId) return;
       const t = tiendasBD[tiendaActualSeleccionadaId];
@@ -1321,11 +1681,10 @@
 
       db.ref(`cuentas_tiendas/${tiendaActualSeleccionadaId}/movimientos`).push(nuevoMovimiento).then(() => {
         cerrarModalAnotarVentaManual();
-        alert(`¡Venta de $${monto.toFixed(2)} anotada a la cuenta de ${t.nombre}! Ganaste $${comision.toFixed(2)} (${pct}%).`);
+        alert(`¡Venta de $${monto.toFixed(2)} anotada a la cuenta de ${t.nombre}!`);
       });
     }
 
-    // ================= LIQUIDAR SALDO / REGISTRAR PAGO A LA TIENDA =================
     function abrirModalLiquidarPagoDirecto(tid, saldoPendiente) {
       tiendaActualSeleccionadaId = tid;
       abrirModalLiquidarPagoTienda(saldoPendiente);
@@ -1338,7 +1697,6 @@
       
       let saldo = saldoSugerido;
       if (saldo === undefined) {
-        // calcularlo
         const cta = cuentasTiendasBD[tiendaActualSeleccionadaId] || {};
         let v = 0, c = 0, p = 0;
         if (cta.movimientos) Object.values(cta.movimientos).forEach(m => { v += (m.montoVenta||0); c += (m.comisionFlash||0); });
@@ -1378,55 +1736,7 @@
 
       db.ref(`cuentas_tiendas/${tiendaActualSeleccionadaId}/liquidaciones`).push(nuevaLiquidacion).then(() => {
         cerrarModalLiquidarPagoTienda();
-        alert(`¡Pago de $${monto.toFixed(2)} registrado con éxito para ${t.nombre}!`);
-      });
-    }
-
-    // ================= AÑADIR PRODUCTO AL MENÚ DE LA TIENDA =================
-    function abrirModalNuevoProductoTienda() {
-      if (!tiendaActualSeleccionadaId) return;
-      const t = tiendasBD[tiendaActualSeleccionadaId];
-      document.getElementById('sub-nuevo-prod-tienda').innerText = `Tienda: ${t.nombre}`;
-      document.getElementById('prod-nombre').value = "";
-      document.getElementById('prod-precio').value = "";
-      document.getElementById('prod-badge').value = "";
-      document.getElementById('prod-imagen').value = "";
-      document.getElementById('modal-nuevo-producto-tienda').classList.remove('hidden');
-    }
-
-    function cerrarModalNuevoProductoTienda() {
-      document.getElementById('modal-nuevo-producto-tienda').classList.add('hidden');
-    }
-
-    function guardarProductoEnTienda(e) {
-      e.preventDefault();
-      if (!tiendaActualSeleccionadaId) return;
-      const t = tiendasBD[tiendaActualSeleccionadaId];
-      const nombre = document.getElementById('prod-nombre').value.trim();
-      const precio = parseFloat(document.getElementById('prod-precio').value) || 0;
-      const badge = document.getElementById('prod-badge').value.trim();
-      const imagen = document.getElementById('prod-imagen').value.trim() || 'img/c1.png';
-
-      if (!nombre || precio <= 0) {
-        alert("Completa el nombre y un precio válido.");
-        return;
-      }
-
-      const idProd = `prod_${Date.now()}`;
-      const nuevoProducto = {
-        id: idProd,
-        nombre: nombre,
-        precioBase: precio,
-        badge: badge || '',
-        imagen: imagen,
-        local: tiendaActualSeleccionadaId,
-        tiendaId: tiendaActualSeleccionadaId,
-        categoria: t.categoria || 'comida'
-      };
-
-      db.ref(`productos_tiendas/${tiendaActualSeleccionadaId}/${idProd}`).set(nuevoProducto).then(() => {
-        cerrarModalNuevoProductoTienda();
-        alert(`¡Producto "${nombre}" agregado al menú de ${t.nombre}! Ya aparecerá en la app del cliente.`);
+        alert(`¡Pago de $${monto.toFixed(2)} registrado para ${t.nombre}!`);
       });
     }
 
@@ -1451,9 +1761,9 @@
         `📊 *Resumen de tu cuenta:*\n` +
         `• Ventas totales: $${v.toFixed(2)}\n` +
         `• Comisión Flash (${t.porcentajeComision || 8}%): $${c.toFixed(2)}\n` +
-        `• Monto neto entregado/pagado: $${p.toFixed(2)}\n` +
+        `• Total liquidado/pagado: $${p.toFixed(2)}\n` +
         `💰 *Saldo pendiente a liquidar:* $${saldo.toFixed(2)}\n\n` +
-        `¡Gracias por tu alianza con Pedidos Flash!`
+        `¡Gracias por tu confianza en Pedidos Flash!`
       );
 
       window.open(`https://wa.me/${telFinal}?text=${msj}`, '_blank');
@@ -1492,7 +1802,6 @@
         const monto = parseFloat(p.total || p.montoTotal || p.monto || 0).toFixed(2);
         const chofer = p.chofer || 'Sin Asignar';
 
-        // Detectar si el pedido pertenece a una tienda
         let nombreTienda = p.tiendaNombre || '';
         let pctTienda = p.porcentajeComision || 0;
 
@@ -1557,7 +1866,6 @@
       const totalMonto = parseFloat(p.total || p.montoTotal || p.monto || 0);
       document.getElementById('adm-modal-total').innerText = `$${totalMonto.toFixed(2)}`;
 
-      // Resolver Tienda del Pedido
       let tid = p.tiendaId || '';
       let tnom = p.tiendaNombre || '';
       let tpct = p.porcentajeComision || 0;
@@ -1576,7 +1884,7 @@
       const cajaTienda = document.getElementById('adm-caja-tienda-comision');
       if (tid || tnom) {
         cajaTienda.classList.remove('hidden');
-        document.getElementById('adm-modal-tienda-nombre').innerText = tnom || 'Comercio Asociado';
+        document.getElementById('adm-modal-tienda-nombre').innerText = tnom || 'Local';
         document.getElementById('adm-modal-tienda-pct').innerText = `${tpct}%`;
 
         const comisionCalc = (totalMonto * tpct) / 100;
@@ -1584,17 +1892,6 @@
 
         document.getElementById('adm-modal-comision-flash').innerText = `+$${comisionCalc.toFixed(2)}`;
         document.getElementById('adm-modal-neto-tienda').innerText = `$${netoCalc.toFixed(2)}`;
-
-        const btnAnotar = document.getElementById('btn-anotar-orden-a-tienda');
-        if (p.anotadoEnCuenta) {
-          btnAnotar.innerText = "✓ Ya Anotado en la Cuenta del Comercio";
-          btnAnotar.className = "w-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold py-2 rounded-xl text-[11px] flex items-center justify-center gap-1.5 cursor-default";
-          btnAnotar.disabled = true;
-        } else {
-          btnAnotar.innerText = `Anotar a Cuenta de ${tnom} (+ $${comisionCalc.toFixed(2)} ganancia)`;
-          btnAnotar.className = "w-full bg-amber-500/20 hover:bg-amber-500/30 text-accent-yellow border border-amber-500/40 font-black py-2 rounded-xl text-[11px] flex items-center justify-center gap-1.5 transition";
-          btnAnotar.disabled = false;
-        }
       } else {
         cajaTienda.classList.add('hidden');
       }
@@ -1606,7 +1903,7 @@
           lista.innerHTML += `<div class="flex justify-between"><span>• ${it.cantidad || 1}x ${it.nombre}</span><span>$${((it.cantidad||1)*(it.precio||0)).toFixed(2)}</span></div>`;
         });
       } else {
-        lista.innerHTML = `<p>${p.detalle || p.productos || 'Carrera de Transporte Flash'}</p>`;
+        lista.innerHTML = `<p>${p.detalle || p.productos || 'Servicio de Transporte'}</p>`;
       }
 
       document.getElementById('adm-select-estado').value = p.estado || 'pendiente';
@@ -1618,50 +1915,6 @@
     function cerrarModalAdminDetalle() {
       document.getElementById('modal-admin-detalle-pedido').classList.add('hidden');
       pedidoSeleccionadoId = null;
-    }
-
-    function anotarOrdenActualATienda() {
-      if (!pedidoSeleccionadoId) return;
-      const p = todosLosPedidosAdmin[pedidoSeleccionadoId];
-      if (!p) return;
-
-      let tid = p.tiendaId;
-      if (!tid && p.items && Array.isArray(p.items)) {
-        const itemT = p.items.find(it => it.tiendaId || it.local);
-        if (itemT) tid = itemT.tiendaId || itemT.local;
-      }
-
-      if (!tid || !tiendasBD[tid]) {
-        tid = 'moravos'; // fallback
-      }
-
-      const t = tiendasBD[tid] || { nombre: 'Comercio', porcentajeComision: 8 };
-      const pct = parseFloat(t.porcentajeComision || 8);
-      const totalMonto = parseFloat(p.total || p.montoTotal || p.monto || 0);
-
-      const comision = (totalMonto * pct) / 100;
-      const neto = totalMonto - comision;
-
-      const itemsDesc = (p.items && Array.isArray(p.items)) 
-        ? p.items.map(i => `${i.cantidad}x ${i.nombre}`).join(', ') 
-        : `Orden #${p.orden || pedidoSeleccionadoId}`;
-
-      const nuevoMov = {
-        orden: p.orden || pedidoSeleccionadoId,
-        concepto: itemsDesc,
-        montoVenta: totalMonto,
-        porcentajeComision: pct,
-        comisionFlash: comision,
-        netoTienda: neto,
-        cliente: p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente'),
-        fecha: new Date().toISOString()
-      };
-
-      db.ref(`cuentas_tiendas/${tid}/movimientos`).push(nuevoMov).then(() => {
-        db.ref(`pedidos/${pedidoSeleccionadoId}`).update({ anotadoEnCuenta: true });
-        alert(`¡Orden anotada a la cuenta de ${t.nombre}! Ganaste $${comision.toFixed(2)} (${pct}%).`);
-        abrirModalAdminDetalle(pedidoSeleccionadoId);
-      });
     }
 
     function guardarCambiosManualesPedido() {
@@ -1684,7 +1937,7 @@
       });
     }
 
-    // ================= CHOFERES & GASTOS =================
+    // ================= CHOFERES & RETIROS =================
     function renderizarChoferesAdmin() {
       const grid = document.getElementById('grid-choferes-admin');
       const contNotificaciones = document.getElementById('contenedor-notificaciones-retiro');
@@ -1707,7 +1960,6 @@
         const c = choferesBD[tel];
         const esPendiente = c.estado === 'pendiente';
 
-        let totalProducidoChofer = 0;
         let carrerasFinalizadas = 0;
         let gananciaAcumulada = 0;
 
@@ -1715,7 +1967,6 @@
           const ped = todosLosPedidosAdmin[idPed];
           if (ped.choferTelefono === tel && ped.estado === 'entregado') {
             carrerasFinalizadas++;
-            totalProducidoChofer += parseFloat(ped.total || ped.montoTotal || ped.monto || 0);
             gananciaAcumulada += parseFloat(ped.gananciaChofer || 0.70);
           }
         });
@@ -1855,8 +2106,44 @@
       });
     }
 
+    function calcularMetricasAdmin() {
+      let totalVentas = 0;
+      let totalPedidos = 0;
+      let totalGastos = 0;
+      let totalComisiones = 0;
+
+      Object.keys(tiendasBD).forEach(tid => {
+        const cta = cuentasTiendasBD[tid] || {};
+        const movs = cta.movimientos ? Object.values(cta.movimientos) : [];
+        movs.forEach(m => {
+          totalComisiones += parseFloat(m.comisionFlash || 0);
+        });
+      });
+
+      Object.keys(todosLosPedidosAdmin).forEach(id => {
+        const p = todosLosPedidosAdmin[id];
+        totalPedidos++;
+        if (p.estado === 'entregado') {
+          totalVentas += parseFloat(p.total || p.montoTotal || p.monto || 0);
+        }
+      });
+
+      gastosBD.forEach(g => {
+        totalGastos += parseFloat(g.monto || 0);
+      });
+
+      const gananciaNeta = (totalVentas * 0.15) + totalComisiones - totalGastos;
+
+      document.getElementById('metrica-ventas').innerText = `$${totalVentas.toFixed(2)}`;
+      document.getElementById('metrica-comisiones').innerText = `$${totalComisiones.toFixed(2)}`;
+      document.getElementById('metrica-ganancia-neta').innerText = `$${Math.max(0, gananciaNeta).toFixed(2)}`;
+      document.getElementById('metrica-gastos').innerText = `$${totalGastos.toFixed(2)}`;
+      document.getElementById('metrica-pedidos').innerText = totalPedidos;
+      document.getElementById('cant-admin-pedidos').innerText = totalPedidos;
+    }
+
     function cambiarPestana(pestana) {
-      ['comercios', 'pedidos', 'choferes', 'gastos', 'ajustes'].forEach(p => {
+      ['productos', 'comercios', 'pedidos', 'choferes', 'gastos', 'ajustes'].forEach(p => {
         const sec = document.getElementById(`sec-admin-${p}`);
         if (sec) sec.classList.add('hidden');
         const btn = document.getElementById(`tab-admin-${p}`);
