@@ -243,6 +243,26 @@
 
     <!-- ================= PESTAÑA 3: GESTIÓN DE PEDIDOS ================= -->
     <section id="sec-admin-pedidos" class="space-y-4 hidden">
+      
+      <!-- ALERTA DE PEDIDOS PENDIENTES CON CHOFERES DESCONECTADOS -->
+      <div id="banner-alerta-choferes-desconectados" class="bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 border-2 border-amber-500/40 rounded-2xl p-4 shadow-xl flex flex-col sm:flex-row justify-between items-center gap-3 hidden">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-accent-yellow border border-amber-500/30 flex items-center justify-center shrink-0 text-xl animate-bounce">
+            🛵
+          </div>
+          <div>
+            <h4 class="text-xs font-black text-white flex items-center gap-1.5">
+              <span>¡PEDIDOS PENDIENTES SIN CHOFER EN LÍNEA!</span>
+              <span id="badge-cant-pedidos-sin-chofer" class="bg-accent-yellow text-slate-950 text-[10px] font-black px-2 py-0.2 rounded-full">1</span>
+            </h4>
+            <p class="text-[11px] text-slate-300">Los choferes no tienen la app abierta. Puedes avisarles directamente a su WhatsApp en 1 solo clic.</p>
+          </div>
+        </div>
+        <button onclick="alertarPrimerChoferDisponible()" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-accent-emerald hover:brightness-110 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-glow-emerald shrink-0">
+          <i data-lucide="message-circle" class="w-4 h-4"></i> Avisar Chofer por WhatsApp
+        </button>
+      </div>
+
       <div class="flex flex-col sm:flex-row gap-2 justify-between items-stretch sm:items-center">
         <div class="relative flex-1 max-w-md">
           <i data-lucide="search" class="w-4 h-4 text-indigo-400 absolute left-3.5 top-3"></i>
@@ -856,6 +876,9 @@
           <button onclick="guardarCambiosManualesPedido()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-2.5 rounded-xl transition shadow-md">
             Actualizar Pedido
           </button>
+          <button onclick="enviarAlertaWhatsAppAChoferSeleccionado()" type="button" class="w-full bg-emerald-600/20 hover:bg-emerald-600/30 text-accent-emerald border border-emerald-500/40 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow">
+            <i data-lucide="message-circle" class="w-4 h-4"></i> 📲 Avisar al Chofer por WhatsApp
+          </button>
         </div>
       </div>
     </div>
@@ -1119,8 +1142,21 @@
       });
 
       // 4. Escuchar Pedidos
+      let pedidosPreviosIds = null;
       db.ref('pedidos').on('value', (snapshot) => {
-        todosLosPedidosAdmin = snapshot.val() || {};
+        const nuevos = snapshot.val() || {};
+        todosLosPedidosAdmin = nuevos;
+
+        const idsNuevos = Object.keys(nuevos);
+        if (pedidosPreviosIds !== null) {
+          const hayNuevoPendiente = idsNuevos.some(id => !pedidosPreviosIds.includes(id) && nuevos[id].estado === 'pendiente');
+          if (hayNuevoPendiente) {
+            emitirAlertaSonoraAdmin();
+          }
+        }
+        pedidosPreviosIds = idsNuevos;
+
+        verificarPedidosPendientesYChoferes();
         calcularMetricasAdmin();
         renderizarTablaPedidos();
         renderizarChoferesAdmin();
@@ -1131,6 +1167,7 @@
         choferesBD = snapshot.val() || {};
         renderizarChoferesAdmin();
         actualizarSelectorChoferes();
+        verificarPedidosPendientesYChoferes();
       });
 
       // 6. Escuchar Gastos
@@ -1842,9 +1879,16 @@
             <td class="p-3.5"><span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${badgeEstado}">${p.estado || 'PENDIENTE'}</span></td>
             <td class="p-3.5 font-bold text-slate-300">${chofer}</td>
             <td class="p-3.5 text-center">
-              <button onclick="abrirModalAdminDetalle('${id}')" class="bg-indigo-600/30 hover:bg-indigo-600 text-accent-cyan hover:text-white font-bold px-2.5 py-1.5 rounded-lg text-[10px] border border-indigo-500/30 transition">
-                Ver / Anotar
-              </button>
+              <div class="flex items-center justify-center gap-1.5">
+                <button onclick="abrirModalAdminDetalle('${id}')" class="bg-indigo-600/30 hover:bg-indigo-600 text-accent-cyan hover:text-white font-bold px-2.5 py-1.5 rounded-lg text-[10px] border border-indigo-500/30 transition whitespace-nowrap">
+                  Ver / Anotar
+                </button>
+                ${p.estado === 'pendiente' ? `
+                  <button onclick="alertarChoferesWhatsAppDirecto('${id}')" class="bg-emerald-600/20 hover:bg-emerald-600 text-accent-emerald hover:text-white font-black px-2 py-1.5 rounded-lg text-[10px] border border-emerald-500/30 transition flex items-center gap-1 whitespace-nowrap shadow" title="Avisar a chofer por WhatsApp">
+                    📲 Avisar Chofer
+                  </button>
+                ` : ''}
+              </div>
             </td>
           </tr>
         `;
@@ -1906,6 +1950,16 @@
         lista.innerHTML = `<p>${p.detalle || p.productos || 'Servicio de Transporte'}</p>`;
       }
 
+      // Poblar selector de choferes con su estado en línea
+      const selectChofer = document.getElementById('adm-select-chofer');
+      selectChofer.innerHTML = `<option value="">Sin Asignar</option>`;
+      Object.keys(choferesBD).forEach(tel => {
+        const ch = choferesBD[tel];
+        const est = ch.enLinea ? '🟢 En Línea' : '🔴 Desconectado';
+        const sel = (p.choferTelefono === tel) ? 'selected' : '';
+        selectChofer.innerHTML += `<option value="${tel}" ${sel}>${ch.nombre} (${est})</option>`;
+      });
+
       document.getElementById('adm-select-estado').value = p.estado || 'pendiente';
       document.getElementById('adm-select-chofer').value = p.choferTelefono || '';
 
@@ -1915,6 +1969,145 @@
     function cerrarModalAdminDetalle() {
       document.getElementById('modal-admin-detalle-pedido').classList.add('hidden');
       pedidoSeleccionadoId = null;
+    }
+
+    function enviarAlertaWhatsAppAChoferSeleccionado() {
+      if (!pedidoSeleccionadoId) return;
+      const p = todosLosPedidosAdmin[pedidoSeleccionadoId];
+      if (!p) return;
+
+      const telChoferSel = document.getElementById('adm-select-chofer').value;
+      let choferObj = null;
+
+      if (telChoferSel && choferesBD[telChoferSel]) {
+        choferObj = choferesBD[telChoferSel];
+      } else {
+        const keys = Object.keys(choferesBD);
+        if (keys.length > 0) choferObj = choferesBD[keys[0]];
+      }
+
+      if (!choferObj) {
+        alert("No hay choferes registrados en el sistema para notificar.");
+        return;
+      }
+
+      let telFinal = (choferObj.telefono || '').replace(/\D/g, '');
+      if (telFinal.startsWith('0')) telFinal = '58' + telFinal.substring(1);
+      if (!telFinal.startsWith('58')) telFinal = '58' + telFinal;
+
+      const numOrden = p.orden || `#FLASH-${pedidoSeleccionadoId.substring(0, 6)}`;
+      const dir = p.cliente ? (p.cliente.direccion || p.direccion) : (p.direccion || 'Nirgua');
+      const clienteNom = p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente');
+
+      const msj = encodeURIComponent(
+        `🚨 *¡HAY UN NUEVO PEDIDO FLASH DISPONIBLE!* 🛵\n\n` +
+        `Hola *${choferObj.nombre}*, tienes una carrera disponible para entregar:\n\n` +
+        `📦 *Orden:* ${numOrden}\n` +
+        `👤 *Cliente:* ${clienteNom}\n` +
+        `📍 *Dirección de Entrega:* ${dir}\n` +
+        `💰 *Tu Ganancia:* $0.70\n\n` +
+        `👉 *Toca aquí para abrir tu app y aceptarlo:* \n` +
+        `chofer.html?pedido=${pedidoSeleccionadoId}`
+      );
+
+      window.open(`https://wa.me/${telFinal}?text=${msj}`, '_blank');
+    }
+
+    // ================= ALERTA SONORA ADMIN =================
+    let audioCtxAdmin = null;
+    function emitirAlertaSonoraAdmin() {
+      try {
+        if (!audioCtxAdmin) audioCtxAdmin = new (window.AudioContext || window.webkitAudioContext)();
+        const tocarTono = (freq, inicio, duracion) => {
+          const osc = audioCtxAdmin.createOscillator();
+          const gain = audioCtxAdmin.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, audioCtxAdmin.currentTime + inicio);
+          gain.gain.setValueAtTime(0.25, audioCtxAdmin.currentTime + inicio);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtxAdmin.currentTime + inicio + duracion);
+          osc.connect(gain);
+          gain.connect(audioCtxAdmin.destination);
+          osc.start(audioCtxAdmin.currentTime + inicio);
+          osc.stop(audioCtxAdmin.currentTime + inicio + duracion);
+        };
+        tocarTono(784, 0, 0.2);       // Sol
+        tocarTono(1046.5, 0.18, 0.3); // Do alto
+        tocarTono(1318.5, 0.38, 0.4); // Mi alto
+      } catch(e) {
+        console.warn("Audio admin bloqueado:", e);
+      }
+    }
+
+    function verificarPedidosPendientesYChoferes() {
+      const banner = document.getElementById('banner-alerta-choferes-desconectados');
+      const badge = document.getElementById('badge-cant-pedidos-sin-chofer');
+      if (!banner) return;
+
+      const keysP = Object.keys(todosLosPedidosAdmin);
+      const pendientes = keysP.filter(id => todosLosPedidosAdmin[id].estado === 'pendiente');
+
+      const keysC = Object.keys(choferesBD);
+      const choferesConectados = keysC.filter(tel => choferesBD[tel].enLinea === true);
+
+      if (pendientes.length > 0 && choferesConectados.length === 0) {
+        if (badge) badge.innerText = `${pendientes.length} sin chofer en línea`;
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    function alertarPrimerChoferDisponible() {
+      const keysP = Object.keys(todosLosPedidosAdmin);
+      const pendientes = keysP.filter(id => todosLosPedidosAdmin[id].estado === 'pendiente');
+      if (pendientes.length > 0) {
+        alertarChoferesWhatsAppDirecto(pendientes[pendientes.length - 1]);
+      } else {
+        alert("No hay pedidos pendientes en este momento.");
+      }
+    }
+
+    function alertarChoferesWhatsAppDirecto(id) {
+      const p = todosLosPedidosAdmin[id];
+      if (!p) return;
+
+      const keys = Object.keys(choferesBD);
+      if (keys.length === 0) {
+        alert("No hay choferes registrados en el sistema. Puedes ver o registrar choferes en la pestaña 'Choferes'.");
+        return;
+      }
+
+      // Buscar si tiene chofer asignado o buscar choferes desconectados
+      let choferTarget = null;
+      if (p.choferTelefono && choferesBD[p.choferTelefono]) {
+        choferTarget = choferesBD[p.choferTelefono];
+      } else {
+        const desconectados = keys.map(k => choferesBD[k]).filter(c => !c.enLinea);
+        choferTarget = desconectados.length > 0 ? desconectados[0] : choferesBD[keys[0]];
+      }
+
+      let tel = (choferTarget.telefono || '').replace(/\D/g, '');
+      if (tel.startsWith('0')) tel = '58' + tel.substring(1);
+      if (!tel.startsWith('58')) tel = '58' + tel;
+
+      const numOrden = p.orden || `#FLASH-${id.substring(0, 6)}`;
+      const dir = p.cliente ? (p.cliente.direccion || p.direccion) : (p.direccion || 'Nirgua');
+      const clienteNom = p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente');
+      const total = parseFloat(p.total || p.montoTotal || p.monto || 0).toFixed(2);
+
+      const msj = encodeURIComponent(
+        `🚨 *¡HAY UN NUEVO PEDIDO FLASH DISPONIBLE!* 🛵\n\n` +
+        `Hola *${choferTarget.nombre}*, tienes un nuevo pedido disponible en Nirgua:\n\n` +
+        `📦 *Orden:* ${numOrden}\n` +
+        `👤 *Cliente:* ${clienteNom}\n` +
+        `📍 *Dirección de Entrega:* ${dir}\n` +
+        `💵 *Total de la Orden:* $${total}\n` +
+        `💰 *Tu Ganancia:* $0.70\n\n` +
+        `👉 *Toca aquí para abrir tu app y aceptarlo:* \n` +
+        `chofer.html?pedido=${id}`
+      );
+
+      window.open(`https://wa.me/${tel}?text=${msj}`, '_blank');
     }
 
     function guardarCambiosManualesPedido() {
@@ -1973,6 +2166,7 @@
 
         const pagadoChofer = parseFloat(c.totalPagado || 0);
         const saldoPendienteLiquidar = Math.max(0, gananciaAcumulada - pagadoChofer);
+        const estaEnLinea = c.enLinea === true;
 
         if (c.solicitudRetiro && c.solicitudRetiro.estado === 'pendiente') {
           retirosPendientesCount++;
@@ -1989,16 +2183,27 @@
           `;
         }
 
+        let telLimpio = (c.telefono || '').replace(/\D/g, '');
+        if (telLimpio.startsWith('0')) telLimpio = '58' + telLimpio.substring(1);
+        if (!telLimpio.startsWith('58')) telLimpio = '58' + telLimpio;
+
+        const badgeConexion = estaEnLinea 
+          ? `<span class="bg-emerald-500/20 text-accent-emerald border border-emerald-500/40 text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-ping"></span> EN LÍNEA</span>`
+          : `<span class="bg-slate-800 text-slate-400 border border-slate-700 text-[9px] font-bold px-2 py-0.5 rounded-full">🔴 DESCONECTADO</span>`;
+
         grid.innerHTML += `
           <div class="bg-slate-950 p-4 rounded-2xl border ${esPendiente ? 'border-amber-500/60 shadow-glow-yellow' : 'border-slate-800'} space-y-3">
             <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
               <div>
-                <h4 class="font-black text-white text-xs">🛵 ${c.nombre}</h4>
-                <p class="text-[10px] text-slate-400">📱 ${c.telefono}</p>
+                <h4 class="font-black text-white text-xs flex items-center gap-1.5">🛵 ${c.nombre}</h4>
+                <p class="text-[10px] text-slate-400">📱 ${c.telefono} • ${c.vehiculo || 'Moto'}</p>
               </div>
-              <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${esPendiente ? 'bg-amber-500/20 text-accent-yellow border border-amber-500/30' : 'bg-emerald-500/20 text-accent-emerald border border-emerald-500/30'}">
-                ${esPendiente ? '⏳ PENDIENTE' : '🟢 ACTIVO'}
-              </span>
+              <div class="flex flex-col items-end gap-1">
+                ${badgeConexion}
+                <span class="text-[9px] font-black uppercase px-2 py-0.2 rounded-full ${esPendiente ? 'bg-amber-500/20 text-accent-yellow' : 'text-slate-500'}">
+                  ${esPendiente ? '⏳ PENDIENTE' : 'AUTORIZADO'}
+                </span>
+              </div>
             </div>
 
             <div class="bg-slate-900 p-2.5 rounded-xl text-xs space-y-1.5 border border-indigo-500/20">
@@ -2013,6 +2218,9 @@
             </div>
 
             <div class="flex gap-2 pt-1">
+              <a href="https://wa.me/${telLimpio}?text=${encodeURIComponent('Hola ' + c.nombre + ', te contactamos de la Administración de Pedidos Flash Nirgua.')}" target="_blank" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-accent-emerald border border-emerald-500/30 font-bold px-2.5 py-2 rounded-xl text-xs flex items-center justify-center gap-1 transition" title="Enviar WhatsApp al chofer">
+                <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> WS
+              </a>
               ${esPendiente ? `
                 <button onclick="cambiarEstadoChoferBD('${c.telefono}', 'autorizado')" class="flex-1 bg-accent-emerald text-slate-950 font-black py-2 rounded-xl text-xs">Aprobar</button>
               ` : `
@@ -2096,12 +2304,14 @@
 
     function actualizarSelectorChoferes() {
       const select = document.getElementById('adm-select-chofer');
+      if (!select) return;
       select.innerHTML = `<option value="">Sin Asignar</option>`;
 
       Object.keys(choferesBD).forEach(tel => {
         const c = choferesBD[tel];
-        if (c.estado === 'autorizado') {
-          select.innerHTML += `<option value="${tel}">${c.nombre}</option>`;
+        if (c.estado === 'autorizado' || !c.estado) {
+          const statusTxt = c.enLinea ? '🟢 EN LÍNEA' : '🔴 DESCONECTADO';
+          select.innerHTML += `<option value="${tel}">${c.nombre} (${statusTxt})</option>`;
         }
       });
     }
