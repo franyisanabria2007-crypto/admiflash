@@ -1,0 +1,13 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Pedidos Flash Admin",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Pedidos Flash Admin",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "id": "Pedidos Flash ",
+  "description": "Plataforma de delivery, compras y transporte rápido en Nirgua, Yaracuy."
+}
