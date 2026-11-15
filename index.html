@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Pedidos Flash - Panel de Administración & Control</title>
+  <title>Pedidos Flash - Panel de Administración & Control Maestro</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -54,7 +55,7 @@
           👑
         </div>
         <h2 class="text-xl font-black font-orbitron text-white tracking-wider">PANEL ADMIN</h2>
-        <p class="text-xs text-slate-400">Ingresa la clave de acceso de administrador</p>
+        <p class="text-xs text-slate-400">Control Maestro de Pedidos Flash • Nirgua</p>
       </div>
 
       <form onsubmit="autenticarAdmin(event)" class="space-y-4">
@@ -80,7 +81,7 @@
           <h1 class="text-base sm:text-lg font-black font-orbitron text-white leading-tight flex items-center gap-2">
             PEDIDOS FLASH <span class="bg-accent-magenta/20 text-accent-magenta border border-accent-magenta/30 text-[9px] font-black px-2 py-0.5 rounded-full uppercase">CENTRO DE CONTROL</span>
           </h1>
-          <p class="text-[10px] text-slate-400 font-semibold">Nirgua, Yaracuy • Gestión de Precios, Choferes, Comercios y Finanzas</p>
+          <p class="text-[10px] text-slate-400 font-semibold">Nirgua, Yaracuy • Gestión Integral: Clientes, Choferes, Comercios y Tarifas</p>
         </div>
       </div>
 
@@ -151,60 +152,90 @@
 
     <!-- PESTAÑAS DE NAVEGACIÓN -->
     <div class="flex border-b border-slate-800 gap-2 overflow-x-auto no-scrollbar pb-1">
-      <button onclick="cambiarPestana('choferes')" id="tab-admin-choferes" class="px-4 py-2.5 rounded-xl text-xs font-black bg-indigo-600 text-white flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="users" class="w-4 h-4 text-accent-yellow"></i> Choferes & Códigos (<span id="cant-admin-choferes-badge" class="font-black">0</span>)
+      <button onclick="cambiarPestana('productos')" id="tab-admin-productos" class="px-4 py-2.5 rounded-xl text-xs font-black bg-indigo-600 text-white flex items-center gap-2 whitespace-nowrap transition">
+        <i data-lucide="package" class="w-4 h-4 text-accent-cyan"></i> Menú y Catálogo (<span id="cant-admin-prods-badge" class="font-black">0</span>)
+      </button>
+      <button onclick="cambiarPestana('comercios')" id="tab-admin-comercios" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
+        <i data-lucide="store" class="w-4 h-4 text-accent-yellow"></i> Comercios & Negocios (<span id="cant-admin-comercios-badge" class="font-black">0</span>)
       </button>
       <button onclick="cambiarPestana('pedidos')" id="tab-admin-pedidos" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
         <i data-lucide="list-ordered" class="w-4 h-4"></i> Pedidos y Carreras (<span id="cant-admin-pedidos">0</span>)
       </button>
-      <button onclick="cambiarPestana('productos')" id="tab-admin-productos" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="package" class="w-4 h-4 text-accent-cyan"></i> Catálogo y Precios (<span id="cant-admin-prods-badge" class="font-black">0</span>)
+      <button onclick="cambiarPestana('choferes')" id="tab-admin-choferes" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
+        <i data-lucide="users" class="w-4 h-4 text-accent-yellow"></i> Choferes & Códigos (<span id="cant-admin-choferes-badge" class="font-black">0</span>)
       </button>
-      <button onclick="cambiarPestana('comercios')" id="tab-admin-comercios" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="store" class="w-4 h-4 text-accent-yellow"></i> Comida Rápida & Tiendas (<span id="cant-admin-comercios-badge" class="font-black">0</span>)
+      <button onclick="cambiarPestana('tarifas')" id="tab-admin-tarifas" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
+        <i data-lucide="navigation" class="w-4 h-4 text-accent-emerald"></i> Tarifas de Transporte
       </button>
       <button onclick="cambiarPestana('gastos')" id="tab-admin-gastos" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="receipt" class="w-4 h-4"></i> Control de Gastos
+        <i data-lucide="receipt" class="w-4 h-4"></i> Gastos
       </button>
       <button onclick="cambiarPestana('ajustes')" id="tab-admin-ajustes" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="settings" class="w-4 h-4"></i> Configuración
+        <i data-lucide="settings" class="w-4 h-4"></i> Configuración & Pago Móvil
       </button>
     </div>
 
-    <!-- ================= PESTAÑA: CHOFERES Y CÓDIGOS DE ACEPTACIÓN ================= -->
-    <section id="sec-admin-choferes" class="space-y-4">
-      <div id="contenedor-notificaciones-retiro" class="bg-amber-950/30 border-2 border-amber-500/50 rounded-2xl p-4 shadow-xl space-y-3 hidden">
-        <div class="flex items-center justify-between border-b border-amber-500/30 pb-2">
-          <h3 class="text-sm font-black text-amber-300 flex items-center gap-2">
-            <i data-lucide="bell-ring" class="w-5 h-5 text-accent-yellow animate-bounce"></i> Solicitudes de Retiro Pendientes
-          </h3>
-          <span class="bg-amber-500/20 text-accent-yellow text-[10px] font-black px-2.5 py-0.5 rounded-full border border-amber-500/30">
-            Requiere tu atención
-          </span>
-        </div>
-        <div id="lista-notificaciones-retiro" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
-      </div>
-
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-3">
+    <!-- ================= PESTAÑA 1: MENÚ PRINCIPAL Y CATÁLOGO DE PRODUCTOS (CONFIGURACIÓN CLIENTE) ================= -->
+    <section id="sec-admin-productos" class="space-y-4">
+      <div class="bg-slate-900/90 border border-indigo-500/30 p-4 rounded-2xl shadow-xl space-y-3">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
-            <h3 class="text-sm font-black text-white flex items-center gap-2">
-              <i data-lucide="shield-check" class="w-5 h-5 text-accent-yellow"></i> Directorio y Autorización de Choferes
-            </h3>
-            <p class="text-[11px] text-slate-400">Revisa los Códigos de Aceptación, autoriza nuevos choferes o envíales su código por WhatsApp.</p>
+            <h2 class="text-base font-black text-white flex items-center gap-2">
+              <i data-lucide="tag" class="w-5 h-5 text-accent-cyan"></i> Catálogo Completo y Menú de Clientes
+            </h2>
+            <p class="text-xs text-slate-400">Agrega productos al menú principal (víveres, ferretería, medicina, bebidas, carnes, etc.) y modifica precios al instante. Se reflejan en vivo en la app del cliente.</p>
           </div>
-          <span class="text-[10px] bg-indigo-950 text-indigo-300 border border-indigo-800/40 px-2.5 py-1 rounded-xl font-bold">
-            Sincronización en Tiempo Real
-          </span>
+          
+          <div class="flex flex-wrap gap-2">
+            <button onclick="abrirModalNuevoProductoFlash()" class="btn-tactil bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition shadow-lg glow-cyan whitespace-nowrap">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i> + Nuevo Producto al Menú
+            </button>
+          </div>
         </div>
 
-        <div id="grid-choferes-admin" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          <div class="text-slate-500 text-xs py-6 text-center col-span-full">Cargando choferes registrados...</div>
+        <!-- FILTROS Y BÚSQUEDA RÁPIDA -->
+        <div class="flex flex-col sm:flex-row gap-2 pt-2 border-t border-slate-800">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-4 h-4 text-indigo-400 absolute left-3.5 top-3"></i>
+            <input type="text" id="busqueda-admin-catalogo" oninput="filtrarCatalogoAdmin()" placeholder="Buscar producto... Ej: Harina PAN, Acetaminofén, Bombillo, Queso..." class="w-full pl-10 pr-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-accent-cyan">
+          </div>
+
+          <div class="flex gap-1 overflow-x-auto no-scrollbar py-0.5">
+            <button onclick="filtrarCategoriaCatalogo('todos')" id="cat-btn-todos" class="btn-cat-fil text-[11px] font-black bg-indigo-600 text-white px-3 py-1.5 rounded-lg whitespace-nowrap">Todos</button>
+            <button onclick="filtrarCategoriaCatalogo('viveres')" id="cat-btn-viveres" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Víveres</button>
+            <button onclick="filtrarCategoriaCatalogo('bebidas')" id="cat-btn-bebidas" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Bebidas</button>
+            <button onclick="filtrarCategoriaCatalogo('ferreteria')" id="cat-btn-ferreteria" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">🔧 Ferretería</button>
+            <button onclick="filtrarCategoriaCatalogo('medicina')" id="cat-btn-medicina" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">💊 Farmacia / Medicina</button>
+            <button onclick="filtrarCategoriaCatalogo('carnes')" id="cat-btn-carnes" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Carnes</button>
+            <button onclick="filtrarCategoriaCatalogo('charcuteria')" id="cat-btn-charcuteria" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Charcutería</button>
+            <button onclick="filtrarCategoriaCatalogo('panaderia')" id="cat-btn-panaderia" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Panadería</button>
+            <button onclick="filtrarCategoriaCatalogo('verduras')" id="cat-btn-verduras" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Verduras</button>
+            <button onclick="filtrarCategoriaCatalogo('limpieza')" id="cat-btn-limpieza" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Limpieza</button>
+          </div>
         </div>
       </div>
+
+      <div id="grid-catalogo-admin" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
     </section>
 
-    <!-- ================= PESTAÑA: GESTIÓN DE PEDIDOS ================= -->
+    <!-- ================= PESTAÑA 2: COMERCIOS & NEGOCIOS REGISTRADOS ================= -->
+    <section id="sec-admin-comercios" class="space-y-4 hidden">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-900/90 border border-indigo-500/30 p-4 rounded-2xl shadow-xl">
+        <div>
+          <h2 class="text-base font-black text-white flex items-center gap-2">
+            <i data-lucide="store" class="w-5 h-5 text-accent-yellow"></i> Comercios, Locales & Negocios Afiliados
+          </h2>
+          <p class="text-xs text-slate-400">Registra restaurantes, ferreterías, farmacias o tiendas de Nirgua. Ajusta el porcentaje (%) de comisión que gana Pedidos Flash por cada venta.</p>
+        </div>
+        <button onclick="abrirModalRegistrarTienda()" class="btn-tactil bg-gradient-to-r from-accent-yellow via-amber-500 to-orange-500 hover:brightness-110 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition shadow-lg glow-yellow whitespace-nowrap">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i> + Registrar Nuevo Negocio
+        </button>
+      </div>
+
+      <div id="grid-comercios-admin" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ================= PESTAÑA 3: GESTIÓN DE PEDIDOS Y CARRERAS ================= -->
     <section id="sec-admin-pedidos" class="space-y-4 hidden">
       <div id="banner-alerta-choferes-desconectados" class="bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 border-2 border-amber-500/40 rounded-2xl p-4 shadow-xl flex flex-col sm:flex-row justify-between items-center gap-3 hidden">
         <div class="flex items-center gap-3">
@@ -266,67 +297,114 @@
       </div>
     </section>
 
-    <!-- ================= PESTAÑA: CATÁLOGO Y EDICIÓN DE PRECIOS FLASH ================= -->
-    <section id="sec-admin-productos" class="space-y-4 hidden">
-      <div class="bg-slate-900/90 border border-indigo-500/30 p-4 rounded-2xl shadow-xl space-y-3">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+    <!-- ================= PESTAÑA 4: CHOFERES Y CÓDIGOS DE ACEPTACIÓN ================= -->
+    <section id="sec-admin-choferes" class="space-y-4 hidden">
+      <div id="contenedor-notificaciones-retiro" class="bg-amber-950/30 border-2 border-amber-500/50 rounded-2xl p-4 shadow-xl space-y-3 hidden">
+        <div class="flex items-center justify-between border-b border-amber-500/30 pb-2">
+          <h3 class="text-sm font-black text-amber-300 flex items-center gap-2">
+            <i data-lucide="bell-ring" class="w-5 h-5 text-accent-yellow animate-bounce"></i> Solicitudes de Retiro Pendientes
+          </h3>
+          <span class="bg-amber-500/20 text-accent-yellow text-[10px] font-black px-2.5 py-0.5 rounded-full border border-amber-500/30">
+            Requiere tu atención
+          </span>
+        </div>
+        <div id="lista-notificaciones-retiro" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-3">
           <div>
-            <h2 class="text-base font-black text-white flex items-center gap-2">
-              <i data-lucide="tag" class="w-5 h-5 text-accent-cyan"></i> Catálogo de Productos Pedidos Flash
-            </h2>
-            <p class="text-xs text-slate-400">Modifica precios en segundos y se actualizarán automáticamente para todos los clientes.</p>
+            <h3 class="text-sm font-black text-white flex items-center gap-2">
+              <i data-lucide="shield-check" class="w-5 h-5 text-accent-yellow"></i> Directorio y Autorización de Choferes
+            </h3>
+            <p class="text-[11px] text-slate-400">Revisa los Códigos de Aceptación, autoriza choferes con 1 clic o envíales su clave por WhatsApp.</p>
           </div>
+          <span class="text-[10px] bg-indigo-950 text-indigo-300 border border-indigo-800/40 px-2.5 py-1 rounded-xl font-bold">
+            Sincronización en Tiempo Real
+          </span>
+        </div>
+
+        <div id="grid-choferes-admin" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div class="text-slate-500 text-xs py-6 text-center col-span-full">Cargando choferes registrados...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PESTAÑA 5: TARIFAS DE TRANSPORTE Y DELIVERY ================= -->
+    <section id="sec-admin-tarifas" class="space-y-4 hidden">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+        <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+          <div>
+            <h3 class="text-sm font-black text-white flex items-center gap-2">
+              <i data-lucide="navigation" class="w-5 h-5 text-accent-emerald"></i> Tarifas Oficiales de Transporte y Despacho
+            </h3>
+            <p class="text-[11px] text-slate-400">Configura los precios que se cobrarán al cliente y las ganancias del chofer. Se actualizan automáticamente en las apps.</p>
+          </div>
+          <span class="bg-emerald-500/20 text-accent-emerald text-[10px] font-black px-2.5 py-1 rounded-full border border-emerald-500/30">
+            Nirgua & Zonas Aledañas
+          </span>
+        </div>
+
+        <form onsubmit="guardarTarifasTransporte(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
           
-          <div class="flex flex-wrap gap-2">
-            <button onclick="abrirModalNuevoProductoFlash()" class="bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition shadow-lg glow-cyan whitespace-nowrap">
-              <i data-lucide="plus-circle" class="w-4 h-4"></i> + Nuevo Producto
-            </button>
-            <button onclick="sincronizarTodoElCatalogoBaseAFirebase()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold px-3 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition whitespace-nowrap">
-              <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-accent-cyan"></i> Respaldar Catálogo
-            </button>
-          </div>
-        </div>
-
-        <div class="flex flex-col sm:flex-row gap-2 pt-2 border-t border-slate-800">
-          <div class="relative flex-1">
-            <i data-lucide="search" class="w-4 h-4 text-indigo-400 absolute left-3.5 top-3"></i>
-            <input type="text" id="busqueda-admin-catalogo" oninput="filtrarCatalogoAdmin()" placeholder="Buscar producto... Ej: Harina PAN, Queso, Polar, Carne..." class="w-full pl-10 pr-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-accent-cyan">
+          <!-- TARIFA DELIVERY GENERAL -->
+          <div class="bg-slate-950 p-4 rounded-2xl border border-indigo-500/40 space-y-2">
+            <span class="text-[10px] text-indigo-300 font-bold uppercase tracking-wider block">🛍️ Delivery de Productos</span>
+            <label class="block font-bold text-white">Costo de Envío al Cliente ($):</label>
+            <input type="number" step="0.10" id="cfg-tarifa-delivery" required value="1.00" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-accent-yellow font-black text-base focus:outline-none text-center">
+            <p class="text-[10px] text-slate-400">Tarifa fija por despacho de víveres, comida, ferretería o medicinas.</p>
           </div>
 
-          <div class="flex gap-1 overflow-x-auto no-scrollbar py-0.5">
-            <button onclick="filtrarCategoriaCatalogo('todos')" id="cat-btn-todos" class="btn-cat-fil text-[11px] font-black bg-indigo-600 text-white px-3 py-1.5 rounded-lg whitespace-nowrap">Todos</button>
-            <button onclick="filtrarCategoriaCatalogo('viveres')" id="cat-btn-viveres" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Víveres</button>
-            <button onclick="filtrarCategoriaCatalogo('bebidas')" id="cat-btn-bebidas" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Bebidas</button>
-            <button onclick="filtrarCategoriaCatalogo('carnes')" id="cat-btn-carnes" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Carnes</button>
-            <button onclick="filtrarCategoriaCatalogo('charcuteria')" id="cat-btn-charcuteria" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Charcutería</button>
-            <button onclick="filtrarCategoriaCatalogo('panaderia')" id="cat-btn-panaderia" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Panadería</button>
-            <button onclick="filtrarCategoriaCatalogo('verduras')" id="cat-btn-verduras" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Verduras</button>
-            <button onclick="filtrarCategoriaCatalogo('limpieza')" id="cat-btn-limpieza" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Limpieza</button>
+          <!-- MOTO EN NIRGUA -->
+          <div class="bg-slate-950 p-4 rounded-2xl border border-accent-cyan/40 space-y-2">
+            <span class="text-[10px] text-accent-cyan font-bold uppercase tracking-wider block">🛵 Moto • Casco Urbano</span>
+            <label class="block font-bold text-white">Carrera en Nirgua ($):</label>
+            <input type="number" step="0.10" id="cfg-tarifa-moto-nirgua" required value="1.00" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-accent-cyan font-black text-base focus:outline-none text-center">
+            <p class="text-[10px] text-slate-400">Dentro del casco urbano y zonas céntricas de Nirgua.</p>
           </div>
-        </div>
+
+          <!-- MOTO AFUERA DE NIRGUA -->
+          <div class="bg-slate-950 p-4 rounded-2xl border border-accent-cyan/40 space-y-2">
+            <span class="text-[10px] text-accent-cyan font-bold uppercase tracking-wider block">🛵 Moto • Zonas Foráneas</span>
+            <label class="block font-bold text-white">Carrera Afuera de Nirgua ($):</label>
+            <input type="number" step="0.10" id="cfg-tarifa-moto-fuera" required value="4.50" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-accent-cyan font-black text-base focus:outline-none text-center">
+            <p class="text-[10px] text-slate-400">Comunidades rurales, haciendas y afueras del municipio.</p>
+          </div>
+
+          <!-- CARRO EN NIRGUA -->
+          <div class="bg-slate-950 p-4 rounded-2xl border border-accent-emerald/40 space-y-2">
+            <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider block">🚗 Carro / Taxi • Casco Urbano</span>
+            <label class="block font-bold text-white">Carrera en Nirgua ($):</label>
+            <input type="number" step="0.10" id="cfg-tarifa-carro-nirgua" required value="3.50" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-accent-emerald font-black text-base focus:outline-none text-center">
+            <p class="text-[10px] text-slate-400">Transporte en automóvil dentro de la ciudad de Nirgua.</p>
+          </div>
+
+          <!-- CARRO A SALÓN / FORÁNEO -->
+          <div class="bg-slate-950 p-4 rounded-2xl border border-accent-emerald/40 space-y-2">
+            <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider block">🚗 Carro / Taxi • Salón & Foráneo</span>
+            <label class="block font-bold text-white">Carrera a Salón ($):</label>
+            <input type="number" step="0.10" id="cfg-tarifa-carro-salon" required value="8.50" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-accent-emerald font-black text-base focus:outline-none text-center">
+            <p class="text-[10px] text-slate-400">Viaje especial a Salón o destinos interurbanos lejanos.</p>
+          </div>
+
+          <!-- PAGO AL CHOFER POR DELIVERY -->
+          <div class="bg-slate-950 p-4 rounded-2xl border border-accent-yellow/40 space-y-2">
+            <span class="text-[10px] text-accent-yellow font-bold uppercase tracking-wider block">💵 Ganancia Chofer (Envío)</span>
+            <label class="block font-bold text-white">Pago al Chofer por Despacho ($):</label>
+            <input type="number" step="0.05" id="cfg-ganancia-chofer" required value="0.70" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-accent-yellow font-black text-base focus:outline-none text-center">
+            <p class="text-[10px] text-slate-400">Lo que recibe el chofer por cada delivery entregado (Base: $0.70).</p>
+          </div>
+
+          <div class="col-span-full pt-2">
+            <button type="submit" class="btn-tactil w-full bg-gradient-to-r from-accent-emerald to-emerald-500 hover:brightness-110 text-slate-950 font-black py-3 rounded-2xl text-xs transition shadow-glow-emerald">
+              💾 Guardar y Actualizar Todas las Tarifas en Vivo
+            </button>
+          </div>
+        </form>
       </div>
-
-      <div id="grid-catalogo-admin" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
     </section>
 
-    <!-- ================= PESTAÑA: COMIDA RÁPIDA & LOCALES REGISTRADOS ================= -->
-    <section id="sec-admin-comercios" class="space-y-4 hidden">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-900/90 border border-indigo-500/30 p-4 rounded-2xl shadow-xl">
-        <div>
-          <h2 class="text-base font-black text-white flex items-center gap-2">
-            <i data-lucide="store" class="w-5 h-5 text-accent-yellow"></i> Restaurantes & Locales de Comida Rápida
-          </h2>
-          <p class="text-xs text-slate-400">Registra locales comerciales, establece tu porcentaje de comisión (ej: 8%) y lleva el control de cuentas corrientes.</p>
-        </div>
-        <button onclick="abrirModalRegistrarTienda()" class="bg-gradient-to-r from-accent-yellow via-amber-500 to-orange-500 hover:brightness-110 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition shadow-lg glow-yellow whitespace-nowrap">
-          <i data-lucide="plus-circle" class="w-4 h-4"></i> Registrar Local Comercial
-        </button>
-      </div>
-
-      <div id="grid-comercios-admin" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-    </section>
-
-    <!-- ================= PESTAÑA: REGISTRO DE GASTOS ================= -->
+    <!-- ================= PESTAÑA 6: CONTROL DE GASTOS ================= -->
     <section id="sec-admin-gastos" class="space-y-4 hidden">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
@@ -359,14 +437,47 @@
       </div>
     </section>
 
-    <!-- ================= PESTAÑA: AJUSTES ================= -->
+    <!-- ================= PESTAÑA 7: CONFIGURACIÓN GENERAL Y PAGO MÓVIL OFICIAL ================= -->
     <section id="sec-admin-ajustes" class="space-y-4 hidden">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         
+        <!-- DATOS OFICIALES DE PAGO MÓVIL (PROVINCIAL) -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+          <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
+            <i data-lucide="credit-card" class="w-5 h-5 text-accent-emerald"></i>
+            <div>
+              <h3 class="text-sm font-black text-white">Datos Oficiales de Pago Móvil</h3>
+              <p class="text-[10px] text-slate-400">Se muestran al cliente en el checkout</p>
+            </div>
+          </div>
+
+          <form onsubmit="actualizarDatosPagoMovil(event)" class="space-y-3 text-xs">
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Banco Receptor:</label>
+              <input type="text" id="cfg-pm-banco" required value="Provincial (0108)" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold focus:outline-none focus:border-accent-emerald">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Teléfono Pago Móvil:</label>
+              <input type="text" id="cfg-pm-telefono" required value="04144205169" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-accent-cyan font-mono font-bold focus:outline-none focus:border-accent-emerald">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Cédula / RIF:</label>
+              <input type="text" id="cfg-pm-cedula" required value="V-31060250" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-accent-yellow font-mono font-bold focus:outline-none focus:border-accent-emerald">
+            </div>
+            <button type="submit" class="btn-tactil w-full bg-accent-emerald hover:bg-emerald-400 text-slate-950 font-black py-2.5 rounded-xl transition shadow-md">
+              💾 Actualizar Datos de Pago Móvil
+            </button>
+          </form>
+        </div>
+
+        <!-- CAMBIO DE CLAVE ADMIN -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
           <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
             <i data-lucide="key" class="w-5 h-5 text-accent-cyan"></i>
-            <h3 class="text-sm font-black text-white">Cambiar Tu Contraseña de Admin</h3>
+            <div>
+              <h3 class="text-sm font-black text-white">Seguridad del Panel Admin</h3>
+              <p class="text-[10px] text-slate-400">Cambia la contraseña maestra de acceso</p>
+            </div>
           </div>
 
           <form onsubmit="actualizarClaveAdmin(event)" class="space-y-3 text-xs">
@@ -374,35 +485,10 @@
               <label class="block font-bold text-slate-300 mb-1">Nueva Contraseña:</label>
               <input type="password" id="cfg-nueva-clave" required placeholder="Ingresa la nueva clave..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-cyan">
             </div>
-            <button type="submit" class="w-full bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black py-2.5 rounded-xl transition shadow-md">
+            <button type="submit" class="btn-tactil w-full bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black py-2.5 rounded-xl transition shadow-md">
               Guardar Nueva Clave
             </button>
           </form>
-        </div>
-
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
-          <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
-            <i data-lucide="credit-card" class="w-5 h-5 text-accent-emerald"></i>
-            <h3 class="text-sm font-black text-white">Datos de Pago Móvil Oficial</h3>
-          </div>
-
-          <div class="space-y-3 text-xs">
-            <div>
-              <label class="block font-bold text-slate-300 mb-1">Banco Receptor:</label>
-              <input type="text" id="cfg-pm-banco" value="Banesco (0134)" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-emerald">
-            </div>
-            <div>
-              <label class="block font-bold text-slate-300 mb-1">Teléfono:</label>
-              <input type="text" id="cfg-pm-telefono" value="04262566854" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-emerald">
-            </div>
-            <div>
-              <label class="block font-bold text-slate-300 mb-1">Cédula / RIF:</label>
-              <input type="text" id="cfg-pm-cedula" value="V-28123456" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-emerald">
-            </div>
-            <button onclick="alert('Datos bancarios actualizados.')" class="w-full bg-accent-emerald hover:bg-emerald-400 text-slate-950 font-black py-2.5 rounded-xl transition shadow-md">
-              Actualizar Pago Móvil
-            </button>
-          </div>
         </div>
 
       </div>
@@ -410,7 +496,7 @@
 
   </div>
 
-  <!-- ================= MODAL: CAMBIAR PRECIO DE PRODUCTO FLASH ================= -->
+  <!-- ================= MODAL: CAMBIAR PRECIO DE PRODUCTO ================= -->
   <div id="modal-cambiar-precio" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border-2 border-indigo-500/40 w-full max-w-sm rounded-3xl p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
@@ -465,7 +551,7 @@
     </div>
   </div>
 
-  <!-- ================= MODAL: AGREGAR NUEVO PRODUCTO FLASH ================= -->
+  <!-- ================= MODAL: AGREGAR NUEVO PRODUCTO AL MENÚ PRINCIPAL ================= -->
   <div id="modal-nuevo-producto-flash" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border-2 border-indigo-500/40 w-full max-w-sm rounded-3xl p-5 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
@@ -474,8 +560,8 @@
             <i data-lucide="plus-circle" class="w-4 h-4"></i>
           </div>
           <div>
-            <h3 class="text-xs font-black text-white uppercase tracking-wider">Añadir Producto a Flash</h3>
-            <span class="text-[10px] text-accent-cyan font-bold">Se agregará a la app del cliente</span>
+            <h3 class="text-xs font-black text-white uppercase tracking-wider">Añadir Producto al Menú</h3>
+            <span class="text-[10px] text-accent-cyan font-bold">Disponible al instante para clientes</span>
           </div>
         </div>
         <button onclick="cerrarModalNuevoProductoFlash()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
@@ -486,14 +572,16 @@
       <form onsubmit="guardarNuevoProductoFlashFirebase(event)" class="space-y-3 text-xs">
         <div>
           <label class="block font-bold text-slate-300 mb-1">Nombre del Producto:</label>
-          <input type="text" id="nuevo-prod-nombre" required placeholder="Ej: Café Molido 500g, Harina..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-cyan font-bold">
+          <input type="text" id="nuevo-prod-nombre" required placeholder="Ej: Acetaminofén 500mg, Bombillo LED, Harina..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-cyan font-bold">
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Categoría:</label>
+            <label class="block font-bold text-slate-300 mb-1">Categoría del Menú:</label>
             <select id="nuevo-prod-categoria" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
               <option value="viveres">Víveres</option>
+              <option value="ferreteria">🔧 Ferretería</option>
+              <option value="medicina">💊 Farmacia / Medicina</option>
               <option value="bebidas">Bebidas</option>
               <option value="carnes">Carnes & Pollo</option>
               <option value="charcuteria">Charcutería</option>
@@ -503,25 +591,25 @@
             </select>
           </div>
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Precio en Dólares ($):</label>
+            <label class="block font-bold text-slate-300 mb-1">Precio ($):</label>
             <input type="number" step="0.01" min="0" id="nuevo-prod-precio" required placeholder="0.00" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-accent-yellow font-black focus:outline-none text-sm">
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Badge / Etiqueta:</label>
-            <input type="text" id="nuevo-prod-badge" placeholder="Ej: PROMO, TOP" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white focus:outline-none">
+            <label class="block font-bold text-slate-300 mb-1">Etiqueta / Badge:</label>
+            <input type="text" id="nuevo-prod-badge" placeholder="Ej: TOP, NUEVO, PROMO" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white focus:outline-none">
           </div>
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Subcategoría (opcional):</label>
-            <input type="text" id="nuevo-prod-sub" placeholder="Ej: harinas, lacteos..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white focus:outline-none">
+            <label class="block font-bold text-slate-300 mb-1">Subcategoría:</label>
+            <input type="text" id="nuevo-prod-sub" placeholder="Ej: herramientas, dolor, lacteos..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white focus:outline-none">
           </div>
         </div>
 
         <div>
           <label class="block font-bold text-slate-300 mb-1">Ruta o URL de Imagen (opcional):</label>
-          <input type="text" id="nuevo-prod-imagen" placeholder="Ej: img/v_harina_pan_blanca.png" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white focus:outline-none text-[11px]">
+          <input type="text" id="nuevo-prod-imagen" placeholder="Ej: img/bombillo.png o enlace web" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white focus:outline-none text-[11px]">
         </div>
 
         <div class="flex items-center gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
@@ -539,7 +627,7 @@
     </div>
   </div>
 
-  <!-- ================= MODAL: REGISTRAR O EDITAR TIENDA ================= -->
+  <!-- ================= MODAL: REGISTRAR O EDITAR TIENDA/COMERCIO ================= -->
   <div id="modal-registrar-tienda" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border-2 border-indigo-500/40 w-full max-w-md rounded-3xl p-5 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -548,7 +636,7 @@
             <i data-lucide="store" class="w-5 h-5"></i>
           </div>
           <div>
-            <h3 id="titulo-modal-tienda" class="text-sm font-black text-white">Registrar Local Comercial</h3>
+            <h3 id="titulo-modal-tienda" class="text-sm font-black text-white">Registrar Comercio / Negocio</h3>
             <span class="text-[10px] text-accent-yellow font-bold">Fija el porcentaje (%) que le cobras al negocio</span>
           </div>
         </div>
@@ -561,14 +649,14 @@
         <input type="hidden" id="tienda-edit-id" value="">
 
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Nombre del Local Comercial:</label>
-          <input type="text" id="tienda-nombre" required placeholder="Ej: Moravos Café, Burger King..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-yellow font-bold">
+          <label class="block font-bold text-slate-300 mb-1">Nombre del Comercio / Negocio:</label>
+          <input type="text" id="tienda-nombre" required placeholder="Ej: Farmacia San Rafael, Ferretería Nirgua, Moravos Café..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-yellow font-bold">
         </div>
 
         <div>
           <div class="flex justify-between items-center mb-1">
-            <label class="block font-bold text-accent-yellow">Porcentaje de Ganancia / Comisión (%):</label>
-            <span class="text-[10px] text-slate-400">Ejemplo: 8% a Moravos</span>
+            <label class="block font-bold text-accent-yellow">Porcentaje de Comisión Flash (%):</label>
+            <span class="text-[10px] text-slate-400">Ejemplo: 8% o 10%</span>
           </div>
           <div class="flex gap-2 items-center">
             <input type="number" step="0.5" min="0" max="100" id="tienda-comision" required placeholder="Ej: 8" class="w-28 bg-slate-950 border border-amber-500/60 rounded-xl p-2.5 text-accent-yellow font-black text-base focus:outline-none text-center">
@@ -585,11 +673,13 @@
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Categoría:</label>
+            <label class="block font-bold text-slate-300 mb-1">Categoría del Negocio:</label>
             <select id="tienda-categoria" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
               <option value="comida">Comida Rápida / Café</option>
+              <option value="farmacia">💊 Farmacia / Medicina</option>
+              <option value="ferreteria">🔧 Ferretería</option>
               <option value="panaderia">Panadería & Dulces</option>
-              <option value="varios">Otro Local</option>
+              <option value="varios">Otro Local / Comercio</option>
             </select>
           </div>
           <div>
@@ -599,19 +689,19 @@
         </div>
 
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Dirección del Local:</label>
-          <input type="text" id="tienda-direccion" placeholder="Ej: Nirgua centro" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
+          <label class="block font-bold text-slate-300 mb-1">Dirección del Local en Nirgua:</label>
+          <input type="text" id="tienda-direccion" placeholder="Ej: Calle Bolívar, frente a la plaza" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
         </div>
 
         <div>
           <label class="block font-bold text-slate-300 mb-1">Ruta o URL del Logo / Foto (Opcional):</label>
-          <input type="text" id="tienda-logo" placeholder="Ej: img/moravos.jpg o enlace web" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none text-[11px]">
+          <input type="text" id="tienda-logo" placeholder="Ej: img/farmacia.jpg o enlace web" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none text-[11px]">
         </div>
 
         <div class="flex gap-2 pt-2">
           <button type="button" onclick="cerrarModalRegistrarTienda()" class="flex-1 bg-slate-800 text-slate-300 font-bold py-3 rounded-xl text-xs">Cancelar</button>
           <button type="submit" class="flex-1 bg-gradient-to-r from-accent-yellow via-amber-500 to-orange-500 hover:brightness-110 text-slate-950 font-black py-3 rounded-xl text-xs shadow-lg glow-yellow">
-            💾 Guardar Local
+            💾 Guardar Negocio
           </button>
         </div>
       </form>
@@ -724,10 +814,10 @@
     let tiendasBD = {};
     let cuentasTiendasBD = {};
     let catalogoFlashBD = {};
+    let configuracionBD = {};
     let estadoFiltroActual = 'todos';
     let categoriaFiltroCatalogo = 'todos';
     let pedidoSeleccionadoId = null;
-    let tiendaActualSeleccionadaId = null;
 
     // Normalizador de teléfono
     function normalizarTelefono(tel) {
@@ -739,6 +829,7 @@
     }
 
     window.onload = () => {
+      lucide.createIcons();
       const sesionAdmin = sessionStorage.getItem('admin_pedidosflash_autenticado');
       if (sesionAdmin === 'true') {
         document.getElementById('modal-login-admin').classList.add('hidden');
@@ -774,25 +865,45 @@
     }
 
     function inicializarSuscripciones() {
-      // 1. Catálogo Propio
+      // 1. Configuración General (Pago Móvil y Tarifas)
+      db.ref('configuracion').on('value', (snap) => {
+        configuracionBD = snap.val() || {};
+        if (configuracionBD.pagoMovil) {
+          const pm = configuracionBD.pagoMovil;
+          if (document.getElementById('cfg-pm-banco')) document.getElementById('cfg-pm-banco').value = pm.banco || "Provincial (0108)";
+          if (document.getElementById('cfg-pm-telefono')) document.getElementById('cfg-pm-telefono').value = pm.telefono || "04144205169";
+          if (document.getElementById('cfg-pm-cedula')) document.getElementById('cfg-pm-cedula').value = pm.cedula || "V-31060250";
+        }
+        if (configuracionBD.tarifas) {
+          const tf = configuracionBD.tarifas;
+          if (document.getElementById('cfg-tarifa-delivery')) document.getElementById('cfg-tarifa-delivery').value = tf.delivery || 1.00;
+          if (document.getElementById('cfg-tarifa-moto-nirgua')) document.getElementById('cfg-tarifa-moto-nirgua').value = tf.motoNirgua || 1.00;
+          if (document.getElementById('cfg-tarifa-moto-fuera')) document.getElementById('cfg-tarifa-moto-fuera').value = tf.motoFuera || 4.50;
+          if (document.getElementById('cfg-tarifa-carro-nirgua')) document.getElementById('cfg-tarifa-carro-nirgua').value = tf.carroNirgua || 3.50;
+          if (document.getElementById('cfg-tarifa-carro-salon')) document.getElementById('cfg-tarifa-carro-salon').value = tf.carroSalon || 8.50;
+          if (document.getElementById('cfg-ganancia-chofer')) document.getElementById('cfg-ganancia-chofer').value = tf.gananciaChofer || 0.70;
+        }
+      });
+
+      // 2. Catálogo Flash Completo
       db.ref('catalogo_flash').on('value', (snapshot) => {
         catalogoFlashBD = snapshot.val() || {};
         renderizarCatalogoAdmin();
       });
 
-      // 2. Tiendas
+      // 3. Tiendas y Negocios
       db.ref('tiendas').on('value', (snapshot) => {
         tiendasBD = snapshot.val() || {};
         renderizarComerciosAdmin();
       });
 
-      // 3. Cuentas Tiendas
+      // 4. Cuentas Tiendas
       db.ref('cuentas_tiendas').on('value', (snapshot) => {
         cuentasTiendasBD = snapshot.val() || {};
         renderizarComerciosAdmin();
       });
 
-      // 4. Choferes
+      // 5. Choferes
       db.ref('choferes').on('value', (snapshot) => {
         choferesBD = snapshot.val() || {};
         renderizarChoferesAdmin();
@@ -800,7 +911,7 @@
         verificarPedidosPendientesYChoferes();
       });
 
-      // 5. Pedidos
+      // 6. Pedidos
       let pedidosPreviosIds = null;
       db.ref('pedidos').on('value', (snapshot) => {
         const nuevos = snapshot.val() || {};
@@ -821,11 +932,50 @@
         renderizarChoferesAdmin();
       });
 
-      // 6. Gastos
+      // 7. Gastos
       db.ref('gastos').on('value', (snapshot) => {
         gastosBD = snapshot.val() ? Object.values(snapshot.val()) : [];
         renderizarGastosAdmin();
         calcularMetricasAdmin();
+      });
+    }
+
+    // ================= CONFIGURACIÓN DE PAGO MÓVIL Y TARIFAS =================
+    function actualizarDatosPagoMovil(e) {
+      e.preventDefault();
+      const banco = document.getElementById('cfg-pm-banco').value.trim();
+      const telefono = document.getElementById('cfg-pm-telefono').value.trim();
+      const cedula = document.getElementById('cfg-pm-cedula').value.trim();
+
+      db.ref('configuracion/pagoMovil').set({
+        banco: banco || "Provincial (0108)",
+        telefono: telefono || "04144205169",
+        cedula: cedula || "V-31060250",
+        actualizadoEn: new Date().toISOString()
+      }).then(() => {
+        alert("✓ Datos de Pago Móvil actualizados en vivo para todos los clientes.");
+      });
+    }
+
+    function guardarTarifasTransporte(e) {
+      e.preventDefault();
+      const delivery = parseFloat(document.getElementById('cfg-tarifa-delivery').value) || 1.00;
+      const motoNirgua = parseFloat(document.getElementById('cfg-tarifa-moto-nirgua').value) || 1.00;
+      const motoFuera = parseFloat(document.getElementById('cfg-tarifa-moto-fuera').value) || 4.50;
+      const carroNirgua = parseFloat(document.getElementById('cfg-tarifa-carro-nirgua').value) || 3.50;
+      const carroSalon = parseFloat(document.getElementById('cfg-tarifa-carro-salon').value) || 8.50;
+      const gananciaChofer = parseFloat(document.getElementById('cfg-ganancia-chofer').value) || 0.70;
+
+      db.ref('configuracion/tarifas').set({
+        delivery,
+        motoNirgua,
+        motoFuera,
+        carroNirgua,
+        carroSalon,
+        gananciaChofer,
+        actualizadoEn: new Date().toISOString()
+      }).then(() => {
+        alert("✓ Tarifas guardadas. Sincronizadas en vivo con las apps de Cliente y Choferes.");
       });
     }
 
@@ -1049,7 +1199,6 @@
 
       Object.keys(choferesBD).forEach(tel => {
         const c = choferesBD[tel];
-        // Solo choferes autorizados para asignar carreras
         if (c.estado === 'autorizado') {
           const statusTxt = c.enLinea ? '🟢 EN LÍNEA' : '🔴 DESCONECTADO';
           select.innerHTML += `<option value="${tel}">${c.nombre} (${statusTxt})</option>`;
@@ -1372,7 +1521,7 @@
       }
     }
 
-    // ================= CATÁLOGO Y PRECIOS FLASH =================
+    // ================= CATÁLOGO Y PRECIOS =================
     function renderizarCatalogoAdmin() {
       const grid = document.getElementById('grid-catalogo-admin');
       if (!grid) return;
@@ -1415,7 +1564,7 @@
                 <span class="text-[9px] font-black bg-indigo-950 text-indigo-300 border border-indigo-800/40 px-2 py-0.5 rounded uppercase tracking-wider">
                   ${catBadge}
                 </span>
-                ${p.esGranel ? `<span class="text-[9px] font-bold text-accent-cyan bg-accent-cyan/10 px-1.5 py-0.5 rounded">Por Peso/Kg</span>` : ''}
+                ${p.esGranel ? `<span class="text-[9px] font-bold text-accent-cyan bg-accent-cyan/10 px-1.5 py-0.5 rounded">Por Peso</span>` : ''}
               </div>
 
               <div class="w-full h-24 rounded-xl overflow-hidden bg-slate-950 flex items-center justify-center mb-2.5 p-1 border border-slate-800/80">
@@ -1431,9 +1580,14 @@
                 <span class="text-base font-black text-accent-yellow">$${precio}</span>
               </div>
 
-              <button onclick="abrirModalCambiarPrecio('${id}')" class="btn-tactil w-full bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black py-2 rounded-xl text-xs flex items-center justify-center gap-1 shadow-md transition">
-                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Cambiar Precio
-              </button>
+              <div class="flex gap-1.5">
+                <button onclick="abrirModalCambiarPrecio('${id}')" class="btn-tactil flex-1 bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black py-2 rounded-xl text-xs flex items-center justify-center gap-1 shadow-md transition">
+                  <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Precio
+                </button>
+                <button onclick="eliminarProductoFlash('${id}')" title="Eliminar del catálogo" class="btn-tactil bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 p-2 rounded-xl text-xs">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
             </div>
           </div>
         `;
@@ -1496,7 +1650,6 @@
         actualizadoEn: new Date().toISOString()
       }).then(() => {
         cerrarModalCambiarPrecio();
-        alert(`¡Precio actualizado a $${nuevoPrecio.toFixed(2)} con éxito!`);
       });
     }
 
@@ -1544,12 +1697,14 @@
 
       db.ref(`catalogo_flash/${idUnico}`).set(nuevoProd).then(() => {
         cerrarModalNuevoProductoFlash();
-        alert(`¡"${nombre}" agregado con éxito!`);
+        alert(`¡"${nombre}" agregado con éxito al menú del cliente!`);
       });
     }
 
-    function sincronizarTodoElCatalogoBaseAFirebase() {
-      alert("Catálogo respaldado y sincronizado.");
+    function eliminarProductoFlash(id) {
+      if (confirm("¿Estás seguro de eliminar este producto del menú?")) {
+        db.ref(`catalogo_flash/${id}`).remove();
+      }
     }
 
     // ================= TIENDAS & COMERCIOS =================
@@ -1629,7 +1784,7 @@
 
             <div class="flex gap-2 pt-2 border-t border-slate-800">
               <button onclick="editarTiendaModal('${tid}')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 rounded-xl text-xs border border-slate-700">
-                Editar %
+                Editar Datos
               </button>
               <button onclick="eliminarTiendaModal('${tid}')" class="text-rose-400 hover:bg-rose-500/20 font-bold px-3 py-2 rounded-xl text-xs border border-rose-500/20">
                 Eliminar
@@ -1698,7 +1853,7 @@
         actualizadoEn: new Date().toISOString()
       }).then(() => {
         cerrarModalRegistrarTienda();
-        alert(`¡Local "${nombre}" guardado con ${comision}% de comisión!`);
+        alert(`¡Comercio "${nombre}" guardado con ${comision}% de comisión!`);
       });
     }
 
@@ -1788,7 +1943,7 @@
     }
 
     function cambiarPestana(pestana) {
-      ['choferes', 'pedidos', 'productos', 'comercios', 'gastos', 'ajustes'].forEach(p => {
+      ['productos', 'comercios', 'pedidos', 'choferes', 'tarifas', 'gastos', 'ajustes'].forEach(p => {
         const sec = document.getElementById(`sec-admin-${p}`);
         if (sec) sec.classList.add('hidden');
         const btn = document.getElementById(`tab-admin-${p}`);
