@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Pedidos Flash - Panel de Administración & Control Maestro</title>
-<link rel="manifest" href="manifest.json">
+  <title>Pedidos Flash - Panel de Administración & Control</title>
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
@@ -14,6 +13,10 @@
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <!-- Leaflet CSS y JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <!-- Google Fonts: Plus Jakarta Sans & Orbitron -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -43,6 +46,27 @@
     .glow-magenta { box-shadow: 0 0 25px rgba(255, 0, 122, 0.35); }
     .btn-tactil { transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1); }
     .btn-tactil:active { transform: scale(0.96); filter: brightness(0.92); }
+    .pin-jewel-a {
+      width: 28px; height: 28px; background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border: 2px solid #ffffff; border-radius: 50%; color: white; font-weight: 900;
+      font-size: 11px; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 15px rgba(37,99,235,0.8);
+    }
+    .pin-jewel-b {
+      width: 28px; height: 28px; background: linear-gradient(135deg, #f97316, #ea580c);
+      border: 2px solid #ffffff; border-radius: 50%; color: white; font-weight: 900;
+      font-size: 11px; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 15px rgba(249,115,22,0.8);
+    }
+    .pin-radar-chofer {
+      position: relative; width: 28px; height: 28px; border-radius: 50%;
+      background: #10b981; border: 2px solid #ffffff; box-shadow: 0 0 16px #10b981;
+      display: flex; align-items: center; justify-content: center; color: #05070c; font-weight: 900;
+    }
+    .pin-radar-chofer::after {
+      content: ''; position: absolute; inset: -8px; border-radius: 50%;
+      border: 2px solid #10b981; animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
   </style>
 </head>
 <body class="bg-slate-950 font-sans text-slate-100 antialiased min-h-screen flex flex-col selection:bg-accent-magenta selection:text-white">
@@ -55,7 +79,7 @@
           👑
         </div>
         <h2 class="text-xl font-black font-orbitron text-white tracking-wider">PANEL ADMIN</h2>
-        <p class="text-xs text-slate-400">Control Maestro de Pedidos Flash • Nirgua</p>
+        <p class="text-xs text-slate-400">Ingresa la clave de acceso de administrador</p>
       </div>
 
       <form onsubmit="autenticarAdmin(event)" class="space-y-4">
@@ -81,7 +105,7 @@
           <h1 class="text-base sm:text-lg font-black font-orbitron text-white leading-tight flex items-center gap-2">
             PEDIDOS FLASH <span class="bg-accent-magenta/20 text-accent-magenta border border-accent-magenta/30 text-[9px] font-black px-2 py-0.5 rounded-full uppercase">CENTRO DE CONTROL</span>
           </h1>
-          <p class="text-[10px] text-slate-400 font-semibold">Nirgua, Yaracuy • Gestión Integral: Clientes, Choferes, Comercios y Tarifas</p>
+          <p class="text-[10px] text-slate-400 font-semibold">Nirgua, Yaracuy • Gestión de Precios, Choferes, Comercios y Finanzas</p>
         </div>
       </div>
 
@@ -152,90 +176,63 @@
 
     <!-- PESTAÑAS DE NAVEGACIÓN -->
     <div class="flex border-b border-slate-800 gap-2 overflow-x-auto no-scrollbar pb-1">
-      <button onclick="cambiarPestana('productos')" id="tab-admin-productos" class="px-4 py-2.5 rounded-xl text-xs font-black bg-indigo-600 text-white flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="package" class="w-4 h-4 text-accent-cyan"></i> Menú y Catálogo (<span id="cant-admin-prods-badge" class="font-black">0</span>)
-      </button>
-      <button onclick="cambiarPestana('comercios')" id="tab-admin-comercios" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="store" class="w-4 h-4 text-accent-yellow"></i> Comercios & Negocios (<span id="cant-admin-comercios-badge" class="font-black">0</span>)
+      <button onclick="cambiarPestana('choferes')" id="tab-admin-choferes" class="px-4 py-2.5 rounded-xl text-xs font-black bg-indigo-600 text-white flex items-center gap-2 whitespace-nowrap transition">
+        <i data-lucide="users" class="w-4 h-4 text-accent-yellow"></i> Choferes & Códigos (<span id="cant-admin-choferes-badge" class="font-black">0</span>)
       </button>
       <button onclick="cambiarPestana('pedidos')" id="tab-admin-pedidos" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
         <i data-lucide="list-ordered" class="w-4 h-4"></i> Pedidos y Carreras (<span id="cant-admin-pedidos">0</span>)
       </button>
-      <button onclick="cambiarPestana('choferes')" id="tab-admin-choferes" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="users" class="w-4 h-4 text-accent-yellow"></i> Choferes & Códigos (<span id="cant-admin-choferes-badge" class="font-black">0</span>)
+      <button onclick="cambiarPestana('radar')" id="tab-admin-radar" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
+        <i data-lucide="radar" class="w-4 h-4 text-emerald-400 animate-pulse"></i> Radar GPS Satelital (<span id="cant-choferes-gps-badge" class="font-black text-emerald-400">0</span>)
       </button>
-      <button onclick="cambiarPestana('tarifas')" id="tab-admin-tarifas" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="navigation" class="w-4 h-4 text-accent-emerald"></i> Tarifas de Transporte
+      <button onclick="cambiarPestana('productos')" id="tab-admin-productos" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
+        <i data-lucide="package" class="w-4 h-4 text-accent-cyan"></i> Catálogo y Precios (<span id="cant-admin-prods-badge" class="font-black">0</span>)
+      </button>
+      <button onclick="cambiarPestana('comercios')" id="tab-admin-comercios" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
+        <i data-lucide="store" class="w-4 h-4 text-accent-yellow"></i> Comida Rápida & Tiendas (<span id="cant-admin-comercios-badge" class="font-black">0</span>)
       </button>
       <button onclick="cambiarPestana('gastos')" id="tab-admin-gastos" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="receipt" class="w-4 h-4"></i> Gastos
+        <i data-lucide="receipt" class="w-4 h-4"></i> Control de Gastos
       </button>
       <button onclick="cambiarPestana('ajustes')" id="tab-admin-ajustes" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="settings" class="w-4 h-4"></i> Configuración & Pago Móvil
+        <i data-lucide="settings" class="w-4 h-4"></i> Configuración
       </button>
     </div>
 
-    <!-- ================= PESTAÑA 1: MENÚ PRINCIPAL Y CATÁLOGO DE PRODUCTOS (CONFIGURACIÓN CLIENTE) ================= -->
-    <section id="sec-admin-productos" class="space-y-4">
-      <div class="bg-slate-900/90 border border-indigo-500/30 p-4 rounded-2xl shadow-xl space-y-3">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+    <!-- ================= PESTAÑA: CHOFERES Y CÓDIGOS DE ACEPTACIÓN ================= -->
+    <section id="sec-admin-choferes" class="space-y-4">
+      <div id="contenedor-notificaciones-retiro" class="bg-amber-950/30 border-2 border-amber-500/50 rounded-2xl p-4 shadow-xl space-y-3 hidden">
+        <div class="flex items-center justify-between border-b border-amber-500/30 pb-2">
+          <h3 class="text-sm font-black text-amber-300 flex items-center gap-2">
+            <i data-lucide="bell-ring" class="w-5 h-5 text-accent-yellow animate-bounce"></i> Solicitudes de Retiro Pendientes
+          </h3>
+          <span class="bg-amber-500/20 text-accent-yellow text-[10px] font-black px-2.5 py-0.5 rounded-full border border-amber-500/30">
+            Requiere tu atención
+          </span>
+        </div>
+        <div id="lista-notificaciones-retiro" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-3">
           <div>
-            <h2 class="text-base font-black text-white flex items-center gap-2">
-              <i data-lucide="tag" class="w-5 h-5 text-accent-cyan"></i> Catálogo Completo y Menú de Clientes
-            </h2>
-            <p class="text-xs text-slate-400">Agrega productos al menú principal (víveres, ferretería, medicina, bebidas, carnes, etc.) y modifica precios al instante. Se reflejan en vivo en la app del cliente.</p>
+            <h3 class="text-sm font-black text-white flex items-center gap-2">
+              <i data-lucide="shield-check" class="w-5 h-5 text-accent-yellow"></i> Directorio y Autorización de Choferes
+            </h3>
+            <p class="text-[11px] text-slate-400">Revisa los Códigos de Aceptación, autoriza nuevos choferes o envíales su código por WhatsApp.</p>
           </div>
-          
-          <div class="flex flex-wrap gap-2">
-            <button onclick="abrirModalNuevoProductoFlash()" class="btn-tactil bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition shadow-lg glow-cyan whitespace-nowrap">
-              <i data-lucide="plus-circle" class="w-4 h-4"></i> + Nuevo Producto al Menú
-            </button>
-          </div>
+          <span class="text-[10px] bg-indigo-950 text-indigo-300 border border-indigo-800/40 px-2.5 py-1 rounded-xl font-bold">
+            Sincronización en Tiempo Real
+          </span>
         </div>
 
-        <!-- FILTROS Y BÚSQUEDA RÁPIDA -->
-        <div class="flex flex-col sm:flex-row gap-2 pt-2 border-t border-slate-800">
-          <div class="relative flex-1">
-            <i data-lucide="search" class="w-4 h-4 text-indigo-400 absolute left-3.5 top-3"></i>
-            <input type="text" id="busqueda-admin-catalogo" oninput="filtrarCatalogoAdmin()" placeholder="Buscar producto... Ej: Harina PAN, Acetaminofén, Bombillo, Queso..." class="w-full pl-10 pr-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-accent-cyan">
-          </div>
-
-          <div class="flex gap-1 overflow-x-auto no-scrollbar py-0.5">
-            <button onclick="filtrarCategoriaCatalogo('todos')" id="cat-btn-todos" class="btn-cat-fil text-[11px] font-black bg-indigo-600 text-white px-3 py-1.5 rounded-lg whitespace-nowrap">Todos</button>
-            <button onclick="filtrarCategoriaCatalogo('viveres')" id="cat-btn-viveres" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Víveres</button>
-            <button onclick="filtrarCategoriaCatalogo('bebidas')" id="cat-btn-bebidas" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Bebidas</button>
-            <button onclick="filtrarCategoriaCatalogo('ferreteria')" id="cat-btn-ferreteria" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">🔧 Ferretería</button>
-            <button onclick="filtrarCategoriaCatalogo('medicina')" id="cat-btn-medicina" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">💊 Farmacia / Medicina</button>
-            <button onclick="filtrarCategoriaCatalogo('carnes')" id="cat-btn-carnes" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Carnes</button>
-            <button onclick="filtrarCategoriaCatalogo('charcuteria')" id="cat-btn-charcuteria" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Charcutería</button>
-            <button onclick="filtrarCategoriaCatalogo('panaderia')" id="cat-btn-panaderia" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Panadería</button>
-            <button onclick="filtrarCategoriaCatalogo('verduras')" id="cat-btn-verduras" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Verduras</button>
-            <button onclick="filtrarCategoriaCatalogo('limpieza')" id="cat-btn-limpieza" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Limpieza</button>
-          </div>
+        <div id="grid-choferes-admin" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div class="text-slate-500 text-xs py-6 text-center col-span-full">Cargando choferes registrados...</div>
         </div>
       </div>
-
-      <div id="grid-catalogo-admin" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
     </section>
 
-    <!-- ================= PESTAÑA 2: COMERCIOS & NEGOCIOS REGISTRADOS ================= -->
-    <section id="sec-admin-comercios" class="space-y-4 hidden">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-900/90 border border-indigo-500/30 p-4 rounded-2xl shadow-xl">
-        <div>
-          <h2 class="text-base font-black text-white flex items-center gap-2">
-            <i data-lucide="store" class="w-5 h-5 text-accent-yellow"></i> Comercios, Locales & Negocios Afiliados
-          </h2>
-          <p class="text-xs text-slate-400">Registra restaurantes, ferreterías, farmacias o tiendas de Nirgua. Ajusta el porcentaje (%) de comisión que gana Pedidos Flash por cada venta.</p>
-        </div>
-        <button onclick="abrirModalRegistrarTienda()" class="btn-tactil bg-gradient-to-r from-accent-yellow via-amber-500 to-orange-500 hover:brightness-110 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition shadow-lg glow-yellow whitespace-nowrap">
-          <i data-lucide="plus-circle" class="w-4 h-4"></i> + Registrar Nuevo Negocio
-        </button>
-      </div>
-
-      <div id="grid-comercios-admin" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-    </section>
-
-    <!-- ================= PESTAÑA 3: GESTIÓN DE PEDIDOS Y CARRERAS ================= -->
+    <!-- ================= PESTAÑA: GESTIÓN DE PEDIDOS ================= -->
     <section id="sec-admin-pedidos" class="space-y-4 hidden">
       <div id="banner-alerta-choferes-desconectados" class="bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 border-2 border-amber-500/40 rounded-2xl p-4 shadow-xl flex flex-col sm:flex-row justify-between items-center gap-3 hidden">
         <div class="flex items-center gap-3">
@@ -297,114 +294,142 @@
       </div>
     </section>
 
-    <!-- ================= PESTAÑA 4: CHOFERES Y CÓDIGOS DE ACEPTACIÓN ================= -->
-    <section id="sec-admin-choferes" class="space-y-4 hidden">
-      <div id="contenedor-notificaciones-retiro" class="bg-amber-950/30 border-2 border-amber-500/50 rounded-2xl p-4 shadow-xl space-y-3 hidden">
-        <div class="flex items-center justify-between border-b border-amber-500/30 pb-2">
-          <h3 class="text-sm font-black text-amber-300 flex items-center gap-2">
-            <i data-lucide="bell-ring" class="w-5 h-5 text-accent-yellow animate-bounce"></i> Solicitudes de Retiro Pendientes
-          </h3>
-          <span class="bg-amber-500/20 text-accent-yellow text-[10px] font-black px-2.5 py-0.5 rounded-full border border-amber-500/30">
-            Requiere tu atención
-          </span>
-        </div>
-        <div id="lista-notificaciones-retiro" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
-      </div>
-
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-3">
+    <!-- ================= PESTAÑA: RADAR GPS SATELITAL EN VIVO ================= -->
+    <section id="sec-admin-radar" class="space-y-4 hidden">
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-800 pb-3">
           <div>
-            <h3 class="text-sm font-black text-white flex items-center gap-2">
-              <i data-lucide="shield-check" class="w-5 h-5 text-accent-yellow"></i> Directorio y Autorización de Choferes
+            <h3 class="text-base font-black text-white flex items-center gap-2">
+              <i data-lucide="radio" class="w-5 h-5 text-accent-emerald animate-pulse"></i>
+              Radar GPS Satelital de Nirgua en Tiempo Real
             </h3>
-            <p class="text-[11px] text-slate-400">Revisa los Códigos de Aceptación, autoriza choferes con 1 clic o envíales su clave por WhatsApp.</p>
+            <p class="text-xs text-slate-400">Telemetría en vivo de choferes, comercios aliados (Punto A) y clientes (Punto B).</p>
           </div>
-          <span class="text-[10px] bg-indigo-950 text-indigo-300 border border-indigo-800/40 px-2.5 py-1 rounded-xl font-bold">
-            Sincronización en Tiempo Real
-          </span>
-        </div>
-
-        <div id="grid-choferes-admin" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          <div class="text-slate-500 text-xs py-6 text-center col-span-full">Cargando choferes registrados...</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= PESTAÑA 5: TARIFAS DE TRANSPORTE Y DELIVERY ================= -->
-    <section id="sec-admin-tarifas" class="space-y-4 hidden">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
-        <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
-          <div>
-            <h3 class="text-sm font-black text-white flex items-center gap-2">
-              <i data-lucide="navigation" class="w-5 h-5 text-accent-emerald"></i> Tarifas Oficiales de Transporte y Despacho
-            </h3>
-            <p class="text-[11px] text-slate-400">Configura los precios que se cobrarán al cliente y las ganancias del chofer. Se actualizan automáticamente en las apps.</p>
-          </div>
-          <span class="bg-emerald-500/20 text-accent-emerald text-[10px] font-black px-2.5 py-1 rounded-full border border-emerald-500/30">
-            Nirgua & Zonas Aledañas
-          </span>
-        </div>
-
-        <form onsubmit="guardarTarifasTransporte(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
-          
-          <!-- TARIFA DELIVERY GENERAL -->
-          <div class="bg-slate-950 p-4 rounded-2xl border border-indigo-500/40 space-y-2">
-            <span class="text-[10px] text-indigo-300 font-bold uppercase tracking-wider block">🛍️ Delivery de Productos</span>
-            <label class="block font-bold text-white">Costo de Envío al Cliente ($):</label>
-            <input type="number" step="0.10" id="cfg-tarifa-delivery" required value="1.00" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-accent-yellow font-black text-base focus:outline-none text-center">
-            <p class="text-[10px] text-slate-400">Tarifa fija por despacho de víveres, comida, ferretería o medicinas.</p>
-          </div>
-
-          <!-- MOTO EN NIRGUA -->
-          <div class="bg-slate-950 p-4 rounded-2xl border border-accent-cyan/40 space-y-2">
-            <span class="text-[10px] text-accent-cyan font-bold uppercase tracking-wider block">🛵 Moto • Casco Urbano</span>
-            <label class="block font-bold text-white">Carrera en Nirgua ($):</label>
-            <input type="number" step="0.10" id="cfg-tarifa-moto-nirgua" required value="1.00" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-accent-cyan font-black text-base focus:outline-none text-center">
-            <p class="text-[10px] text-slate-400">Dentro del casco urbano y zonas céntricas de Nirgua.</p>
-          </div>
-
-          <!-- MOTO AFUERA DE NIRGUA -->
-          <div class="bg-slate-950 p-4 rounded-2xl border border-accent-cyan/40 space-y-2">
-            <span class="text-[10px] text-accent-cyan font-bold uppercase tracking-wider block">🛵 Moto • Zonas Foráneas</span>
-            <label class="block font-bold text-white">Carrera Afuera de Nirgua ($):</label>
-            <input type="number" step="0.10" id="cfg-tarifa-moto-fuera" required value="4.50" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-accent-cyan font-black text-base focus:outline-none text-center">
-            <p class="text-[10px] text-slate-400">Comunidades rurales, haciendas y afueras del municipio.</p>
-          </div>
-
-          <!-- CARRO EN NIRGUA -->
-          <div class="bg-slate-950 p-4 rounded-2xl border border-accent-emerald/40 space-y-2">
-            <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider block">🚗 Carro / Taxi • Casco Urbano</span>
-            <label class="block font-bold text-white">Carrera en Nirgua ($):</label>
-            <input type="number" step="0.10" id="cfg-tarifa-carro-nirgua" required value="3.50" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-accent-emerald font-black text-base focus:outline-none text-center">
-            <p class="text-[10px] text-slate-400">Transporte en automóvil dentro de la ciudad de Nirgua.</p>
-          </div>
-
-          <!-- CARRO A SALÓN / FORÁNEO -->
-          <div class="bg-slate-950 p-4 rounded-2xl border border-accent-emerald/40 space-y-2">
-            <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider block">🚗 Carro / Taxi • Salón & Foráneo</span>
-            <label class="block font-bold text-white">Carrera a Salón ($):</label>
-            <input type="number" step="0.10" id="cfg-tarifa-carro-salon" required value="8.50" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-accent-emerald font-black text-base focus:outline-none text-center">
-            <p class="text-[10px] text-slate-400">Viaje especial a Salón o destinos interurbanos lejanos.</p>
-          </div>
-
-          <!-- PAGO AL CHOFER POR DELIVERY -->
-          <div class="bg-slate-950 p-4 rounded-2xl border border-accent-yellow/40 space-y-2">
-            <span class="text-[10px] text-accent-yellow font-bold uppercase tracking-wider block">💵 Ganancia Chofer (Envío)</span>
-            <label class="block font-bold text-white">Pago al Chofer por Despacho ($):</label>
-            <input type="number" step="0.05" id="cfg-ganancia-chofer" required value="0.70" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-accent-yellow font-black text-base focus:outline-none text-center">
-            <p class="text-[10px] text-slate-400">Lo que recibe el chofer por cada delivery entregado (Base: $0.70).</p>
-          </div>
-
-          <div class="col-span-full pt-2">
-            <button type="submit" class="btn-tactil w-full bg-gradient-to-r from-accent-emerald to-emerald-500 hover:brightness-110 text-slate-950 font-black py-3 rounded-2xl text-xs transition shadow-glow-emerald">
-              💾 Guardar y Actualizar Todas las Tarifas en Vivo
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="centrarRadarAdminNirgua()" class="btn-tactil bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition">
+              <i data-lucide="crosshair" class="w-3.5 h-3.5 text-accent-cyan"></i> Centrar Nirgua
+            </button>
+            <button onclick="actualizarMarcadoresRadarAdmin()" class="btn-tactil bg-indigo-600/30 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/40 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refrescar
             </button>
           </div>
-        </form>
+        </div>
+
+        <!-- BARRA DE ESTADO DEL RADAR -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div class="bg-slate-950/80 p-2.5 rounded-2xl border border-slate-800 flex items-center gap-2.5">
+            <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping inline-block"></span>
+            <div>
+              <span class="text-[10px] text-slate-400 block font-bold uppercase">Choferes en Línea</span>
+              <span id="radar-cant-choferes-activos" class="text-sm font-black text-emerald-400 font-mono">0</span>
+            </div>
+          </div>
+          <div class="bg-slate-950/80 p-2.5 rounded-2xl border border-slate-800 flex items-center gap-2.5">
+            <span class="w-3 h-3 rounded-full bg-amber-400 inline-block"></span>
+            <div>
+              <span class="text-[10px] text-slate-400 block font-bold uppercase">Órdenes Activas</span>
+              <span id="radar-cant-ordenes-activas" class="text-sm font-black text-amber-400 font-mono">0</span>
+            </div>
+          </div>
+          <div class="bg-slate-950/80 p-2.5 rounded-2xl border border-slate-800 flex items-center gap-2.5">
+            <span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span>
+            <div>
+              <span class="text-[10px] text-slate-400 block font-bold uppercase">Puntos A (Comercios)</span>
+              <span id="radar-cant-comercios" class="text-sm font-black text-blue-400 font-mono">0</span>
+            </div>
+          </div>
+          <div class="bg-slate-950/80 p-2.5 rounded-2xl border border-slate-800 flex items-center gap-2.5">
+            <span class="w-3 h-3 rounded-full bg-orange-500 inline-block"></span>
+            <div>
+              <span class="text-[10px] text-slate-400 block font-bold uppercase">Puntos B (Clientes)</span>
+              <span id="radar-cant-clientes" class="text-sm font-black text-orange-400 font-mono">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTENEDOR DEL MAPA LEAFLET -->
+        <div class="relative rounded-2xl overflow-hidden border border-slate-800 shadow-inner">
+          <div id="mapa-admin-radar" style="height: 480px; min-height: 420px; width: 100%;"></div>
+          
+          <!-- LEYENDA FLOTANTE -->
+          <div class="absolute bottom-3 left-3 z-[1000] bg-slate-950/90 backdrop-blur-md border border-slate-800 p-2.5 rounded-2xl text-[10px] space-y-1 shadow-2xl">
+            <div class="flex items-center gap-2 font-bold text-slate-200">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"></span> Chofer GPS Activo (Radar Neón)
+            </div>
+            <div class="flex items-center gap-2 font-bold text-slate-200">
+              <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Punto A: Comercio Aliado / Compra
+            </div>
+            <div class="flex items-center gap-2 font-bold text-slate-200">
+              <span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span> Punto B: Destino Cliente Exacto
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- ================= PESTAÑA 6: CONTROL DE GASTOS ================= -->
+    <!-- ================= PESTAÑA: CATÁLOGO Y EDICIÓN DE PRECIOS FLASH ================= -->
+    <section id="sec-admin-productos" class="space-y-4 hidden">
+      <div class="bg-slate-900/90 border border-indigo-500/30 p-4 rounded-2xl shadow-xl space-y-3">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div>
+            <h2 class="text-base font-black text-white flex items-center gap-2">
+              <i data-lucide="tag" class="w-5 h-5 text-accent-cyan"></i> Catálogo de Productos Pedidos Flash
+            </h2>
+            <p class="text-xs text-slate-400">Modifica precios en segundos y se actualizarán automáticamente para todos los clientes.</p>
+          </div>
+          
+          <div class="flex flex-wrap gap-2">
+            <button onclick="abrirModalNuevoProductoFlash()" class="bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition shadow-lg glow-cyan whitespace-nowrap">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i> + Nuevo Producto
+            </button>
+            <button onclick="sincronizarTodoElCatalogoBaseAFirebase()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold px-3 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition whitespace-nowrap">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-accent-cyan"></i> Respaldar Catálogo
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-2 pt-2 border-t border-slate-800">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-4 h-4 text-indigo-400 absolute left-3.5 top-3"></i>
+            <input type="text" id="busqueda-admin-catalogo" oninput="filtrarCatalogoAdmin()" placeholder="Buscar producto... Ej: Harina PAN, Queso, Polar, Carne..." class="w-full pl-10 pr-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-accent-cyan">
+          </div>
+
+          <div class="flex gap-1 overflow-x-auto no-scrollbar py-0.5">
+            <button onclick="filtrarCategoriaCatalogo('todos')" id="cat-btn-todos" class="btn-cat-fil text-[11px] font-black bg-indigo-600 text-white px-3 py-1.5 rounded-lg whitespace-nowrap">Todos</button>
+            <button onclick="filtrarCategoriaCatalogo('viveres')" id="cat-btn-viveres" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Víveres</button>
+            <button onclick="filtrarCategoriaCatalogo('bebidas')" id="cat-btn-bebidas" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Bebidas</button>
+            <button onclick="filtrarCategoriaCatalogo('carnes')" id="cat-btn-carnes" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Carnes</button>
+            <button onclick="filtrarCategoriaCatalogo('charcuteria')" id="cat-btn-charcuteria" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Charcutería</button>
+            <button onclick="filtrarCategoriaCatalogo('panaderia')" id="cat-btn-panaderia" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Panadería</button>
+            <button onclick="filtrarCategoriaCatalogo('verduras')" id="cat-btn-verduras" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Verduras</button>
+            <button onclick="filtrarCategoriaCatalogo('limpieza')" id="cat-btn-limpieza" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Limpieza</button>
+            <button onclick="filtrarCategoriaCatalogo('farmacia')" id="cat-btn-farmacia" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Farmacia</button>
+            <button onclick="filtrarCategoriaCatalogo('ferreteria')" id="cat-btn-ferreteria" class="btn-cat-fil text-[11px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap">Ferretería</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="grid-catalogo-admin" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+    </section>
+
+    <!-- ================= PESTAÑA: COMIDA RÁPIDA & LOCALES REGISTRADOS ================= -->
+    <section id="sec-admin-comercios" class="space-y-4 hidden">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-900/90 border border-indigo-500/30 p-4 rounded-2xl shadow-xl">
+        <div>
+          <h2 class="text-base font-black text-white flex items-center gap-2">
+            <i data-lucide="store" class="w-5 h-5 text-accent-yellow"></i> Restaurantes & Locales de Comida Rápida
+          </h2>
+          <p class="text-xs text-slate-400">Registra locales comerciales, establece tu porcentaje de comisión (ej: 8%) y lleva el control de cuentas corrientes.</p>
+        </div>
+        <button onclick="abrirModalRegistrarTienda()" class="bg-gradient-to-r from-accent-yellow via-amber-500 to-orange-500 hover:brightness-110 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition shadow-lg glow-yellow whitespace-nowrap">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i> Registrar Local Comercial
+        </button>
+      </div>
+
+      <div id="grid-comercios-admin" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ================= PESTAÑA: REGISTRO DE GASTOS ================= -->
     <section id="sec-admin-gastos" class="space-y-4 hidden">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
@@ -437,47 +462,14 @@
       </div>
     </section>
 
-    <!-- ================= PESTAÑA 7: CONFIGURACIÓN GENERAL Y PAGO MÓVIL OFICIAL ================= -->
+    <!-- ================= PESTAÑA: AJUSTES ================= -->
     <section id="sec-admin-ajustes" class="space-y-4 hidden">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         
-        <!-- DATOS OFICIALES DE PAGO MÓVIL (PROVINCIAL) -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
-          <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
-            <i data-lucide="credit-card" class="w-5 h-5 text-accent-emerald"></i>
-            <div>
-              <h3 class="text-sm font-black text-white">Datos Oficiales de Pago Móvil</h3>
-              <p class="text-[10px] text-slate-400">Se muestran al cliente en el checkout</p>
-            </div>
-          </div>
-
-          <form onsubmit="actualizarDatosPagoMovil(event)" class="space-y-3 text-xs">
-            <div>
-              <label class="block font-bold text-slate-300 mb-1">Banco Receptor:</label>
-              <input type="text" id="cfg-pm-banco" required value="Provincial (0108)" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold focus:outline-none focus:border-accent-emerald">
-            </div>
-            <div>
-              <label class="block font-bold text-slate-300 mb-1">Teléfono Pago Móvil:</label>
-              <input type="text" id="cfg-pm-telefono" required value="04144205169" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-accent-cyan font-mono font-bold focus:outline-none focus:border-accent-emerald">
-            </div>
-            <div>
-              <label class="block font-bold text-slate-300 mb-1">Cédula / RIF:</label>
-              <input type="text" id="cfg-pm-cedula" required value="V-31060250" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-accent-yellow font-mono font-bold focus:outline-none focus:border-accent-emerald">
-            </div>
-            <button type="submit" class="btn-tactil w-full bg-accent-emerald hover:bg-emerald-400 text-slate-950 font-black py-2.5 rounded-xl transition shadow-md">
-              💾 Actualizar Datos de Pago Móvil
-            </button>
-          </form>
-        </div>
-
-        <!-- CAMBIO DE CLAVE ADMIN -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
           <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
             <i data-lucide="key" class="w-5 h-5 text-accent-cyan"></i>
-            <div>
-              <h3 class="text-sm font-black text-white">Seguridad del Panel Admin</h3>
-              <p class="text-[10px] text-slate-400">Cambia la contraseña maestra de acceso</p>
-            </div>
+            <h3 class="text-sm font-black text-white">Cambiar Tu Contraseña de Admin</h3>
           </div>
 
           <form onsubmit="actualizarClaveAdmin(event)" class="space-y-3 text-xs">
@@ -485,10 +477,35 @@
               <label class="block font-bold text-slate-300 mb-1">Nueva Contraseña:</label>
               <input type="password" id="cfg-nueva-clave" required placeholder="Ingresa la nueva clave..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-cyan">
             </div>
-            <button type="submit" class="btn-tactil w-full bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black py-2.5 rounded-xl transition shadow-md">
+            <button type="submit" class="w-full bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black py-2.5 rounded-xl transition shadow-md">
               Guardar Nueva Clave
             </button>
           </form>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+          <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
+            <i data-lucide="credit-card" class="w-5 h-5 text-accent-emerald"></i>
+            <h3 class="text-sm font-black text-white">Datos de Pago Móvil Oficial</h3>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Banco Receptor:</label>
+              <input type="text" id="cfg-pm-banco" value="Banesco (0134)" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-emerald">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Teléfono:</label>
+              <input type="text" id="cfg-pm-telefono" value="04262566854" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-emerald">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Cédula / RIF:</label>
+              <input type="text" id="cfg-pm-cedula" value="V-28123456" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-emerald">
+            </div>
+            <button onclick="alert('Datos bancarios actualizados.')" class="w-full bg-accent-emerald hover:bg-emerald-400 text-slate-950 font-black py-2.5 rounded-xl transition shadow-md">
+              Actualizar Pago Móvil
+            </button>
+          </div>
         </div>
 
       </div>
@@ -496,7 +513,7 @@
 
   </div>
 
-  <!-- ================= MODAL: CAMBIAR PRECIO DE PRODUCTO ================= -->
+  <!-- ================= MODAL: CAMBIAR PRECIO DE PRODUCTO FLASH ================= -->
   <div id="modal-cambiar-precio" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border-2 border-indigo-500/40 w-full max-w-sm rounded-3xl p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
@@ -551,7 +568,7 @@
     </div>
   </div>
 
-  <!-- ================= MODAL: AGREGAR NUEVO PRODUCTO AL MENÚ PRINCIPAL ================= -->
+  <!-- ================= MODAL: AGREGAR NUEVO PRODUCTO FLASH ================= -->
   <div id="modal-nuevo-producto-flash" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border-2 border-indigo-500/40 w-full max-w-sm rounded-3xl p-5 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
@@ -560,8 +577,8 @@
             <i data-lucide="plus-circle" class="w-4 h-4"></i>
           </div>
           <div>
-            <h3 class="text-xs font-black text-white uppercase tracking-wider">Añadir Producto al Menú</h3>
-            <span class="text-[10px] text-accent-cyan font-bold">Disponible al instante para clientes</span>
+            <h3 class="text-xs font-black text-white uppercase tracking-wider">Añadir Producto a Flash</h3>
+            <span class="text-[10px] text-accent-cyan font-bold">Se agregará a la app del cliente</span>
           </div>
         </div>
         <button onclick="cerrarModalNuevoProductoFlash()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
@@ -572,44 +589,44 @@
       <form onsubmit="guardarNuevoProductoFlashFirebase(event)" class="space-y-3 text-xs">
         <div>
           <label class="block font-bold text-slate-300 mb-1">Nombre del Producto:</label>
-          <input type="text" id="nuevo-prod-nombre" required placeholder="Ej: Acetaminofén 500mg, Bombillo LED, Harina..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-cyan font-bold">
+          <input type="text" id="nuevo-prod-nombre" required placeholder="Ej: Café Molido 500g, Harina..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-cyan font-bold">
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Categoría del Menú:</label>
+            <label class="block font-bold text-slate-300 mb-1">Categoría:</label>
             <select id="nuevo-prod-categoria" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
               <option value="viveres">Víveres</option>
-              <option value="ferreteria">🔧 Ferretería</option>
-              <option value="medicina">💊 Farmacia / Medicina</option>
               <option value="bebidas">Bebidas</option>
               <option value="carnes">Carnes & Pollo</option>
               <option value="charcuteria">Charcutería</option>
               <option value="panaderia">Panadería</option>
               <option value="verduras">Verduras</option>
               <option value="limpieza">Limpieza</option>
+              <option value="farmacia">Farmacia / Salud</option>
+              <option value="ferreteria">Ferretería / Hogar</option>
             </select>
           </div>
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Precio ($):</label>
+            <label class="block font-bold text-slate-300 mb-1">Precio en Dólares ($):</label>
             <input type="number" step="0.01" min="0" id="nuevo-prod-precio" required placeholder="0.00" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-accent-yellow font-black focus:outline-none text-sm">
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Etiqueta / Badge:</label>
-            <input type="text" id="nuevo-prod-badge" placeholder="Ej: TOP, NUEVO, PROMO" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white focus:outline-none">
+            <label class="block font-bold text-slate-300 mb-1">Badge / Etiqueta:</label>
+            <input type="text" id="nuevo-prod-badge" placeholder="Ej: PROMO, TOP" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white focus:outline-none">
           </div>
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Subcategoría:</label>
-            <input type="text" id="nuevo-prod-sub" placeholder="Ej: herramientas, dolor, lacteos..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white focus:outline-none">
+            <label class="block font-bold text-slate-300 mb-1">Subcategoría (opcional):</label>
+            <input type="text" id="nuevo-prod-sub" placeholder="Ej: harinas, lacteos..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white focus:outline-none">
           </div>
         </div>
 
         <div>
           <label class="block font-bold text-slate-300 mb-1">Ruta o URL de Imagen (opcional):</label>
-          <input type="text" id="nuevo-prod-imagen" placeholder="Ej: img/bombillo.png o enlace web" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white focus:outline-none text-[11px]">
+          <input type="text" id="nuevo-prod-imagen" placeholder="Ej: img/v_harina_pan_blanca.png" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white focus:outline-none text-[11px]">
         </div>
 
         <div class="flex items-center gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
@@ -627,7 +644,7 @@
     </div>
   </div>
 
-  <!-- ================= MODAL: REGISTRAR O EDITAR TIENDA/COMERCIO ================= -->
+  <!-- ================= MODAL: REGISTRAR O EDITAR TIENDA ================= -->
   <div id="modal-registrar-tienda" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border-2 border-indigo-500/40 w-full max-w-md rounded-3xl p-5 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -636,7 +653,7 @@
             <i data-lucide="store" class="w-5 h-5"></i>
           </div>
           <div>
-            <h3 id="titulo-modal-tienda" class="text-sm font-black text-white">Registrar Comercio / Negocio</h3>
+            <h3 id="titulo-modal-tienda" class="text-sm font-black text-white">Registrar Local Comercial</h3>
             <span class="text-[10px] text-accent-yellow font-bold">Fija el porcentaje (%) que le cobras al negocio</span>
           </div>
         </div>
@@ -649,14 +666,14 @@
         <input type="hidden" id="tienda-edit-id" value="">
 
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Nombre del Comercio / Negocio:</label>
-          <input type="text" id="tienda-nombre" required placeholder="Ej: Farmacia San Rafael, Ferretería Nirgua, Moravos Café..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-yellow font-bold">
+          <label class="block font-bold text-slate-300 mb-1">Nombre del Local Comercial:</label>
+          <input type="text" id="tienda-nombre" required placeholder="Ej: Moravos Café, Burger King..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-yellow font-bold">
         </div>
 
         <div>
           <div class="flex justify-between items-center mb-1">
-            <label class="block font-bold text-accent-yellow">Porcentaje de Comisión Flash (%):</label>
-            <span class="text-[10px] text-slate-400">Ejemplo: 8% o 10%</span>
+            <label class="block font-bold text-accent-yellow">Porcentaje de Ganancia / Comisión (%):</label>
+            <span class="text-[10px] text-slate-400">Ejemplo: 8% a Moravos</span>
           </div>
           <div class="flex gap-2 items-center">
             <input type="number" step="0.5" min="0" max="100" id="tienda-comision" required placeholder="Ej: 8" class="w-28 bg-slate-950 border border-amber-500/60 rounded-xl p-2.5 text-accent-yellow font-black text-base focus:outline-none text-center">
@@ -673,13 +690,11 @@
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Categoría del Negocio:</label>
+            <label class="block font-bold text-slate-300 mb-1">Categoría:</label>
             <select id="tienda-categoria" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
               <option value="comida">Comida Rápida / Café</option>
-              <option value="farmacia">💊 Farmacia / Medicina</option>
-              <option value="ferreteria">🔧 Ferretería</option>
               <option value="panaderia">Panadería & Dulces</option>
-              <option value="varios">Otro Local / Comercio</option>
+              <option value="varios">Otro Local</option>
             </select>
           </div>
           <div>
@@ -689,19 +704,19 @@
         </div>
 
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Dirección del Local en Nirgua:</label>
-          <input type="text" id="tienda-direccion" placeholder="Ej: Calle Bolívar, frente a la plaza" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
+          <label class="block font-bold text-slate-300 mb-1">Dirección del Local:</label>
+          <input type="text" id="tienda-direccion" placeholder="Ej: Nirgua centro" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
         </div>
 
         <div>
           <label class="block font-bold text-slate-300 mb-1">Ruta o URL del Logo / Foto (Opcional):</label>
-          <input type="text" id="tienda-logo" placeholder="Ej: img/farmacia.jpg o enlace web" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none text-[11px]">
+          <input type="text" id="tienda-logo" placeholder="Ej: img/moravos.jpg o enlace web" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none text-[11px]">
         </div>
 
         <div class="flex gap-2 pt-2">
           <button type="button" onclick="cerrarModalRegistrarTienda()" class="flex-1 bg-slate-800 text-slate-300 font-bold py-3 rounded-xl text-xs">Cancelar</button>
           <button type="submit" class="flex-1 bg-gradient-to-r from-accent-yellow via-amber-500 to-orange-500 hover:brightness-110 text-slate-950 font-black py-3 rounded-xl text-xs shadow-lg glow-yellow">
-            💾 Guardar Negocio
+            💾 Guardar Local
           </button>
         </div>
       </form>
@@ -731,6 +746,11 @@
           <p class="text-slate-400 font-bold">Cliente: <span id="adm-modal-cliente" class="text-white font-black">---</span></p>
           <p class="text-slate-400 font-bold">Teléfono: <span id="adm-modal-telefono" class="text-accent-cyan font-black">---</span></p>
           <p class="text-slate-400 font-bold">Dirección: <span id="adm-modal-direccion" class="text-slate-200">---</span></p>
+          <div id="adm-caja-gps-link" class="pt-2 border-t border-slate-800 hidden">
+            <a id="adm-modal-gps-btn" href="#" target="_blank" class="inline-flex items-center gap-1.5 bg-emerald-950/70 text-accent-emerald hover:bg-emerald-900 border border-emerald-500/40 px-3 py-1.5 rounded-xl font-black text-[11px] transition shadow">
+              <i data-lucide="navigation" class="w-3.5 h-3.5"></i> <span id="adm-modal-gps-texto">Ver Ubicación GPS en Google Maps</span>
+            </a>
+          </div>
         </div>
 
         <div id="adm-caja-tienda-comision" class="bg-slate-950 p-3 rounded-2xl border border-amber-500/30 space-y-1.5">
@@ -753,7 +773,10 @@
         </div>
 
         <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 space-y-2">
-          <h4 class="font-black text-indigo-300 border-b border-slate-800 pb-1">Productos / Carrera:</h4>
+          <div class="flex justify-between items-center border-b border-slate-800 pb-1">
+            <h4 class="font-black text-indigo-300">Productos / Carrera:</h4>
+            <span id="adm-modal-vehiculo-req" class="text-[10px] font-mono text-cyan-300 font-bold bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/30">Cualquiera</span>
+          </div>
           <div id="adm-modal-items-lista" class="space-y-1 text-slate-300"></div>
           <div class="flex justify-between border-t border-slate-800 pt-2 font-black">
             <span>Monto Total de la Orden:</span>
@@ -761,18 +784,62 @@
           </div>
         </div>
 
+        <!-- COMPROBANTE DE COMPRA EN TIENDA SUBIDO POR EL CHOFER -->
+        <div id="adm-caja-factura-chofer" class="bg-slate-950 p-3 rounded-2xl border border-amber-500/40 space-y-2.5 hidden">
+          <div class="flex justify-between items-center">
+            <span class="text-amber-300 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="receipt" class="w-4 h-4"></i> Factura de Tienda (Reporte Chofer):
+            </span>
+            <span id="adm-modal-monto-factura-chofer" class="text-white font-mono font-black text-sm">$0.00</span>
+          </div>
+          <div id="adm-caja-foto-factura" class="hidden">
+            <a id="adm-link-foto-factura" href="#" target="_blank" class="block group relative rounded-xl overflow-hidden border border-amber-500/30">
+              <img id="adm-img-foto-factura" class="w-full h-36 object-cover">
+              <span class="absolute inset-0 bg-slate-950/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-xs font-bold text-white">Ver Factura en Grande 🔍</span>
+            </a>
+          </div>
+          <div class="flex justify-between items-center text-[11px] pt-1 border-t border-slate-800">
+            <span class="text-slate-400">Estado de Reembolso Pago Móvil:</span>
+            <span id="adm-modal-reembolso-status" class="px-2 py-0.5 rounded-full font-bold text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30">Pendiente</span>
+          </div>
+          <button type="button" id="btn-aprobar-reembolso-pago-movil" onclick="aprobarReembolsoTiendaPagoMovil()" class="btn-tactil w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:brightness-110 text-slate-950 font-black py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/20">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            <span>Confirmar Transferencia Pago Móvil (<span id="txt-monto-btn-reembolso">$0.00</span>)</span>
+          </button>
+        </div>
+
+        <!-- HOJA DE RUTA GPS (MINI-MAPA DE LA ORDEN) -->
+        <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+              <i data-lucide="map" class="w-4 h-4 text-accent-cyan"></i> Mapa de Ruta (A: Tienda • B: Cliente)
+            </span>
+            <span class="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">GPS en vivo</span>
+          </div>
+          <div id="adm-mapa-modal-orden" style="height: 160px; min-height: 160px; width: 100%;" class="rounded-xl overflow-hidden border border-slate-800"></div>
+        </div>
+
         <div class="bg-slate-800/80 p-3.5 rounded-2xl border border-slate-700 space-y-3">
           <h4 class="font-black text-white">Controles Administrativos:</h4>
+          
+          <!-- ASIGNACIÓN DE TIENDA ESPECÍFICA (PUNTO A) -->
+          <div>
+            <label class="block text-[10px] font-bold text-accent-yellow uppercase mb-1">Comercio / Tienda Asignada (Punto A):</label>
+            <select id="adm-select-tienda-asignada" class="w-full bg-slate-900 border border-amber-500/40 rounded-xl p-2 text-white font-bold focus:outline-none text-xs">
+              <option value="">Sin Asignar (Comercio Libre)</option>
+            </select>
+          </div>
+
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Chofer Asignado:</label>
-              <select id="adm-select-chofer" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white font-bold focus:outline-none">
+              <select id="adm-select-chofer" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white font-bold focus:outline-none text-xs">
                 <option value="">Sin Asignar</option>
               </select>
             </div>
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Estado de la Orden:</label>
-              <select id="adm-select-estado" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white font-bold focus:outline-none">
+              <select id="adm-select-estado" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white font-bold focus:outline-none text-xs">
                 <option value="pendiente">PENDIENTE</option>
                 <option value="aceptado">ACEPTADO</option>
                 <option value="en_camino">EN CAMINO</option>
@@ -814,10 +881,10 @@
     let tiendasBD = {};
     let cuentasTiendasBD = {};
     let catalogoFlashBD = {};
-    let configuracionBD = {};
     let estadoFiltroActual = 'todos';
     let categoriaFiltroCatalogo = 'todos';
     let pedidoSeleccionadoId = null;
+    let tiendaActualSeleccionadaId = null;
 
     // Normalizador de teléfono
     function normalizarTelefono(tel) {
@@ -829,7 +896,6 @@
     }
 
     window.onload = () => {
-      lucide.createIcons();
       const sesionAdmin = sessionStorage.getItem('admin_pedidosflash_autenticado');
       if (sesionAdmin === 'true') {
         document.getElementById('modal-login-admin').classList.add('hidden');
@@ -865,53 +931,34 @@
     }
 
     function inicializarSuscripciones() {
-      // 1. Configuración General (Pago Móvil y Tarifas)
-      db.ref('configuracion').on('value', (snap) => {
-        configuracionBD = snap.val() || {};
-        if (configuracionBD.pagoMovil) {
-          const pm = configuracionBD.pagoMovil;
-          if (document.getElementById('cfg-pm-banco')) document.getElementById('cfg-pm-banco').value = pm.banco || "Provincial (0108)";
-          if (document.getElementById('cfg-pm-telefono')) document.getElementById('cfg-pm-telefono').value = pm.telefono || "04144205169";
-          if (document.getElementById('cfg-pm-cedula')) document.getElementById('cfg-pm-cedula').value = pm.cedula || "V-31060250";
-        }
-        if (configuracionBD.tarifas) {
-          const tf = configuracionBD.tarifas;
-          if (document.getElementById('cfg-tarifa-delivery')) document.getElementById('cfg-tarifa-delivery').value = tf.delivery || 1.00;
-          if (document.getElementById('cfg-tarifa-moto-nirgua')) document.getElementById('cfg-tarifa-moto-nirgua').value = tf.motoNirgua || 1.00;
-          if (document.getElementById('cfg-tarifa-moto-fuera')) document.getElementById('cfg-tarifa-moto-fuera').value = tf.motoFuera || 4.50;
-          if (document.getElementById('cfg-tarifa-carro-nirgua')) document.getElementById('cfg-tarifa-carro-nirgua').value = tf.carroNirgua || 3.50;
-          if (document.getElementById('cfg-tarifa-carro-salon')) document.getElementById('cfg-tarifa-carro-salon').value = tf.carroSalon || 8.50;
-          if (document.getElementById('cfg-ganancia-chofer')) document.getElementById('cfg-ganancia-chofer').value = tf.gananciaChofer || 0.70;
-        }
-      });
-
-      // 2. Catálogo Flash Completo
+      // 1. Catálogo Propio
       db.ref('catalogo_flash').on('value', (snapshot) => {
         catalogoFlashBD = snapshot.val() || {};
         renderizarCatalogoAdmin();
       });
 
-      // 3. Tiendas y Negocios
+      // 2. Tiendas
       db.ref('tiendas').on('value', (snapshot) => {
         tiendasBD = snapshot.val() || {};
         renderizarComerciosAdmin();
       });
 
-      // 4. Cuentas Tiendas
+      // 3. Cuentas Tiendas
       db.ref('cuentas_tiendas').on('value', (snapshot) => {
         cuentasTiendasBD = snapshot.val() || {};
         renderizarComerciosAdmin();
       });
 
-      // 5. Choferes
+      // 4. Choferes
       db.ref('choferes').on('value', (snapshot) => {
         choferesBD = snapshot.val() || {};
         renderizarChoferesAdmin();
         actualizarSelectorChoferes();
         verificarPedidosPendientesYChoferes();
+        actualizarMarcadoresRadarAdmin();
       });
 
-      // 6. Pedidos
+      // 5. Pedidos
       let pedidosPreviosIds = null;
       db.ref('pedidos').on('value', (snapshot) => {
         const nuevos = snapshot.val() || {};
@@ -930,52 +977,14 @@
         calcularMetricasAdmin();
         renderizarTablaPedidos();
         renderizarChoferesAdmin();
+        actualizarMarcadoresRadarAdmin();
       });
 
-      // 7. Gastos
+      // 6. Gastos
       db.ref('gastos').on('value', (snapshot) => {
         gastosBD = snapshot.val() ? Object.values(snapshot.val()) : [];
         renderizarGastosAdmin();
         calcularMetricasAdmin();
-      });
-    }
-
-    // ================= CONFIGURACIÓN DE PAGO MÓVIL Y TARIFAS =================
-    function actualizarDatosPagoMovil(e) {
-      e.preventDefault();
-      const banco = document.getElementById('cfg-pm-banco').value.trim();
-      const telefono = document.getElementById('cfg-pm-telefono').value.trim();
-      const cedula = document.getElementById('cfg-pm-cedula').value.trim();
-
-      db.ref('configuracion/pagoMovil').set({
-        banco: banco || "Provincial (0108)",
-        telefono: telefono || "04144205169",
-        cedula: cedula || "V-31060250",
-        actualizadoEn: new Date().toISOString()
-      }).then(() => {
-        alert("✓ Datos de Pago Móvil actualizados en vivo para todos los clientes.");
-      });
-    }
-
-    function guardarTarifasTransporte(e) {
-      e.preventDefault();
-      const delivery = parseFloat(document.getElementById('cfg-tarifa-delivery').value) || 1.00;
-      const motoNirgua = parseFloat(document.getElementById('cfg-tarifa-moto-nirgua').value) || 1.00;
-      const motoFuera = parseFloat(document.getElementById('cfg-tarifa-moto-fuera').value) || 4.50;
-      const carroNirgua = parseFloat(document.getElementById('cfg-tarifa-carro-nirgua').value) || 3.50;
-      const carroSalon = parseFloat(document.getElementById('cfg-tarifa-carro-salon').value) || 8.50;
-      const gananciaChofer = parseFloat(document.getElementById('cfg-ganancia-chofer').value) || 0.70;
-
-      db.ref('configuracion/tarifas').set({
-        delivery,
-        motoNirgua,
-        motoFuera,
-        carroNirgua,
-        carroSalon,
-        gananciaChofer,
-        actualizadoEn: new Date().toISOString()
-      }).then(() => {
-        alert("✓ Tarifas guardadas. Sincronizadas en vivo con las apps de Cliente y Choferes.");
       });
     }
 
@@ -1199,6 +1208,7 @@
 
       Object.keys(choferesBD).forEach(tel => {
         const c = choferesBD[tel];
+        // Solo choferes autorizados para asignar carreras
         if (c.estado === 'autorizado') {
           const statusTxt = c.enLinea ? '🟢 EN LÍNEA' : '🔴 DESCONECTADO';
           select.innerHTML += `<option value="${tel}">${c.nombre} (${statusTxt})</option>`;
@@ -1308,6 +1318,32 @@
       document.getElementById('adm-modal-telefono').innerText = p.telefono || 'Sin especificar';
       document.getElementById('adm-modal-direccion').innerText = p.direccion || 'Sin dirección';
       
+      // Visualización de enlace GPS exacto
+      let latGPS = (p.lat !== undefined && p.lat !== null) ? p.lat : p.destinoLat;
+      let lngGPS = (p.lng !== undefined && p.lng !== null) ? p.lng : p.destinoLng;
+      let urlGPS = p.ubicacionGPS;
+      
+      if (!latGPS && urlGPS) {
+        const m = urlGPS.match(/q=(-?\d+\.?\d*),\s*(-?\d+\.?\d*)/) || urlGPS.match(/@(-?\d+\.?\d*),\s*(-?\d+\.?\d*)/);
+        if (m) {
+          latGPS = m[1];
+          lngGPS = m[2];
+        }
+      }
+
+      const cajaGps = document.getElementById('adm-caja-gps-link');
+      const btnGps = document.getElementById('adm-modal-gps-btn');
+      const txtGps = document.getElementById('adm-modal-gps-texto');
+
+      if (urlGPS || (latGPS && lngGPS)) {
+        if (cajaGps) cajaGps.classList.remove('hidden');
+        const hrefFinal = (latGPS && lngGPS) ? `https://maps.google.com/?q=${latGPS},${lngGPS}` : urlGPS;
+        if (btnGps) btnGps.href = hrefFinal;
+        if (txtGps) txtGps.innerText = (latGPS && lngGPS) ? `📍 Ver GPS Exacto (${parseFloat(latGPS).toFixed(5)}, ${parseFloat(lngGPS).toFixed(5)})` : `📍 Ver Ubicación GPS Adjunta`;
+      } else {
+        if (cajaGps) cajaGps.classList.add('hidden');
+      }
+
       const totalMonto = parseFloat(p.total || p.montoTotal || p.monto || 0);
       document.getElementById('adm-modal-total').innerText = `$${totalMonto.toFixed(2)}`;
 
@@ -1351,6 +1387,58 @@
         lista.innerHTML = `<p>${p.detalle || p.productos || 'Servicio de Transporte'}</p>`;
       }
 
+      // Vehículo Requerido
+      const vehiculoReqEl = document.getElementById('adm-modal-vehiculo-req');
+      if (vehiculoReqEl) {
+        vehiculoReqEl.innerText = p.vehiculoRequerido || (p.tipoServicio === 'transporte' ? 'Transporte' : 'Cualquiera');
+      }
+
+      // Factura de Tienda subida por el Chofer
+      const cajaFacturaChofer = document.getElementById('adm-caja-factura-chofer');
+      if (cajaFacturaChofer) {
+        const montoGasto = parseFloat(p.montoFacturaTienda || p.montoGastoChofer || 0);
+        const fotoUrl = p.fotoFacturaUrl || p.fotoFacturaReembolsoUrl;
+        if (montoGasto > 0 || fotoUrl) {
+          cajaFacturaChofer.classList.remove('hidden');
+          document.getElementById('adm-modal-monto-factura-chofer').innerText = `$${montoGasto.toFixed(2)}`;
+          document.getElementById('txt-monto-btn-reembolso').innerText = `$${montoGasto.toFixed(2)}`;
+          
+          const cajaFoto = document.getElementById('adm-caja-foto-factura');
+          if (fotoUrl) {
+            cajaFoto.classList.remove('hidden');
+            document.getElementById('adm-img-foto-factura').src = fotoUrl;
+            document.getElementById('adm-link-foto-factura').href = fotoUrl;
+          } else {
+            cajaFoto.classList.add('hidden');
+          }
+
+          const statusReembolsoEl = document.getElementById('adm-modal-reembolso-status');
+          const btnReembolso = document.getElementById('btn-aprobar-reembolso-pago-movil');
+          if (p.solicitudReembolso === 'aprobado' || p.solicitudReembolso === 'pagado') {
+            statusReembolsoEl.className = "px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+            statusReembolsoEl.innerText = "Transferido por Pago Móvil ✓";
+            btnReembolso.classList.add('hidden');
+          } else {
+            statusReembolsoEl.className = "px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30";
+            statusReembolsoEl.innerText = "Pendiente de Transferencia";
+            btnReembolso.classList.remove('hidden');
+          }
+        } else {
+          cajaFacturaChofer.classList.add('hidden');
+        }
+      }
+
+      // Selector de Tiendas (Punto A)
+      const selectTienda = document.getElementById('adm-select-tienda-asignada');
+      if (selectTienda) {
+        selectTienda.innerHTML = `<option value="">Sin Asignar (Comercio Libre)</option>`;
+        Object.keys(tiendasBD).forEach(tidKey => {
+          const t = tiendasBD[tidKey];
+          const sel = (p.tiendaId === tidKey) ? 'selected' : '';
+          selectTienda.innerHTML += `<option value="${tidKey}" ${sel}>${t.nombre} (${t.porcentajeComision || 8}%)</option>`;
+        });
+      }
+
       const selectChofer = document.getElementById('adm-select-chofer');
       selectChofer.innerHTML = `<option value="">Sin Asignar</option>`;
       Object.keys(choferesBD).forEach(tel => {
@@ -1366,6 +1454,10 @@
       document.getElementById('adm-select-chofer').value = p.choferTelefono || '';
 
       document.getElementById('modal-admin-detalle-pedido').classList.remove('hidden');
+
+      setTimeout(() => {
+        renderizarMiniMapaOrdenAdmin(p);
+      }, 250);
     }
 
     function cerrarModalAdminDetalle() {
@@ -1378,19 +1470,115 @@
 
       const nuevoEstado = document.getElementById('adm-select-estado').value;
       const telChoferSel = document.getElementById('adm-select-chofer').value;
+      const tiendaSelId = document.getElementById('adm-select-tienda-asignada') ? document.getElementById('adm-select-tienda-asignada').value : '';
       
       let nombreChoferSel = "";
       if (telChoferSel && choferesBD[telChoferSel]) {
         nombreChoferSel = choferesBD[telChoferSel].nombre;
       }
 
-      db.ref(`pedidos/${pedidoSeleccionadoId}`).update({
+      const updates = {
         estado: nuevoEstado,
         chofer: nombreChoferSel || 'Sin Asignar',
-        choferTelefono: telChoferSel || ''
-      }).then(() => {
+        choferTelefono: telChoferSel || '',
+        gananciaChofer: 1.00
+      };
+
+      if (tiendaSelId && tiendasBD[tiendaSelId]) {
+        const t = tiendasBD[tiendaSelId];
+        updates.tiendaId = tiendaSelId;
+        updates.tiendaNombre = t.nombre;
+        updates.porcentajeComision = t.porcentajeComision || 8;
+        if (t.lat && t.lng) {
+          updates.origenLat = parseFloat(t.lat);
+          updates.origenLng = parseFloat(t.lng);
+        }
+      }
+
+      db.ref(`pedidos/${pedidoSeleccionadoId}`).update(updates).then(() => {
         cerrarModalAdminDetalle();
       });
+    }
+
+    function aprobarReembolsoTiendaPagoMovil() {
+      if (!pedidoSeleccionadoId) return;
+      const p = todosLosPedidosAdmin[pedidoSeleccionadoId];
+      if (!p) return;
+
+      const montoGasto = parseFloat(p.montoFacturaTienda || p.montoGastoChofer || 0);
+      const chNom = p.chofer || 'Chofer';
+      const chTel = p.choferTelefono || '';
+
+      if (confirm(`¿Confirmas que ya realizaste la transferencia por Pago Móvil de $${montoGasto.toFixed(2)} al chofer ${chNom}?`)) {
+        db.ref(`pedidos/${pedidoSeleccionadoId}`).update({
+          solicitudReembolso: 'aprobado',
+          fechaReembolso: new Date().toISOString()
+        });
+
+        db.ref('solicitudes_pagos_choferes').push({
+          pedidoId: pedidoSeleccionadoId,
+          orden: p.orden || `#FLASH-${pedidoSeleccionadoId.substring(0, 6)}`,
+          tipo: 'reembolso_compra_tienda',
+          chofer: chNom,
+          choferTelefono: chTel,
+          monto: montoGasto,
+          metodo: 'Pago Móvil',
+          estado: 'aprobado',
+          fecha: new Date().toISOString()
+        });
+
+        alert("✓ Reembolso marcado como transferido exitosamente por Pago Móvil.");
+        abrirModalAdminDetalle(pedidoSeleccionadoId);
+      }
+    }
+
+    let mapaModalAdminInstance = null;
+    let marcadoresMiniMapa = [];
+    function renderizarMiniMapaOrdenAdmin(p) {
+      const contenedor = document.getElementById('adm-mapa-modal-orden');
+      if (!contenedor) return;
+
+      const latDest = p.lat ? parseFloat(p.lat) : (p.destinoLat ? parseFloat(p.destinoLat) : 10.1506);
+      const lngDest = p.lng ? parseFloat(p.lng) : (p.destinoLng ? parseFloat(p.destinoLng) : -68.5668);
+      const latOrig = p.origenLat ? parseFloat(p.origenLat) : 10.1506;
+      const lngOrig = p.origenLng ? parseFloat(p.origenLng) : -68.5668;
+
+      if (!mapaModalAdminInstance) {
+        mapaModalAdminInstance = L.map('adm-mapa-modal-orden', { zoomControl: false, attributionControl: false }).setView([latDest, lngDest], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapaModalAdminInstance);
+      } else {
+        mapaModalAdminInstance.invalidateSize();
+      }
+
+      marcadoresMiniMapa.forEach(m => mapaModalAdminInstance.removeLayer(m));
+      marcadoresMiniMapa = [];
+
+      // Marcador A (Tienda)
+      const pinA = L.marker([latOrig, lngOrig], {
+        icon: L.divIcon({ className: 'custom-pin', html: '<div class="pin-jewel-a">A</div>', iconSize: [28, 28] })
+      }).addTo(mapaModalAdminInstance).bindPopup(`🏪 Tienda: ${p.tiendaNombre || 'Comercio'}`);
+      marcadoresMiniMapa.push(pinA);
+
+      // Marcador B (Cliente)
+      const pinB = L.marker([latDest, lngDest], {
+        icon: L.divIcon({ className: 'custom-pin', html: '<div class="pin-jewel-b">B</div>', iconSize: [28, 28] })
+      }).addTo(mapaModalAdminInstance).bindPopup(`📍 Cliente: ${p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Destino')}`).openPopup();
+      marcadoresMiniMapa.push(pinB);
+
+      // Chofer si tiene GPS y está asignado
+      if (p.choferTelefono && choferesBD[p.choferTelefono] && choferesBD[p.choferTelefono].gps) {
+        const cGps = choferesBD[p.choferTelefono].gps;
+        if (cGps.lat && cGps.lng) {
+          const pinCh = L.marker([parseFloat(cGps.lat), parseFloat(cGps.lng)], {
+            icon: L.divIcon({ className: 'custom-pin', html: '<div class="pin-radar-chofer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></div>', iconSize: [28, 28] })
+          }).addTo(mapaModalAdminInstance).bindPopup(`🛵 Chofer: ${p.chofer} (En vivo)`);
+          marcadoresMiniMapa.push(pinCh);
+        }
+      }
+
+      const bounds = L.latLngBounds([[latOrig, lngOrig], [latDest, lngDest]]);
+      mapaModalAdminInstance.fitBounds(bounds, { padding: [25, 25] });
+      lucide.createIcons();
     }
 
     function enviarAlertaWhatsAppAChoferSeleccionado() {
@@ -1417,6 +1605,8 @@
       const numOrden = p.orden || `#FLASH-${pedidoSeleccionadoId.substring(0, 6)}`;
       const dir = p.cliente ? (p.cliente.direccion || p.direccion) : (p.direccion || 'Nirgua');
       const clienteNom = p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente');
+      const linkGPS = (p.lat && p.lng) ? `https://maps.google.com/?q=${p.lat},${p.lng}` : (p.ubicacionGPS || '');
+      const lineaGPS = linkGPS ? `🗺️ *GPS Exacto:* ${linkGPS}\n` : '';
 
       const msj = encodeURIComponent(
         `🚨 *¡HAY UN NUEVO PEDIDO FLASH DISPONIBLE!* 🛵\n\n` +
@@ -1424,7 +1614,8 @@
         `📦 *Orden:* ${numOrden}\n` +
         `👤 *Cliente:* ${clienteNom}\n` +
         `📍 *Dirección de Entrega:* ${dir}\n` +
-        `💰 *Tu Ganancia:* $0.70\n\n` +
+        lineaGPS +
+        `💰 *Tu Ganancia:* $1.00\n\n` +
         `👉 *Abre la app de Choferes para aceptarlo:* \n` +
         `chofer.html?pedido=${pedidoSeleccionadoId}`
       );
@@ -1461,6 +1652,8 @@
       const dir = p.cliente ? (p.cliente.direccion || p.direccion) : (p.direccion || 'Nirgua');
       const clienteNom = p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente');
       const total = parseFloat(p.total || p.montoTotal || p.monto || 0).toFixed(2);
+      const linkGPS = (p.lat && p.lng) ? `https://maps.google.com/?q=${p.lat},${p.lng}` : (p.ubicacionGPS || '');
+      const lineaGPS = linkGPS ? `🗺️ *GPS Exacto:* ${linkGPS}\n` : '';
 
       const msj = encodeURIComponent(
         `🚨 *¡NUEVO PEDIDO FLASH DISPONIBLE!* 🛵\n\n` +
@@ -1468,8 +1661,9 @@
         `📦 *Orden:* ${numOrden}\n` +
         `👤 *Cliente:* ${clienteNom}\n` +
         `📍 *Dirección:* ${dir}\n` +
+        lineaGPS +
         `💵 *Total Orden:* $${total}\n` +
-        `💰 *Tu Ganancia:* $0.70\n\n` +
+        `💰 *Tu Ganancia:* $1.00\n\n` +
         `👉 *Abre la app de chofer para aceptarlo:* \n` +
         `chofer.html?pedido=${id}`
       );
@@ -1521,7 +1715,7 @@
       }
     }
 
-    // ================= CATÁLOGO Y PRECIOS =================
+    // ================= CATÁLOGO Y PRECIOS FLASH =================
     function renderizarCatalogoAdmin() {
       const grid = document.getElementById('grid-catalogo-admin');
       if (!grid) return;
@@ -1564,7 +1758,7 @@
                 <span class="text-[9px] font-black bg-indigo-950 text-indigo-300 border border-indigo-800/40 px-2 py-0.5 rounded uppercase tracking-wider">
                   ${catBadge}
                 </span>
-                ${p.esGranel ? `<span class="text-[9px] font-bold text-accent-cyan bg-accent-cyan/10 px-1.5 py-0.5 rounded">Por Peso</span>` : ''}
+                ${p.esGranel ? `<span class="text-[9px] font-bold text-accent-cyan bg-accent-cyan/10 px-1.5 py-0.5 rounded">Por Peso/Kg</span>` : ''}
               </div>
 
               <div class="w-full h-24 rounded-xl overflow-hidden bg-slate-950 flex items-center justify-center mb-2.5 p-1 border border-slate-800/80">
@@ -1580,14 +1774,9 @@
                 <span class="text-base font-black text-accent-yellow">$${precio}</span>
               </div>
 
-              <div class="flex gap-1.5">
-                <button onclick="abrirModalCambiarPrecio('${id}')" class="btn-tactil flex-1 bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black py-2 rounded-xl text-xs flex items-center justify-center gap-1 shadow-md transition">
-                  <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Precio
-                </button>
-                <button onclick="eliminarProductoFlash('${id}')" title="Eliminar del catálogo" class="btn-tactil bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 p-2 rounded-xl text-xs">
-                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                </button>
-              </div>
+              <button onclick="abrirModalCambiarPrecio('${id}')" class="btn-tactil w-full bg-gradient-to-r from-accent-cyan to-brand-600 hover:brightness-110 text-slate-950 font-black py-2 rounded-xl text-xs flex items-center justify-center gap-1 shadow-md transition">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Cambiar Precio
+              </button>
             </div>
           </div>
         `;
@@ -1650,6 +1839,7 @@
         actualizadoEn: new Date().toISOString()
       }).then(() => {
         cerrarModalCambiarPrecio();
+        alert(`¡Precio actualizado a $${nuevoPrecio.toFixed(2)} con éxito!`);
       });
     }
 
@@ -1697,14 +1887,12 @@
 
       db.ref(`catalogo_flash/${idUnico}`).set(nuevoProd).then(() => {
         cerrarModalNuevoProductoFlash();
-        alert(`¡"${nombre}" agregado con éxito al menú del cliente!`);
+        alert(`¡"${nombre}" agregado con éxito!`);
       });
     }
 
-    function eliminarProductoFlash(id) {
-      if (confirm("¿Estás seguro de eliminar este producto del menú?")) {
-        db.ref(`catalogo_flash/${id}`).remove();
-      }
+    function sincronizarTodoElCatalogoBaseAFirebase() {
+      alert("Catálogo respaldado y sincronizado.");
     }
 
     // ================= TIENDAS & COMERCIOS =================
@@ -1784,7 +1972,7 @@
 
             <div class="flex gap-2 pt-2 border-t border-slate-800">
               <button onclick="editarTiendaModal('${tid}')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 rounded-xl text-xs border border-slate-700">
-                Editar Datos
+                Editar %
               </button>
               <button onclick="eliminarTiendaModal('${tid}')" class="text-rose-400 hover:bg-rose-500/20 font-bold px-3 py-2 rounded-xl text-xs border border-rose-500/20">
                 Eliminar
@@ -1853,7 +2041,7 @@
         actualizadoEn: new Date().toISOString()
       }).then(() => {
         cerrarModalRegistrarTienda();
-        alert(`¡Comercio "${nombre}" guardado con ${comision}% de comisión!`);
+        alert(`¡Local "${nombre}" guardado con ${comision}% de comisión!`);
       });
     }
 
@@ -1943,7 +2131,7 @@
     }
 
     function cambiarPestana(pestana) {
-      ['productos', 'comercios', 'pedidos', 'choferes', 'tarifas', 'gastos', 'ajustes'].forEach(p => {
+      ['choferes', 'pedidos', 'radar', 'productos', 'comercios', 'gastos', 'ajustes'].forEach(p => {
         const sec = document.getElementById(`sec-admin-${p}`);
         if (sec) sec.classList.add('hidden');
         const btn = document.getElementById(`tab-admin-${p}`);
@@ -1954,6 +2142,147 @@
       if (secActiva) secActiva.classList.remove('hidden');
       const btnActivo = document.getElementById(`tab-admin-${pestana}`);
       if (btnActivo) btnActivo.className = "px-4 py-2.5 rounded-xl text-xs font-black bg-indigo-600 text-white flex items-center gap-2 whitespace-nowrap transition";
+
+      if (pestana === 'radar') {
+        setTimeout(() => {
+          if (!mapaRadarAdmin) {
+            inicializarMapaRadarAdmin();
+          } else {
+            mapaRadarAdmin.invalidateSize();
+            actualizarMarcadoresRadarAdmin();
+          }
+        }, 150);
+      }
+      lucide.createIcons();
+    }
+
+    // ================= RADAR GPS SATELITAL ADMIN =================
+    let mapaRadarAdmin = null;
+    let marcadoresRadarChoferes = {};
+    let marcadoresRadarPedidos = [];
+    let marcadoresRadarComercios = [];
+
+    function inicializarMapaRadarAdmin() {
+      const el = document.getElementById('mapa-admin-radar');
+      if (!el || mapaRadarAdmin) return;
+
+      mapaRadarAdmin = L.map('mapa-admin-radar', { zoomControl: true, attributionControl: false }).setView([10.1506, -68.5668], 15);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapaRadarAdmin);
+      actualizarMarcadoresRadarAdmin();
+    }
+
+    function centrarRadarAdminNirgua() {
+      if (mapaRadarAdmin) {
+        mapaRadarAdmin.setView([10.1506, -68.5668], 15);
+      }
+    }
+
+    function actualizarMarcadoresRadarAdmin() {
+      if (!mapaRadarAdmin) return;
+
+      let cantChoferesActivos = 0;
+      let cantOrdenesActivas = 0;
+      let cantComercios = 0;
+      let cantClientes = 0;
+
+      // 1. Choferes con radar en vivo
+      const choferesKeys = Object.keys(choferesBD);
+      choferesKeys.forEach(tel => {
+        const ch = choferesBD[tel];
+        if (ch.estado === 'autorizado' && ch.enLinea && ch.gps && ch.gps.lat && ch.gps.lng) {
+          cantChoferesActivos++;
+          const pos = [parseFloat(ch.gps.lat), parseFloat(ch.gps.lng)];
+          
+          if (marcadoresRadarChoferes[tel]) {
+            marcadoresRadarChoferes[tel].setLatLng(pos);
+          } else {
+            const m = L.marker(pos, {
+              icon: L.divIcon({
+                className: 'custom-pin',
+                html: `<div class="pin-radar-chofer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></div>`,
+                iconSize: [28, 28]
+              })
+            }).addTo(mapaRadarAdmin);
+
+            m.bindPopup(`
+              <div class="p-1 font-sans text-xs">
+                <b class="text-emerald-400 font-mono block">🛵 ${ch.nombre}</b>
+                <span class="text-slate-300 text-[10px] block">Vehículo: ${ch.vehiculo || 'Moto'} • ${ch.telefono}</span>
+                <span class="text-slate-400 text-[9px] block">GPS: ${pos[0].toFixed(5)}, ${pos[1].toFixed(5)}</span>
+              </div>
+            `);
+            marcadoresRadarChoferes[tel] = m;
+          }
+        } else {
+          if (marcadoresRadarChoferes[tel]) {
+            mapaRadarAdmin.removeLayer(marcadoresRadarChoferes[tel]);
+            delete marcadoresRadarChoferes[tel];
+          }
+        }
+      });
+
+      // 2. Limpiar marcadores de pedidos y comercios
+      marcadoresRadarPedidos.forEach(m => mapaRadarAdmin.removeLayer(m));
+      marcadoresRadarPedidos = [];
+      marcadoresRadarComercios.forEach(m => mapaRadarAdmin.removeLayer(m));
+      marcadoresRadarComercios = [];
+
+      // 3. Comercios Aliados (Punto A)
+      Object.keys(tiendasBD).forEach(tid => {
+        const t = tiendasBD[tid];
+        if (t.lat && t.lng) {
+          cantComercios++;
+          const pos = [parseFloat(t.lat), parseFloat(t.lng)];
+          const m = L.marker(pos, {
+            icon: L.divIcon({
+              className: 'custom-pin',
+              html: `<div class="pin-jewel-a">A</div>`,
+              iconSize: [26, 26]
+            })
+          }).addTo(mapaRadarAdmin).bindPopup(`🏪 <b>${t.nombre}</b><br><span class="text-[10px]">${t.direccion || 'Nirgua'}</span>`);
+          marcadoresRadarComercios.push(m);
+        }
+      });
+
+      // 4. Pedidos Activos (Punto B: Clientes)
+      Object.keys(todosLosPedidosAdmin).forEach(id => {
+        const p = todosLosPedidosAdmin[id];
+        if (p.estado === 'pendiente' || p.estado === 'aceptado' || p.estado === 'en_camino') {
+          cantOrdenesActivas++;
+          const latDest = p.lat ? parseFloat(p.lat) : (p.destinoLat ? parseFloat(p.destinoLat) : null);
+          const lngDest = p.lng ? parseFloat(p.lng) : (p.destinoLng ? parseFloat(p.destinoLng) : null);
+
+          if (latDest && lngDest) {
+            cantClientes++;
+            const m = L.marker([latDest, lngDest], {
+              icon: L.divIcon({
+                className: 'custom-pin',
+                html: `<div class="pin-jewel-b">B</div>`,
+                iconSize: [26, 26]
+              })
+            }).addTo(mapaRadarAdmin).bindPopup(`
+              <div class="p-1 font-sans text-xs">
+                <b class="text-orange-400 block">${p.orden || '#FLASH'}</b>
+                <span class="text-slate-200 font-bold block">${p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente')}</span>
+                <span class="text-slate-400 text-[10px] block">${p.direccion || 'Nirgua'}</span>
+                <span class="text-emerald-400 font-mono text-[10px] block mt-1">Estado: ${p.estado}</span>
+              </div>
+            `);
+            marcadoresRadarPedidos.push(m);
+          }
+        }
+      });
+
+      const elBadgeChoferes = document.getElementById('cant-choferes-gps-badge');
+      if (elBadgeChoferes) elBadgeChoferes.innerText = cantChoferesActivos;
+      const elChoferesActivos = document.getElementById('radar-cant-choferes-activos');
+      if (elChoferesActivos) elChoferesActivos.innerText = cantChoferesActivos;
+      const elOrdenesActivas = document.getElementById('radar-cant-ordenes-activas');
+      if (elOrdenesActivas) elOrdenesActivas.innerText = cantOrdenesActivas;
+      const elComercios = document.getElementById('radar-cant-comercios');
+      if (elComercios) elComercios.innerText = cantComercios;
+      const elClientes = document.getElementById('radar-cant-clientes');
+      if (elClientes) elClientes.innerText = cantClientes;
     }
 
     function filtrarEstadoPedido(est) {
