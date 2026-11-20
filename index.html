@@ -196,7 +196,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE ALERTA URGENTE: CHOFER EN TIENDA SOLICITA PAGO / REEMBOLSO (PASO 3) -->
+  <!-- MODAL DE ALERTA URGENTE: CHOFER EN TIENDA SOLICITA PAGO (PASO 3: PAGO MÓVIL AL COMERCIO O REEMBOLSO CHOFER) -->
   <div id="modal-alerta-pago-tienda-admin" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[120] flex items-center justify-center p-4 hidden">
     <div class="alerta-emergente-activa bg-slate-900 border-2 border-amber-500/60 w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl text-center">
       <div class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center mx-auto text-3xl animate-bounce">
@@ -214,11 +214,11 @@
         </div>
       </div>
 
-      <!-- DATOS DE PAGO MÓVIL (COMERCIO O CHOFER A REEMBOLSAR) -->
+      <!-- DATOS DE PAGO MÓVIL DEL COMERCIO (SI ADMIN PAGA DIRECTO) -->
       <div id="caja-alerta-datos-pago-movil" class="bg-slate-950 p-3.5 rounded-2xl border border-amber-500/40 text-left space-y-2 text-xs">
         <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">
-          <span id="txt-pm-titulo-alerta" class="text-accent-cyan font-bold font-mono text-[11px] flex items-center gap-1.5">
-            📱 DATOS PAGO MÓVIL:
+          <span class="text-accent-cyan font-bold font-mono text-[11px] flex items-center gap-1.5">
+            <i data-lucide="smartphone" class="w-3.5 h-3.5 text-accent-cyan"></i> DATOS PAGO MÓVIL DEL COMERCIO:
           </span>
           <button type="button" onclick="copiarDatosPagoMovilAlerta()" class="btn-tactil text-[10px] bg-indigo-600/30 text-accent-cyan hover:bg-indigo-600/50 border border-indigo-500/40 px-2 py-0.5 rounded font-mono font-bold flex items-center gap-1">
             <i data-lucide="copy" class="w-3 h-3"></i> Copiar
@@ -240,13 +240,18 @@
         </div>
       </div>
 
-      <!-- FOTO FACTURA OFICIAL SUBIDA POR EL CHOFER (CON CLICK PARA AMPLIAR) -->
-      <div id="caja-alerta-reembolso-factura" class="bg-slate-950 p-3 rounded-2xl border border-purple-500/40 text-left space-y-1.5 text-xs hidden">
-        <div class="flex items-center justify-between">
-          <span class="text-purple-300 font-bold text-[11px]">📸 Factura / Ticket Subido por el Chofer:</span>
-          <span class="text-[9px] text-slate-400">Clic para ampliar 🔍</span>
-        </div>
-        <img id="img-alerta-factura-chofer" src="" class="w-full h-36 object-cover rounded-xl border border-purple-500/30 cursor-pointer" onclick="verFotoGrandeAdmin(this.src)">
+      <!-- VISTA FACTURA / REEMBOLSO SI CHOFER YA PAGÓ -->
+      <div id="caja-alerta-reembolso-factura" class="hidden bg-slate-950 p-3.5 rounded-2xl border border-purple-500/40 text-left space-y-2 text-xs">
+        <span class="text-purple-300 font-bold block text-[11px]">Factura Oficial Subida por el Chofer:</span>
+        <a id="link-alerta-factura-chofer" href="#" target="_blank" class="block rounded-xl overflow-hidden border border-purple-500/30 max-h-36">
+          <img id="img-alerta-factura-chofer" src="" class="w-full h-32 object-cover">
+        </a>
+      </div>
+
+      <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-left space-y-1.5 text-xs">
+        <p id="txt-desc-alerta-pago-tienda" class="text-slate-300 text-[11px] leading-relaxed">
+          💡 El chofer ya está en el mostrador del comercio y comunicó el valor exacto de los productos. Realiza la transferencia por Pago Móvil a la tienda y presiona el botón verde para confirmar.
+        </p>
       </div>
 
       <div class="space-y-2 pt-2">
@@ -278,7 +283,7 @@
           <h1 class="text-base sm:text-lg font-black font-orbitron text-white leading-tight flex items-center gap-2">
             PEDIDOS FLASH <span class="bg-accent-magenta/20 text-accent-magenta border border-accent-magenta/30 text-[9px] font-black px-2 py-0.5 rounded-full uppercase">CENTRO DE CONTROL</span>
           </h1>
-          <p class="text-[10px] text-slate-400 font-semibold">Nirgua, Yaracuy • Notificaciones a WhatsApp, Balances Separados & Flujo 4 Pasos</p>
+          <p class="text-[10px] text-slate-400 font-semibold">Nirgua, Yaracuy • Notificaciones a WhatsApp & Flujo 4 Pasos Chofer</p>
         </div>
       </div>
 
@@ -339,13 +344,12 @@
         <p id="metrica-pedidos" class="text-base sm:text-xl font-black text-white">0</p>
       </div>
 
-      <div class="bg-slate-900/80 border border-purple-500/30 p-3.5 rounded-2xl shadow-lg space-y-1">
+      <div class="bg-slate-900/80 border border-indigo-500/20 p-3.5 rounded-2xl shadow-lg space-y-1">
         <div class="flex justify-between items-center text-slate-400">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-purple-300">Reembolsos Pend.</span>
-          <i data-lucide="refresh-cw" class="w-4 h-4 text-purple-300"></i>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-accent-cyan">Productos Flash</span>
+          <i data-lucide="package" class="w-4 h-4 text-accent-cyan"></i>
         </div>
-        <p id="metrica-reembolsos-pendientes" class="text-base sm:text-xl font-black text-purple-300">$0.00</p>
-        <span id="metrica-productos-total" class="hidden">0</span>
+        <p id="metrica-productos-total" class="text-base sm:text-xl font-black text-accent-cyan">0</p>
       </div>
     </div>
 
@@ -355,7 +359,7 @@
         <i data-lucide="list-ordered" class="w-4 h-4 text-accent-yellow"></i> Pedidos y Carreras (<span id="cant-admin-pedidos">0</span>)
       </button>
       <button onclick="cambiarPestana('choferes')" id="tab-admin-choferes" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
-        <i data-lucide="users" class="w-4 h-4 text-purple-400"></i> Choferes, Códigos & Balances (<span id="cant-admin-choferes-badge" class="font-black">0</span>)
+        <i data-lucide="users" class="w-4 h-4"></i> Choferes & Códigos (<span id="cant-admin-choferes-badge" class="font-black">0</span>)
       </button>
       <button onclick="cambiarPestana('radar')" id="tab-admin-radar" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 flex items-center gap-2 whitespace-nowrap transition">
         <i data-lucide="radar" class="w-4 h-4 text-emerald-400 animate-pulse"></i> Radar GPS Satelital (<span id="cant-choferes-gps-badge" class="font-black text-emerald-400">0</span>)
@@ -419,16 +423,15 @@
                 <th class="p-3.5">Cliente / Teléfono</th>
                 <th class="p-3.5">Local Asignado</th>
                 <th class="p-3.5">Monto Total</th>
-                <th class="p-3.5">Paso Chofer</th>
-                <th class="p-3.5">Pago Tienda / Reembolso</th>
-                <th class="p-3.5">Factura</th>
+                <th class="p-3.5">Paso del Chofer</th>
+                <th class="p-3.5">Pago Tienda</th>
                 <th class="p-3.5">Chofer</th>
                 <th class="p-3.5 text-center">Acciones</th>
               </tr>
             </thead>
             <tbody id="tabla-pedidos-body" class="divide-y divide-slate-800/60 font-medium">
               <tr>
-                <td colspan="9" class="p-8 text-center text-slate-500">
+                <td colspan="8" class="p-8 text-center text-slate-500">
                   <i data-lucide="loader-2" class="w-6 h-6 animate-spin mx-auto mb-2 text-indigo-400"></i>
                   Cargando órdenes desde Firebase...
                 </td>
@@ -439,7 +442,7 @@
       </div>
     </section>
 
-    <!-- ================= PESTAÑA: CHOFERES, CÓDIGOS & DOBLE BALANCE SEPARADO ================= -->
+    <!-- ================= PESTAÑA: CHOFERES Y CÓDIGOS DE ACEPTACIÓN ================= -->
     <section id="sec-admin-choferes" class="space-y-4 hidden">
       <div id="contenedor-notificaciones-retiro" class="bg-amber-950/30 border-2 border-amber-500/50 rounded-2xl p-4 shadow-xl space-y-3 hidden">
         <div class="flex items-center justify-between border-b border-amber-500/30 pb-2">
@@ -457,18 +460,16 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-3">
           <div>
             <h3 class="text-sm font-black text-white flex items-center gap-2">
-              <i data-lucide="shield-check" class="w-5 h-5 text-accent-yellow"></i> Directorio de Choferes, Códigos & Balances Separados
+              <i data-lucide="shield-check" class="w-5 h-5 text-accent-yellow"></i> Directorio y Autorización de Choferes
             </h3>
-            <p class="text-[11px] text-slate-400">
-              Cada chofer tiene dos balances independientes: <b>Ganancia por Servicios ($1.00 por carrera)</b> y <b>Reembolsos por Compras</b> (plata de productos que pagó).
-            </p>
+            <p class="text-[11px] text-slate-400">Revisa los Códigos de Aceptación, autoriza nuevos choferes o envíales su código por WhatsApp.</p>
           </div>
           <span class="text-[10px] bg-indigo-950 text-indigo-300 border border-indigo-800/40 px-2.5 py-1 rounded-xl font-bold">
             Sincronización en Tiempo Real
           </span>
         </div>
 
-        <div id="grid-choferes-admin" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        <div id="grid-choferes-admin" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           <div class="text-slate-500 text-xs py-6 text-center col-span-full">Cargando choferes registrados...</div>
         </div>
       </div>
@@ -766,7 +767,7 @@
 
   </div>
 
-  <!-- ================= MODAL: DETALLE Y EDICIÓN DE ORDEN (CON FLUJO DE 4 PASOS & PAGO MÓVIL) ================= -->
+  <!-- ================= MODAL: DETALLE Y EDICIÓN DE ORDEN (CON FLUJO DE 4 PASOS) ================= -->
   <div id="modal-admin-detalle-pedido" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border border-indigo-500/40 w-full max-w-lg rounded-3xl p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto no-scrollbar">
       
@@ -793,7 +794,7 @@
         <div class="grid grid-cols-4 gap-1 text-[9px] font-bold text-center">
           <div id="adm-step-1" class="p-1.5 rounded-lg bg-slate-900 text-slate-500 border border-slate-800">1. Aceptada</div>
           <div id="adm-step-2" class="p-1.5 rounded-lg bg-slate-900 text-slate-500 border border-slate-800">2. En Local</div>
-          <div id="adm-step-3" class="p-1.5 rounded-lg bg-slate-900 text-slate-500 border border-slate-800">3. Pago Admin</div>
+          <div id="adm-step-3" class="p-1.5 rounded-lg bg-slate-900 text-slate-500 border border-slate-800">3. Pago Tienda</div>
           <div id="adm-step-4" class="p-1.5 rounded-lg bg-slate-900 text-slate-500 border border-slate-800">4. Factura & Fin</div>
         </div>
       </div>
@@ -810,26 +811,26 @@
           </div>
         </div>
 
-        <!-- SECCIÓN PASO 3 & FACTURA: COMPRA EN TIENDA / REEMBOLSO & TRANSFERENCIA PAGO MÓVIL ADMIN -->
+        <!-- SECCIÓN PASO 3 & FACTURA: COMPRA EN TIENDA & TRANSFERENCIA PAGO MÓVIL ADMIN O REEMBOLSO -->
         <div id="adm-caja-factura-chofer" class="bg-slate-950 p-3.5 rounded-2xl border-2 border-amber-500/40 space-y-3">
           <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-            <span id="adm-txt-titulo-modal-pago" class="text-amber-300 font-bold text-xs flex items-center gap-1.5">
-              <i data-lucide="receipt" class="w-4 h-4"></i> Paso 3: Pago en Comercio (Reporte Chofer):
+            <span class="text-amber-300 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="receipt" class="w-4 h-4"></i> Paso 3: Pago en Comercio:
             </span>
             <span id="adm-modal-monto-factura-chofer" class="text-white font-mono font-black text-sm">$0.00</span>
           </div>
 
-          <!-- DATOS PAGO MÓVIL (COMERCIO O CHOFER) -->
-          <div id="adm-caja-datos-pm-tienda" class="bg-slate-900 p-2.5 rounded-xl border border-indigo-500/30 space-y-1.5">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-1">
-              <span id="adm-lbl-pm-destinatario" class="text-[10px] font-bold text-accent-cyan flex items-center gap-1">
-                <i data-lucide="smartphone" class="w-3.5 h-3.5"></i> Datos Pago Móvil:
+          <!-- DATOS PAGO MÓVIL DEL COMERCIO EN DETALLE -->
+          <div id="adm-caja-datos-pm-tienda" class="bg-slate-900 p-2.5 rounded-xl border border-indigo-500/30 space-y-1.5 text-xs">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-1">
+              <span class="text-[10px] font-bold text-accent-cyan flex items-center gap-1">
+                <i data-lucide="smartphone" class="w-3.5 h-3.5"></i> Pago Móvil del Comercio:
               </span>
-              <button type="button" onclick="copiarDatosPagoMovilDetalle()" class="text-[9px] bg-indigo-600/30 text-accent-cyan hover:bg-indigo-600 px-2 py-0.5 rounded font-mono font-bold">
-                Copiar Datos 📋
+              <button type="button" onclick="copiarDatosPagoMovilDetalle()" class="text-[9px] bg-indigo-600/30 text-accent-cyan hover:bg-indigo-600/50 px-2 py-0.5 rounded font-mono font-bold flex items-center gap-1 border border-indigo-500/30">
+                <i data-lucide="copy" class="w-2.5 h-2.5"></i> Copiar
               </button>
             </div>
-            <div class="grid grid-cols-2 gap-1 text-[10px]">
+            <div class="grid grid-cols-2 gap-1.5 text-[10px]">
               <div><span class="text-slate-400">Banco:</span> <b id="adm-modal-pm-banco" class="text-white">---</b></div>
               <div><span class="text-slate-400">Teléfono:</span> <b id="adm-modal-pm-tel" class="text-accent-yellow font-mono">---</b></div>
               <div class="col-span-2"><span class="text-slate-400">Cédula/RIF:</span> <b id="adm-modal-pm-ci" class="text-white font-mono">---</b></div>
@@ -849,13 +850,12 @@
           </button>
 
           <!-- COMPROBANTE / FACTURA OFICIAL DADA POR EL COMERCIO (PASO 4) -->
-          <div id="adm-caja-foto-factura" class="hidden pt-2 border-t border-slate-800">
-            <span class="text-[10px] font-bold text-slate-400 block mb-1">Paso 4: Factura Oficial Entregada por el Comercio (Clic para ampliar):</span>
-            <div class="block group relative rounded-xl overflow-hidden border border-amber-500/30 cursor-pointer" onclick="verFotoGrandeAdmin(document.getElementById('adm-img-foto-factura').src)">
+          <div id="adm-caja-foto-factura" class="hidden pt-1 border-t border-slate-800">
+            <span class="text-[10px] font-bold text-slate-400 block mb-1">Paso 4: Factura Oficial Entregada por el Comercio:</span>
+            <a id="adm-link-foto-factura" href="#" target="_blank" class="block group relative rounded-xl overflow-hidden border border-amber-500/30">
               <img id="adm-img-foto-factura" class="w-full h-36 object-cover">
               <span class="absolute inset-0 bg-slate-950/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-xs font-bold text-white">Ver Factura en Grande 🔍</span>
-            </div>
-            <a id="adm-link-foto-factura" href="#" target="_blank" class="hidden">Abrir enlace</a>
+            </a>
           </div>
         </div>
 
@@ -947,12 +947,6 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- VISOR DE FACTURA GRANDE ADMIN -->
-  <div id="modal-foto-grande-admin" class="fixed inset-0 bg-black/95 z-[200] flex items-center justify-center p-4 hidden" onclick="cerrarFotoGrandeAdmin()">
-    <img id="img-lightbox-grande-admin" src="" class="max-w-full max-h-[90vh] rounded-2xl object-contain border border-white/20">
-    <button onclick="cerrarFotoGrandeAdmin()" class="absolute top-4 right-4 bg-white/20 text-white rounded-full p-2.5 text-xs font-bold">✕ Cerrar</button>
   </div>
 
   <!-- ================= MODAL: AGG / EDITAR COMERCIO DE COMPRA OFICIAL ================= -->
@@ -1255,16 +1249,6 @@
       return t;
     }
 
-    function verFotoGrandeAdmin(src) {
-      if (!src) return;
-      document.getElementById('img-lightbox-grande-admin').src = src;
-      document.getElementById('modal-foto-grande-admin').classList.remove('hidden');
-    }
-
-    function cerrarFotoGrandeAdmin() {
-      document.getElementById('modal-foto-grande-admin').classList.add('hidden');
-    }
-
     // ENTRADA DIRECTA: INICIALIZACIÓN SIN BARRERAS DE LOGIN
     window.onload = () => {
       cargarAjustesWhatsAppGuardados();
@@ -1358,7 +1342,7 @@
         actualizarMarcadoresRadarAdmin();
       });
 
-      // 5. Pedidos con Detección en Tiempo Real de Nuevos Pedidos y Pagos / Reembolsos en Tienda
+      // 5. Pedidos con Detección en Tiempo Real de Nuevos Pedidos y Pagos en Tienda
       let pedidosPreviosIds = null;
       let pedidosPreviosObj = {};
 
@@ -1376,12 +1360,13 @@
             mostrarModalAlertaNuevoPedidoAdmin(primerId, nuevos[primerId]);
           }
 
-          // B) Detectar Chofer Solicitando Pago en Tienda o Reembolso (Paso 3)
+          // B) Detectar Chofer Solicitando Pago en Tienda (Paso 3) o Chofer que pagó de su bolsillo
           idsNuevos.forEach(id => {
             const p = nuevos[id];
             const prev = pedidosPreviosObj[id];
-            const m = parseFloat(p.montoFacturaTienda || p.montoGastoChofer || 0);
-            const solicitoPagoAhora = p && (p.estadoPagoAdmin === 'pendiente' || p.solicitudReembolso === 'pendiente') && m > 0;
+            const montoTienda = parseFloat(p.montoFacturaTienda || p.montoGastoChofer || 0);
+            
+            const solicitoPagoAhora = p && (p.estadoPagoAdmin === 'pendiente' || p.solicitudReembolso === 'pendiente') && montoTienda > 0;
             const yaEstabaNotificado = prev && (prev.estadoPagoAdmin === 'pendiente' || prev.solicitudReembolso === 'pendiente');
             
             if (solicitoPagoAhora && !yaEstabaNotificado) {
@@ -1822,55 +1807,54 @@
       cerrarModalAlertaNuevoPedido();
     }
 
-    // ================= ALERTA DE PAGO EN TIENDA / REEMBOLSO (PASO 3) =================
+    // ================= ALERTA DE PAGO EN TIENDA (PASO 3: PAGO MÓVIL AL COMERCIO O REEMBOLSO CHOFER) =================
     function mostrarModalAlertaPagoTiendaAdmin(id, p) {
       pedidoAlertaPagoId = id;
       const modal = document.getElementById('modal-alerta-pago-tienda-admin');
       if (!modal) return;
 
-      const m = parseFloat(p.montoFacturaTienda || p.montoGastoChofer || 0);
+      const monto = parseFloat(p.montoFacturaTienda || p.montoGastoChofer || 0);
       document.getElementById('txt-pago-tienda-chofer-nom').innerText = `Chofer: ${p.chofer || 'Chofer'} (${p.choferTelefono || ''})`;
       document.getElementById('txt-pago-tienda-local-nom').innerText = `Local (Punto A): ${p.tiendaNombre || 'Comercio en Nirgua'}`;
-      document.getElementById('txt-pago-tienda-monto').innerText = `$${m.toFixed(2)}`;
+      document.getElementById('txt-pago-tienda-monto').innerText = `$${monto.toFixed(2)}`;
 
-      const badge = document.getElementById('badge-tipo-alerta-pago-admin');
-      const pmTitulo = document.getElementById('txt-pm-titulo-alerta');
+      const badgeAlerta = document.getElementById('badge-tipo-alerta-pago-admin');
+      const cajaPm = document.getElementById('caja-alerta-datos-pago-movil');
+      const cajaReembolso = document.getElementById('caja-alerta-reembolso-factura');
+      const btnConfirmarTxt = document.getElementById('txt-btn-confirmar-pago-tienda');
+      const descTxt = document.getElementById('txt-desc-alerta-pago-tienda');
       const subMonto = document.getElementById('txt-subtitulo-monto-alerta');
-      const cajaFactura = document.getElementById('caja-alerta-reembolso-factura');
-      const btnTxt = document.getElementById('txt-btn-confirmar-pago-tienda');
 
       if (p.modalidadPagoTienda === 'chofer_paga') {
-        badge.className = "bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider";
-        badge.innerText = "💸 SOLICITUD DE REEMBOLSO (CHOFER PAGÓ LA COMPRA)";
-        pmTitulo.innerText = "👤 DATOS PAGO MÓVIL DEL CHOFER (RECEPTOR):";
-        subMonto.innerText = "Monto Exacto a Reembolsar al Chofer por Pago Móvil:";
+        badgeAlerta.className = "bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider";
+        badgeAlerta.innerText = "💸 CHOFER PAGÓ EN TIENDA (SOLICITA REEMBOLSO)";
+        subMonto.innerText = "Monto Pagado por el Chofer a Reembolsar:";
+        cajaPm.classList.add('hidden');
 
-        const pmCh = p.pagoMovilChofer || {};
-        document.getElementById('txt-alerta-pm-banco').innerText = pmCh.banco || 'Banesco / BDV';
-        document.getElementById('txt-alerta-pm-tel').innerText = pmCh.telefono || p.choferTelefono || '---';
-        document.getElementById('txt-alerta-pm-ci').innerText = pmCh.cedula || '---';
+        if (p.fotoFacturaUrl || p.fotoFacturaReembolsoUrl) {
+          cajaReembolso.classList.remove('hidden');
+          document.getElementById('img-alerta-factura-chofer').src = p.fotoFacturaUrl || p.fotoFacturaReembolsoUrl;
+          document.getElementById('link-alerta-factura-chofer').href = p.fotoFacturaUrl || p.fotoFacturaReembolsoUrl;
+        } else {
+          cajaReembolso.classList.add('hidden');
+        }
 
-        btnTxt.innerText = `✓ CONFIRMAR REEMBOLSO PAGADO AL CHOFER ($${m.toFixed(2)})`;
+        descTxt.innerText = "💡 El chofer pagó el monto en la tienda de su propio dinero y adjuntó la factura oficial. Realiza la transferencia de reembolso por Pago Móvil a su cuenta.";
+        btnConfirmarTxt.innerText = `✓ CONFIRMAR REEMBOLSO AL CHOFER ($${monto.toFixed(2)})`;
       } else {
-        badge.className = "bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider";
-        badge.innerText = "PASO 3: CHOFER ESPERANDO PAGO EN TIENDA";
-        pmTitulo.innerText = "🏪 DATOS PAGO MÓVIL DEL COMERCIO:";
+        badgeAlerta.className = "bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider";
+        badgeAlerta.innerText = "PASO 3: CHOFER ESPERANDO PAGO EN TIENDA";
         subMonto.innerText = "Monto Exacto a Transferir por Pago Móvil:";
+        cajaReembolso.classList.add('hidden');
+        cajaPm.classList.remove('hidden');
 
-        const pmT = p.pagoMovilTienda || {};
-        document.getElementById('txt-alerta-pm-banco').innerText = pmT.banco || '---';
-        document.getElementById('txt-alerta-pm-tel').innerText = pmT.telefono || '---';
-        document.getElementById('txt-alerta-pm-ci').innerText = pmT.cedulaRif || '---';
+        const pm = p.pagoMovilTienda || {};
+        document.getElementById('txt-alerta-pm-banco').innerText = pm.banco || 'No especificado';
+        document.getElementById('txt-alerta-pm-tel').innerText = pm.telefono || 'No especificado';
+        document.getElementById('txt-alerta-pm-ci').innerText = pm.cedulaRif || 'No especificado';
 
-        btnTxt.innerText = `✓ CONFIRMAR PAGO REALIZADO (Pago Móvil Transferido)`;
-      }
-
-      const foto = p.fotoFacturaUrl || p.fotoFacturaReembolsoUrl;
-      if (foto) {
-        cajaFactura.classList.remove('hidden');
-        document.getElementById('img-alerta-factura-chofer').src = foto;
-      } else {
-        cajaFactura.classList.add('hidden');
+        descTxt.innerText = "💡 El chofer indicó los datos de Pago Móvil de la caja del comercio. Realiza la transferencia directa por Pago Móvil al local y presiona confirmar.";
+        btnConfirmarTxt.innerText = `✓ CONFIRMAR PAGO REALIZADO (Pago Móvil Transferido)`;
       }
 
       modal.classList.remove('hidden');
@@ -1882,8 +1866,15 @@
       const t = document.getElementById('txt-alerta-pm-tel').innerText;
       const c = document.getElementById('txt-alerta-pm-ci').innerText;
       const m = document.getElementById('txt-pago-tienda-monto').innerText;
-      const texto = `Pago Móvil:\nBanco: ${b}\nTeléfono: ${t}\nCédula/RIF: ${c}\nMonto: ${m}`;
-      navigator.clipboard.writeText(texto).then(() => alert("✓ Datos de Pago Móvil copiados al portapapeles."));
+      const texto = `Pago Móvil Comercio:\nBanco: ${b}\nTeléfono: ${t}\nCédula/RIF: ${c}\nMonto: ${m}`;
+      
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(() => {
+          alert("✓ Datos de Pago Móvil del comercio copiados al portapapeles.");
+        }).catch(() => alert(texto));
+      } else {
+        alert(texto);
+      }
     }
 
     function copiarDatosPagoMovilDetalle() {
@@ -1891,13 +1882,19 @@
       const t = document.getElementById('adm-modal-pm-tel').innerText;
       const c = document.getElementById('adm-modal-pm-ci').innerText;
       const m = document.getElementById('adm-modal-monto-factura-chofer').innerText;
-      const texto = `Pago Móvil:\nBanco: ${b}\nTeléfono: ${t}\nCédula/RIF: ${c}\nMonto: ${m}`;
-      navigator.clipboard.writeText(texto).then(() => alert("✓ Datos de Pago Móvil copiados al portapapeles."));
+      const texto = `Pago Móvil Comercio:\nBanco: ${b}\nTeléfono: ${t}\nCédula/RIF: ${c}\nMonto: ${m}`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(() => {
+          alert("✓ Datos de Pago Móvil del comercio copiados al portapapeles.");
+        }).catch(() => alert(texto));
+      } else {
+        alert(texto);
+      }
     }
 
     function cerrarModalAlertaPagoTiendaAdmin() {
       document.getElementById('modal-alerta-pago-tienda-admin').classList.add('hidden');
-      pedidoAlertaPagoId = null;
     }
 
     function confirmarPagoTiendaDesdeAlerta() {
@@ -1924,8 +1921,13 @@
       const montoGasto = parseFloat(p.montoFacturaTienda || p.montoGastoChofer || 0);
       const chNom = p.chofer || 'Chofer';
       const chTel = p.choferTelefono || '';
+      const esPagoChofer = (p.modalidadPagoTienda === 'chofer_paga');
 
-      if (confirm(`¿Confirmas que ya revisaste y validaste el monto de $${montoGasto.toFixed(2)} por Pago Móvil?`)) {
+      const pregunta = esPagoChofer 
+        ? `¿Confirmas que ya realizaste la transferencia de reembolso de $${montoGasto.toFixed(2)} por Pago Móvil al chofer ${chNom}?`
+        : `¿Confirmas que ya realizaste la transferencia por Pago Móvil de $${montoGasto.toFixed(2)} al comercio ${p.tiendaNombre || ''}?`;
+
+      if (confirm(pregunta)) {
         db.ref(`pedidos/${pid}`).update({
           estadoPagoAdmin: 'aprobado',
           solicitudReembolso: 'aprobado',
@@ -1935,7 +1937,7 @@
         db.ref('solicitudes_pagos_choferes').push({
           pedidoId: pid,
           orden: p.orden || `#FLASH-${pid.substring(0, 6)}`,
-          tipo: p.modalidadPagoTienda === 'chofer_paga' ? 'reembolso_compra_chofer' : 'pago_compra_tienda_admin',
+          tipo: esPagoChofer ? 'reembolso_compra_chofer' : 'pago_compra_tienda_admin',
           chofer: chNom,
           choferTelefono: chTel,
           monto: montoGasto,
@@ -1944,7 +1946,7 @@
           fecha: new Date().toISOString()
         });
 
-        alert("✓ Pago marcado como transferido exitosamente por Pago Móvil.");
+        alert("✓ Pago registrado como transferido exitosamente por Pago Móvil.");
         cerrarModalAlertaPagoTiendaAdmin();
         if (pedidoSeleccionadoId === pid) {
           abrirModalAdminDetalle(pid);
@@ -1952,7 +1954,7 @@
       }
     }
 
-    // ================= CHOFERES, CÓDIGOS, BALANCES SEPARADOS & RETIROS =================
+    // ================= CHOFERES, CÓDIGOS DE ACEPTACIÓN & RETIROS =================
     function renderizarChoferesAdmin() {
       const grid = document.getElementById('grid-choferes-admin');
       const contNotificaciones = document.getElementById('contenedor-notificaciones-retiro');
@@ -1975,7 +1977,6 @@
 
       keys.forEach(tel => {
         const c = choferesBD[tel];
-        const telNorm = normalizarTelefono(c.telefono || tel);
         const esPendiente = (c.estado === 'pendiente' || !c.estado);
         if (esPendiente) choferesPendientesCount++;
 
@@ -1986,31 +1987,18 @@
         }
 
         let carrerasFinalizadas = 0;
-        let gananciasServicioTotal = 0;
-        let reembolsosComprasPendientes = 0;
-        let reembolsosComprasPagados = 0;
+        let gananciaAcumulada = 0;
 
         Object.keys(todosLosPedidosAdmin).forEach(idPed => {
           const ped = todosLosPedidosAdmin[idPed];
-          if (ped.choferTelefono && normalizarTelefono(ped.choferTelefono) === telNorm) {
-            if (ped.estado === 'entregado') {
-              carrerasFinalizadas++;
-              gananciasServicioTotal += parseFloat(ped.gananciaChofer || 1.00);
-            }
-
-            if (ped.modalidadPagoTienda === 'chofer_paga') {
-              const montoG = parseFloat(ped.montoFacturaTienda || ped.montoGastoChofer || 0);
-              if (ped.solicitudReembolso === 'aprobado' || ped.estadoPagoAdmin === 'aprobado') {
-                reembolsosComprasPagados += montoG;
-              } else {
-                reembolsosComprasPendientes += montoG;
-              }
-            }
+          if (ped.choferTelefono === tel && ped.estado === 'entregado') {
+            carrerasFinalizadas++;
+            gananciaAcumulada += parseFloat(ped.gananciaChofer || 1.00);
           }
         });
 
-        const pagadoServicios = parseFloat(c.totalPagadoServicios !== undefined ? c.totalPagadoServicios : (c.totalPagado || 0));
-        const saldoServiciosPendiente = Math.max(0, gananciasServicioTotal - pagadoServicios);
+        const pagadoChofer = parseFloat(c.totalPagado || 0);
+        const saldoPendienteLiquidar = Math.max(0, gananciaAcumulada - pagadoChofer);
         const estaEnLinea = c.enLinea === true;
 
         if (c.solicitudRetiro && c.solicitudRetiro.estado === 'pendiente') {
@@ -2022,7 +2010,7 @@
                   <span class="font-black text-white block">🛵 ${c.nombre}</span>
                   <span class="text-[10px] text-slate-400">Solicitó: <strong class="text-accent-yellow">$${parseFloat(c.solicitudRetiro.monto).toFixed(2)}</strong> (${c.solicitudRetiro.metodo})</span>
                 </div>
-                <button onclick="liquidarSaldoServiciosChofer('${telNorm}', ${c.solicitudRetiro.monto}, ${gananciasServicioTotal})" class="btn-tactil bg-accent-emerald text-slate-950 font-black px-2.5 py-1.5 rounded-lg text-[10px]">
+                <button onclick="liquidarSaldoChofer('${c.telefono}', ${c.solicitudRetiro.monto}, ${gananciaAcumulada})" class="btn-tactil bg-accent-emerald text-slate-950 font-black px-2.5 py-1.5 rounded-lg text-[10px]">
                   Aprobar y Pagar
                 </button>
               </div>
@@ -2030,67 +2018,59 @@
           }
         }
 
+        const telLimpio = normalizarTelefono(c.telefono || tel);
+
         const badgeConexion = estaEnLinea 
           ? `<span class="bg-emerald-500/20 text-accent-emerald border border-emerald-500/40 text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-ping"></span> EN LÍNEA</span>`
           : `<span class="bg-slate-800 text-slate-400 border border-slate-700 text-[9px] font-bold px-2 py-0.5 rounded-full">🔴 DESCONECTADO</span>`;
 
         grid.innerHTML += `
-          <div class="bg-slate-950 p-4 rounded-2xl border ${esPendiente ? 'border-amber-500/80 shadow-[0_0_20px_rgba(255,184,0,0.25)]' : 'border-slate-800'} space-y-3 flex flex-col justify-between">
-            <div class="space-y-3">
-              <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
-                <div>
-                  <h4 class="font-black text-white text-xs flex items-center gap-1.5">🛵 ${c.nombre}</h4>
-                  <p class="text-[10px] text-slate-400">📱 ${c.telefono} • ${c.vehiculo || 'Moto'} (${c.placa || 'Sin placa'})</p>
-                </div>
-                <div class="flex flex-col items-end gap-1">
-                  ${badgeConexion}
-                  <span class="text-[9px] font-black uppercase px-2 py-0.2 rounded-full ${esPendiente ? 'bg-amber-500/20 text-accent-yellow border border-amber-500/40 animate-pulse' : 'bg-emerald-500/20 text-accent-emerald border border-emerald-500/30'}">
-                    ${esPendiente ? '⏳ PENDIENTE' : '🟢 AUTORIZADO'}
-                  </span>
-                </div>
+          <div class="bg-slate-950 p-4 rounded-2xl border ${esPendiente ? 'border-amber-500/80 shadow-[0_0_20px_rgba(255,184,0,0.25)]' : 'border-slate-800'} space-y-3">
+            
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+              <div>
+                <h4 class="font-black text-white text-xs flex items-center gap-1.5">🛵 ${c.nombre}</h4>
+                <p class="text-[10px] text-slate-400">📱 ${c.telefono} • ${c.vehiculo || 'Moto'} (${c.placa || 'Sin placa'})</p>
               </div>
-
-              <!-- CÓDIGO DE ACEPTACIÓN -->
-              <div class="bg-indigo-950/40 border border-indigo-500/30 p-2.5 rounded-xl flex items-center justify-between">
-                <div>
-                  <span class="text-[10px] text-indigo-300 font-bold block">Código de Aceptación:</span>
-                  <span class="font-mono text-base font-black text-accent-cyan tracking-widest">${codigoChofer || '---'}</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <button onclick="enviarCodigoChoferWhatsApp('${c.telefono}', '${c.nombre}', '${codigoChofer}')" class="btn-tactil bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black px-2.5 py-1.5 rounded-lg text-[10px] flex items-center gap-1 shadow">
-                    <i data-lucide="send" class="w-3 h-3"></i> Enviar WS 📲
-                  </button>
-                  <button onclick="regenerarCodigoChofer('${c.telefono}')" title="Generar otro código" class="btn-tactil p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">
-                    <i data-lucide="refresh-cw" class="w-3 h-3"></i>
-                  </button>
-                </div>
+              <div class="flex flex-col items-end gap-1">
+                ${badgeConexion}
+                <span class="text-[9px] font-black uppercase px-2 py-0.2 rounded-full ${esPendiente ? 'bg-amber-500/20 text-accent-yellow border border-amber-500/40 animate-pulse' : 'bg-emerald-500/20 text-accent-emerald border border-emerald-500/30'}">
+                  ${esPendiente ? '⏳ PENDIENTE' : '🟢 AUTORIZADO'}
+                </span>
               </div>
+            </div>
 
-              <!-- DOS BALANCES SEPARADOS (GANANCIA SERVICIOS VS REEMBOLSOS COMPRAS) -->
-              <div class="grid grid-cols-2 gap-2 text-xs">
-                <div class="bg-slate-900 p-2.5 rounded-xl border border-emerald-500/30 space-y-1">
-                  <span class="text-[9px] text-emerald-400 font-bold block uppercase">Ganancia Servicios</span>
-                  <span class="text-sm font-black text-emerald-400 font-mono block">$${saldoServiciosPendiente.toFixed(2)}</span>
-                  <span class="text-[8px] text-slate-500 block leading-none">${carrerasFinalizadas} carreras realizadas</span>
-                  <button onclick="liquidarSaldoServiciosChofer('${telNorm}', ${saldoServiciosPendiente}, ${gananciasServicioTotal})" class="btn-tactil w-full mt-1 bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-slate-950 font-black py-1.5 rounded-lg text-[9px] transition">
-                    💸 Pagar Servicios
-                  </button>
-                </div>
+            <!-- CÓDIGO DE ACEPTACIÓN -->
+            <div class="bg-indigo-950/40 border border-indigo-500/30 p-2.5 rounded-xl flex items-center justify-between">
+              <div>
+                <span class="text-[10px] text-indigo-300 font-bold block">Código de Aceptación:</span>
+                <span class="font-mono text-base font-black text-accent-cyan tracking-widest">${codigoChofer || '---'}</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button onclick="enviarCodigoChoferWhatsApp('${c.telefono}', '${c.nombre}', '${codigoChofer}')" class="btn-tactil bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black px-2.5 py-1.5 rounded-lg text-[10px] flex items-center gap-1 shadow">
+                  <i data-lucide="send" class="w-3 h-3"></i> Enviar WS 📲
+                </button>
+                <button onclick="regenerarCodigoChofer('${c.telefono}')" title="Generar otro código" class="btn-tactil p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">
+                  <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+                </button>
+              </div>
+            </div>
 
-                <div class="bg-slate-900 p-2.5 rounded-xl border border-purple-500/30 space-y-1">
-                  <span class="text-[9px] text-purple-300 font-bold block uppercase">Reembolsos Compras</span>
-                  <span class="text-sm font-black text-purple-300 font-mono block">$${reembolsosComprasPendientes.toFixed(2)}</span>
-                  <span class="text-[8px] text-slate-500 block leading-none">$${reembolsosComprasPagados.toFixed(2)} reembolsados</span>
-                  <button onclick="liquidarTodosLosReembolsosChofer('${telNorm}', ${reembolsosComprasPendientes})" class="btn-tactil w-full mt-1 bg-purple-600/30 hover:bg-purple-600 text-purple-300 hover:text-white font-black py-1.5 rounded-lg text-[9px] transition">
-                    🔄 Pagar Reembolso
-                  </button>
-                </div>
+            <!-- PRODUCCIÓN -->
+            <div class="bg-slate-900 p-2.5 rounded-xl text-xs space-y-1.5 border border-slate-800">
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400 text-[10px]">Carreras Finalizadas:</span>
+                <span class="font-bold text-white">${carrerasFinalizadas} entregas</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400 text-[10px]">Saldo Pendiente a Pagar:</span>
+                <span class="font-black text-accent-cyan">$${saldoPendienteLiquidar.toFixed(2)}</span>
               </div>
             </div>
 
             <!-- ACCIONES -->
-            <div class="flex gap-2 pt-2 border-t border-slate-800/80">
-              <a href="https://wa.me/${telNorm}?text=${encodeURIComponent('Hola ' + c.nombre + ', te contactamos de la Administración de Pedidos Flash Nirgua.')}" target="_blank" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-accent-emerald border border-emerald-500/30 font-bold px-2.5 py-2 rounded-xl text-xs flex items-center justify-center gap-1 transition" title="Enviar WhatsApp al chofer">
+            <div class="flex gap-2 pt-1">
+              <a href="https://wa.me/${telLimpio}?text=${encodeURIComponent('Hola ' + c.nombre + ', te contactamos de la Administración de Pedidos Flash Nirgua.')}" target="_blank" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-accent-emerald border border-emerald-500/30 font-bold px-2.5 py-2 rounded-xl text-xs flex items-center justify-center gap-1 transition" title="Enviar WhatsApp al chofer">
                 <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
               </a>
 
@@ -2099,7 +2079,10 @@
                   <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> ✓ APROBAR DIRECTAMENTE
                 </button>
               ` : `
-                <button onclick="cambiarEstadoChoferBD('${c.telefono}', 'pendiente')" title="Suspender chofer" class="btn-tactil flex-1 bg-amber-500/20 text-accent-yellow hover:bg-amber-500/30 font-bold py-2 rounded-xl text-[10px] border border-amber-500/30 transition">
+                <button onclick="liquidarSaldoChofer('${c.telefono}', ${saldoPendienteLiquidar}, ${gananciaAcumulada})" class="btn-tactil flex-1 bg-accent-cyan hover:bg-cyan-400 text-slate-950 font-black py-2 rounded-xl text-xs transition shadow-md">
+                  💸 Liquidar Saldo
+                </button>
+                <button onclick="cambiarEstadoChoferBD('${c.telefono}', 'pendiente')" title="Suspender chofer" class="btn-tactil bg-amber-500/20 text-accent-yellow hover:bg-amber-500/30 font-bold px-2 py-2 rounded-xl text-[10px] border border-amber-500/30 transition">
                   ⏸ Suspender
                 </button>
               `}
@@ -2118,45 +2101,6 @@
 
       document.getElementById('cant-admin-choferes-badge').innerText = choferesPendientesCount + retirosPendientesCount;
       if (window.lucide) lucide.createIcons();
-    }
-
-    function liquidarSaldoServiciosChofer(tel, saldo, total) {
-      if (saldo <= 0) {
-        alert("Este chofer no tiene saldo de servicios pendiente.");
-        return;
-      }
-      if (confirm(`¿Confirmas liquidar $${parseFloat(saldo).toFixed(2)} al chofer por sus carreras?`)) {
-        const telNorm = normalizarTelefono(tel);
-        db.ref(`choferes/${telNorm}`).update({
-          totalPagadoServicios: total,
-          totalPagado: total,
-          solicitudRetiro: null,
-          fechaUltimaLiquidacion: new Date().toISOString()
-        }).then(() => {
-          alert("✓ Ganancias de servicio liquidadas exitosamente.");
-        });
-      }
-    }
-
-    function liquidarTodosLosReembolsosChofer(tel, totalPendiente) {
-      if (totalPendiente <= 0) {
-        alert("Este chofer no tiene reembolsos de compras pendientes.");
-        return;
-      }
-      if (confirm(`¿Confirmas que ya transferiste el reembolso de $${parseFloat(totalPendiente).toFixed(2)} por las compras al chofer?`)) {
-        const telNorm = normalizarTelefono(tel);
-        Object.keys(todosLosPedidosAdmin).forEach(id => {
-          const p = todosLosPedidosAdmin[id];
-          if (p.choferTelefono && normalizarTelefono(p.choferTelefono) === telNorm && p.modalidadPagoTienda === 'chofer_paga' && (p.solicitudReembolso === 'pendiente' || p.estadoPagoAdmin === 'pendiente_reembolso')) {
-            db.ref(`pedidos/${id}`).update({
-              solicitudReembolso: 'aprobado',
-              estadoPagoAdmin: 'aprobado',
-              fechaPagoAdmin: new Date().toISOString()
-            });
-          }
-        });
-        alert("✓ Reembolsos de compras marcados como pagados.");
-      }
     }
 
     function enviarCodigoChoferWhatsApp(telefono, nombre, codigo) {
@@ -2196,6 +2140,23 @@
       }).then(() => {
         alert(`Nuevo código generado: ${nuevoCodigo}`);
       });
+    }
+
+    function liquidarSaldoChofer(telefono, saldoPendiente, totalAcumulado) {
+      if (saldoPendiente <= 0) {
+        alert("Este chofer no tiene saldo pendiente por liquidar.");
+        return;
+      }
+      if (confirm(`¿Confirmas liquidar $${parseFloat(saldoPendiente).toFixed(2)} al chofer?`)) {
+        const tel = normalizarTelefono(telefono);
+        db.ref(`choferes/${tel}`).update({
+          totalPagado: totalAcumulado,
+          solicitudRetiro: null,
+          fechaUltimaLiquidacion: new Date().toISOString()
+        }).then(() => {
+          alert("Liquidación guardada.");
+        });
+      }
     }
 
     function cambiarEstadoChoferBD(telefono, nuevoEstado) {
@@ -2246,7 +2207,7 @@
       });
 
       if (filtrados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-500">No hay órdenes para mostrar.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-500">No hay órdenes para mostrar.</td></tr>`;
         return;
       }
 
@@ -2279,24 +2240,24 @@
           badgePaso = '<span class="bg-emerald-500/20 text-accent-emerald border border-emerald-500/30 text-[10px] font-black px-2 py-0.5 rounded-md">✓ Entregado</span>';
         }
 
-        // ESTADO DE PAGO EN TIENDA / REEMBOLSO CHOFER (PASO 3)
+        // ESTADO DE PAGO EN TIENDA (PASO 3)
         let badgePagoTienda = '<span class="text-slate-500 text-[10px]">--</span>';
         const mFact = parseFloat(p.montoFacturaTienda || p.montoGastoChofer || 0);
         if (mFact > 0) {
           if (p.modalidadPagoTienda === 'chofer_paga') {
-            const listo = p.solicitudReembolso === 'aprobado' || p.estadoPagoAdmin === 'aprobado';
-            badgePagoTienda = `<span class="px-2 py-0.5 rounded-md text-[9px] font-bold ${listo ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-purple-600 text-white font-black animate-pulse'}">Reembolso Chofer ($${mFact.toFixed(2)})</span>`;
+            if (p.solicitudReembolso === 'aprobado' || p.estadoPagoAdmin === 'aprobado') {
+              badgePagoTienda = `<span class="bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-bold px-2 py-0.5 rounded-md">Reembolsado ($${mFact.toFixed(2)})</span>`;
+            } else {
+              badgePagoTienda = `<span class="bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-bold px-2 py-0.5 rounded-md animate-bounce">Reembolso Chofer ($${mFact.toFixed(2)})</span>`;
+            }
           } else {
-            const listo = p.estadoPagoAdmin === 'pagado' || p.estadoPagoAdmin === 'aprobado' || p.solicitudReembolso === 'aprobado';
-            badgePagoTienda = `<span class="px-2 py-0.5 rounded-md text-[9px] font-bold ${listo ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500 text-slate-950 font-black animate-bounce'}">Pago Tienda ($${mFact.toFixed(2)})</span>`;
+            if (p.estadoPagoAdmin === 'pagado' || p.estadoPagoAdmin === 'aprobado' || p.solicitudReembolso === 'aprobado') {
+              badgePagoTienda = `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-md">Admin Pagó ($${mFact.toFixed(2)})</span>`;
+            } else {
+              badgePagoTienda = `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-bold px-2 py-0.5 rounded-md animate-bounce">Pago Móvil Req ($${mFact.toFixed(2)})</span>`;
+            }
           }
         }
-
-        // FACTURA
-        const foto = p.fotoFacturaUrl || p.fotoFacturaReembolsoUrl;
-        const celdaFoto = foto 
-          ? `<button onclick="verFotoGrandeAdmin('${foto}')" class="text-[10px] bg-indigo-600/30 hover:bg-indigo-600/50 text-accent-cyan px-2 py-1 rounded-lg border border-indigo-500/30 font-bold">📸 Ver</button>` 
-          : `<span class="text-slate-500 text-[10px]">Sin foto</span>`;
 
         tbody.innerHTML += `
           <tr class="hover:bg-slate-800/40 transition">
@@ -2313,7 +2274,6 @@
             <td class="p-3.5 font-black text-accent-yellow">$${monto}</td>
             <td class="p-3.5">${badgePaso}</td>
             <td class="p-3.5">${badgePagoTienda}</td>
-            <td class="p-3.5">${celdaFoto}</td>
             <td class="p-3.5 font-bold text-slate-300">${chofer}</td>
             <td class="p-3.5 text-center">
               <div class="flex items-center justify-center gap-1.5">
@@ -2340,7 +2300,7 @@
       document.getElementById('adm-modal-fecha').innerText = p.fecha ? new Date(p.fecha).toLocaleString() : 'Reciente';
       document.getElementById('adm-modal-cliente').innerText = p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente');
       document.getElementById('adm-modal-telefono').innerText = p.telefono || 'Sin especificar';
-      document.getElementById('adm-modal-direccion').innerText = p.cliente ? (p.cliente.direccion || p.direccion) : (p.direccion || 'Sin dirección');
+      document.getElementById('adm-modal-direccion').innerText = p.direccion || 'Sin dirección';
       
       let latGPS = (p.lat !== undefined && p.lat !== null) ? p.lat : p.destinoLat;
       let lngGPS = (p.lng !== undefined && p.lng !== null) ? p.lng : p.destinoLng;
@@ -2415,32 +2375,16 @@
         vehiculoReqEl.innerText = p.vehiculoRequerido || (p.tipoServicio === 'transporte' ? 'Transporte' : 'Cualquiera');
       }
 
-      // PASO 3 & FACTURA: Compra en Comercio / Reembolso Chofer + Datos Pago Móvil
+      // PASO 3 & FACTURA: Compra en Comercio y Factura Chofer
       const cajaFacturaChofer = document.getElementById('adm-caja-factura-chofer');
       if (cajaFacturaChofer) {
         const montoGasto = parseFloat(p.montoFacturaTienda || p.montoGastoChofer || 0);
         const fotoUrl = p.fotoFacturaUrl || p.fotoFacturaReembolsoUrl;
         
-        if (montoGasto > 0 || fotoUrl || p.estado === 'en_local') {
+        if (montoGasto > 0 || fotoUrl || p.estado === 'en_local' || p.modalidadPagoTienda) {
           cajaFacturaChofer.classList.remove('hidden');
           document.getElementById('adm-modal-monto-factura-chofer').innerText = `$${montoGasto.toFixed(2)}`;
           document.getElementById('txt-monto-btn-reembolso').innerText = `$${montoGasto.toFixed(2)}`;
-
-          if (p.modalidadPagoTienda === 'chofer_paga') {
-            document.getElementById('adm-txt-titulo-modal-pago').innerHTML = `<i data-lucide="refresh-cw" class="w-4 h-4"></i> Reembolso de Compra al Chofer:`;
-            document.getElementById('adm-lbl-pm-destinatario').innerHTML = `<i data-lucide="smartphone" class="w-3.5 h-3.5"></i> Pago Móvil del Chofer (Receptor):`;
-            const pmCh = p.pagoMovilChofer || {};
-            document.getElementById('adm-modal-pm-banco').innerText = pmCh.banco || 'Banesco / BDV';
-            document.getElementById('adm-modal-pm-tel').innerText = pmCh.telefono || p.choferTelefono || '---';
-            document.getElementById('adm-modal-pm-ci').innerText = pmCh.cedula || '---';
-          } else {
-            document.getElementById('adm-txt-titulo-modal-pago').innerHTML = `<i data-lucide="receipt" class="w-4 h-4"></i> Paso 3: Pago en Comercio (Reporte Chofer):`;
-            document.getElementById('adm-lbl-pm-destinatario').innerHTML = `<i data-lucide="smartphone" class="w-3.5 h-3.5"></i> Pago Móvil del Comercio:`;
-            const pmT = p.pagoMovilTienda || {};
-            document.getElementById('adm-modal-pm-banco').innerText = pmT.banco || '---';
-            document.getElementById('adm-modal-pm-tel').innerText = pmT.telefono || '---';
-            document.getElementById('adm-modal-pm-ci').innerText = pmT.cedulaRif || '---';
-          }
           
           const cajaFoto = document.getElementById('adm-caja-foto-factura');
           if (fotoUrl) {
@@ -2451,16 +2395,38 @@
             cajaFoto.classList.add('hidden');
           }
 
+          // Datos de Pago Móvil de la tienda (si aplica)
+          const cajaPmDetalle = document.getElementById('adm-caja-datos-pm-tienda');
+          if (p.pagoMovilTienda && (p.pagoMovilTienda.banco || p.pagoMovilTienda.telefono)) {
+            if (cajaPmDetalle) {
+              cajaPmDetalle.classList.remove('hidden');
+              document.getElementById('adm-modal-pm-banco').innerText = p.pagoMovilTienda.banco || '---';
+              document.getElementById('adm-modal-pm-tel').innerText = p.pagoMovilTienda.telefono || '---';
+              document.getElementById('adm-modal-pm-ci').innerText = p.pagoMovilTienda.cedulaRif || '---';
+            }
+          } else {
+            if (cajaPmDetalle) cajaPmDetalle.classList.add('hidden');
+          }
+
           const statusReembolsoEl = document.getElementById('adm-modal-reembolso-status');
           const btnReembolso = document.getElementById('btn-aprobar-reembolso-pago-movil');
+          const esPagoChofer = (p.modalidadPagoTienda === 'chofer_paga');
+
           if (p.estadoPagoAdmin === 'pagado' || p.estadoPagoAdmin === 'aprobado' || p.solicitudReembolso === 'aprobado') {
             statusReembolsoEl.className = "px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-            statusReembolsoEl.innerText = "Monto Aprobado y Validado ✓";
+            statusReembolsoEl.innerText = esPagoChofer ? "Reembolso Chofer Aprobado y Pagado ✓" : "Monto Aprobado y Transferido ✓";
             btnReembolso.classList.add('hidden');
           } else {
             statusReembolsoEl.className = "px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 animate-pulse";
-            statusReembolsoEl.innerText = "Pendiente de Transferencia";
+            statusReembolsoEl.innerText = esPagoChofer ? "Reembolso Chofer Pendiente de Pago" : "Pendiente de Transferencia al Comercio";
             btnReembolso.classList.remove('hidden');
+
+            const btnSpan = btnReembolso.querySelector('span');
+            if (btnSpan) {
+              btnSpan.innerHTML = esPagoChofer
+                ? `Confirmar Reembolso al Chofer (<span id="txt-monto-btn-reembolso">$${montoGasto.toFixed(2)}</span>)`
+                : `Confirmar Pago Móvil al Comercio (<span id="txt-monto-btn-reembolso">$${montoGasto.toFixed(2)}</span>)`;
+            }
           }
         } else {
           cajaFacturaChofer.classList.add('hidden');
@@ -2495,7 +2461,6 @@
       actualizarVisualStepperDetalle(p);
 
       document.getElementById('modal-admin-detalle-pedido').classList.remove('hidden');
-      if (window.lucide) lucide.createIcons();
 
       setTimeout(() => {
         renderizarMiniMapaOrdenAdmin(p);
@@ -2518,7 +2483,7 @@
       } else if (est === 'en_local') {
         if (s1) s1.className = "p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
         if (s2) s2.className = "p-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 font-black animate-pulse";
-        if (p.estadoPagoAdmin === 'pagado' || p.estadoPagoAdmin === 'aprobado') {
+        if (p.estadoPagoAdmin === 'pagado' || p.estadoPagoAdmin === 'aprobado' || p.modalidadPagoTienda === 'chofer_paga') {
           if (s3) s3.className = "p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-black";
         } else if (parseFloat(p.montoFacturaTienda || 0) > 0) {
           if (s3) s3.className = "p-1.5 rounded-lg bg-amber-500/20 text-accent-yellow border border-amber-500/40 font-black animate-bounce";
@@ -2601,6 +2566,7 @@
       marcadoresMiniMapa.forEach(m => mapaModalAdminInstance.removeLayer(m));
       marcadoresMiniMapa = [];
 
+      // Marcador A (Tienda/Comercio) - DRAGGABLE y sincronizado con el Chofer
       const pinA = L.marker([latOrig, lngOrig], {
         draggable: true,
         icon: L.divIcon({ className: 'custom-pin', html: '<div class="pin-jewel-a">A</div>', iconSize: [28, 28] })
@@ -2618,6 +2584,7 @@
         actualizarCoordenadasTiendaPorAdmin(e.latlng.lat, e.latlng.lng);
       });
 
+      // Marcador Cliente (PERSONITA 👤)
       const pinCliente = L.marker([latDest, lngDest], {
         icon: L.divIcon({ 
           className: 'custom-pin', 
@@ -2627,6 +2594,7 @@
       }).addTo(mapaModalAdminInstance).bindPopup(`📍 Cliente: ${p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Destino')}`).openPopup();
       marcadoresMiniMapa.push(pinCliente);
 
+      // Chofer en vivo
       if (p.choferTelefono && choferesBD[p.choferTelefono] && choferesBD[p.choferTelefono].gps) {
         const cGps = choferesBD[p.choferTelefono].gps;
         if (cGps.lat && cGps.lng) {
@@ -3167,7 +3135,6 @@
       let totalPedidos = 0;
       let totalGastos = 0;
       let totalComisiones = 0;
-      let totalReembolsosPend = 0;
 
       Object.keys(tiendasBD).forEach(tid => {
         const cta = cuentasTiendasBD[tid] || {};
@@ -3183,9 +3150,6 @@
         if (p.estado === 'entregado') {
           totalVentas += parseFloat(p.total || p.montoTotal || p.monto || 0);
         }
-        if (p.modalidadPagoTienda === 'chofer_paga' && (p.solicitudReembolso === 'pendiente' || p.estadoPagoAdmin === 'pendiente_reembolso')) {
-          totalReembolsosPend += parseFloat(p.montoFacturaTienda || p.montoGastoChofer || 0);
-        }
       });
 
       gastosBD.forEach(g => {
@@ -3199,7 +3163,6 @@
       document.getElementById('metrica-ganancia-neta').innerText = `$${Math.max(0, gananciaNeta).toFixed(2)}`;
       document.getElementById('metrica-gastos').innerText = `$${totalGastos.toFixed(2)}`;
       document.getElementById('metrica-pedidos').innerText = totalPedidos;
-      document.getElementById('metrica-reembolsos-pendientes').innerText = `$${totalReembolsosPend.toFixed(2)}`;
       document.getElementById('cant-admin-pedidos').innerText = totalPedidos;
     }
 
@@ -3258,6 +3221,7 @@
       let cantComercios = 0;
       let cantClientes = 0;
 
+      // 1. Choferes
       const choferesKeys = Object.keys(choferesBD);
       choferesKeys.forEach(tel => {
         const ch = choferesBD[tel];
@@ -3293,11 +3257,13 @@
         }
       });
 
+      // 2. Pedidos y Comercios
       marcadoresRadarPedidos.forEach(m => mapaRadarAdmin.removeLayer(m));
       marcadoresRadarPedidos = [];
       marcadoresRadarComercios.forEach(m => mapaRadarAdmin.removeLayer(m));
       marcadoresRadarComercios = [];
 
+      // 3. Comercios Aliados (Punto A)
       Object.keys(tiendasBD).forEach(tid => {
         const t = tiendasBD[tid];
         if (t.lat && t.lng) {
@@ -3314,6 +3280,7 @@
         }
       });
 
+      // 4. Pedidos Activos (Punto B: Clientes con Marcador PERSONITA 👤)
       Object.keys(todosLosPedidosAdmin).forEach(id => {
         const p = todosLosPedidosAdmin[id];
         if (p.estado === 'pendiente' || p.estado === 'aceptado' || p.estado === 'en_local' || p.estado === 'en_camino') {
