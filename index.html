@@ -283,6 +283,11 @@
       </div>
 
       <div class="flex items-center gap-2">
+        <!-- INDICADOR DE CONEXIÓN CON FIREBASE RTDB -->
+        <div id="indicador-conexion-firebase" class="bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] font-black px-2.5 py-1 rounded-xl flex items-center gap-1.5 shadow-sm transition">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+          <span id="txt-conexion-firebase">Conectando...</span>
+        </div>
         <a id="btn-header-mi-ws" href="https://wa.me/584262566854" target="_blank" title="Mi WhatsApp Admin" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-accent-emerald border border-emerald-500/40 text-xs font-black px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition">
           <i data-lucide="message-circle" class="w-4 h-4"></i>
           <span class="hidden sm:inline">Mi WhatsApp</span>
@@ -914,6 +919,17 @@
               </span>
             </div>
 
+            <!-- AVISO DE FACTURA ENVIADA POR WHATSAPP POR EL CHOFER -->
+            <div id="adm-caja-factura-ws-notif" class="hidden p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-[11px] text-emerald-300 flex items-center justify-between gap-2 shadow-sm">
+              <span class="flex items-center gap-1.5 font-bold">
+                <i data-lucide="message-circle" class="w-4 h-4 text-accent-emerald"></i>
+                <span>Chofer envió la factura a tu WhatsApp</span>
+              </span>
+              <button type="button" onclick="abrirChatChoferFacturaAdmin(pedidoSeleccionadoId)" class="btn-tactil bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black px-2.5 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow">
+                Abrir Chat WS 📲
+              </button>
+            </div>
+
             <div class="block group relative rounded-2xl overflow-hidden border-2 border-indigo-500/40 cursor-pointer bg-slate-950" onclick="verFacturaModalActualGrande()">
               <img id="adm-img-foto-factura" class="w-full h-44 object-contain">
               <div class="absolute inset-0 bg-slate-950/70 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition gap-1 text-white">
@@ -1307,7 +1323,9 @@
       appId: "1:191012880689:web:a31697074c619b96a83010"
     };
 
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
     const db = firebase.database();
 
     let claveMasterAdmin = localStorage.getItem('clave_admin_pedidosflash') || "admin123";
@@ -1363,6 +1381,21 @@
     function verFacturaModalActualGrande() {
       const img = document.getElementById('adm-img-foto-factura');
       if (img && img.src) verFotoGrandeAdmin(img.src);
+    }
+
+    function abrirChatChoferFacturaAdmin(id) {
+      const pid = id || pedidoSeleccionadoId;
+      if (!pid) return;
+      const p = todosLosPedidosAdmin[pid];
+      if (!p) return;
+      const tel = normalizarTelefono(p.choferTelefono || '');
+      if (!tel) {
+        alert("Este pedido no tiene teléfono de chofer asignado.");
+        return;
+      }
+      const numOrden = p.orden || `#FLASH-${pid.substring(0, 6)}`;
+      const msj = encodeURIComponent(`Hola ${p.chofer || 'Chofer'}, te escribe la Administración de Pedidos Flash sobre la factura de la orden ${numOrden}.`);
+      window.open(`https://wa.me/${tel}?text=${msj}`, '_blank');
     }
 
     // AUDITORÍA DE FACTURAS OFICIALES EN ADMIN
@@ -1483,94 +1516,143 @@
     }
 
     function inicializarSuscripciones() {
+      // 0. Monitor de Conexión en Tiempo Real con Firebase
+      db.ref('.info/connected').on('value', (snap) => {
+        const conectado = snap.val() === true;
+        const ind = document.getElementById('indicador-conexion-firebase');
+        const txt = document.getElementById('txt-conexion-firebase');
+        if (ind && txt) {
+          if (conectado) {
+            ind.className = "bg-emerald-500/15 text-emerald-300 border border-emerald-500/40 text-[10px] font-black px-2.5 py-1 rounded-xl flex items-center gap-1.5 shadow-sm transition";
+            txt.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> Conectado a Firebase`;
+          } else {
+            ind.className = "bg-rose-500/15 text-rose-300 border border-rose-500/40 text-[10px] font-black px-2.5 py-1 rounded-xl flex items-center gap-1.5 shadow-sm transition";
+            txt.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-400 animate-ping"></span> Desconectado`;
+          }
+        }
+      });
+
       // 1. Catálogo
       db.ref('catalogo_flash').on('value', (snapshot) => {
-        catalogoFlashBD = snapshot.val() || {};
-        renderizarCatalogoAdmin();
-      });
+        try {
+          catalogoFlashBD = snapshot.val() || {};
+          renderizarCatalogoAdmin();
+        } catch(e) { console.error("Error catalogo_flash:", e); }
+      }, (err) => console.error("Error Firebase catalogo_flash:", err));
 
       // 2. Tiendas
       db.ref('tiendas').on('value', (snapshot) => {
-        tiendasBD = snapshot.val() || {};
-        renderizarComerciosAdmin();
-      });
+        try {
+          tiendasBD = snapshot.val() || {};
+          renderizarComerciosAdmin();
+        } catch(e) { console.error("Error tiendas:", e); }
+      }, (err) => console.error("Error Firebase tiendas:", err));
 
       // 3. Cuentas Tiendas
       db.ref('cuentas_tiendas').on('value', (snapshot) => {
-        cuentasTiendasBD = snapshot.val() || {};
-        renderizarComerciosAdmin();
-      });
+        try {
+          cuentasTiendasBD = snapshot.val() || {};
+          renderizarComerciosAdmin();
+        } catch(e) { console.error("Error cuentas_tiendas:", e); }
+      }, (err) => console.error("Error Firebase cuentas_tiendas:", err));
 
       // 4. Choferes
       db.ref('choferes').on('value', (snapshot) => {
-        choferesBD = snapshot.val() || {};
-        renderizarChoferesAdmin();
-        actualizarSelectorChoferes();
-        verificarPedidosPendientesYChoferes();
-        actualizarMarcadoresRadarAdmin();
-      });
+        try {
+          choferesBD = snapshot.val() || {};
+          renderizarChoferesAdmin();
+          actualizarSelectorChoferes();
+          verificarPedidosPendientesYChoferes();
+          actualizarMarcadoresRadarAdmin();
+        } catch(e) { console.error("Error choferes:", e); }
+      }, (err) => console.error("Error Firebase choferes:", err));
 
       // 5. Clientes Registrados en la App
       db.ref('usuarios_clientes').on('value', (snapshot) => {
-        usuariosClientesBD = snapshot.val() || {};
-        renderizarClientesAdmin();
-      });
+        try {
+          usuariosClientesBD = snapshot.val() || {};
+          renderizarClientesAdmin();
+        } catch(e) { console.error("Error usuarios_clientes:", e); }
+      }, (err) => console.error("Error Firebase usuarios_clientes:", err));
 
       // 6. Pedidos con Detección en Tiempo Real de Nuevos Pedidos y Pagos / Reembolsos en Tienda
       let pedidosPreviosIds = null;
       let pedidosPreviosObj = {};
 
       db.ref('pedidos').on('value', (snapshot) => {
-        const nuevos = snapshot.val() || {};
-        todosLosPedidosAdmin = nuevos;
+        try {
+          const nuevos = snapshot.val() || {};
+          todosLosPedidosAdmin = nuevos;
 
-        const idsNuevos = Object.keys(nuevos);
-        if (pedidosPreviosIds !== null) {
-          // A) Detectar Nuevo Pedido Pendiente
-          const nuevosPendientes = idsNuevos.filter(id => !pedidosPreviosIds.includes(id) && nuevos[id].estado === 'pendiente');
-          if (nuevosPendientes.length > 0) {
-            const primerId = nuevosPendientes[nuevosPendientes.length - 1];
-            emitirAlertaSonoraAdmin();
-            mostrarModalAlertaNuevoPedidoAdmin(primerId, nuevos[primerId]);
+          const idsNuevos = Object.keys(nuevos);
+          if (pedidosPreviosIds !== null) {
+            // A) Detectar Nuevo Pedido Pendiente
+            const nuevosPendientes = idsNuevos.filter(id => {
+              const p = nuevos[id];
+              return p && !pedidosPreviosIds.includes(id) && p.estado === 'pendiente';
+            });
+            if (nuevosPendientes.length > 0) {
+              const primerId = nuevosPendientes[nuevosPendientes.length - 1];
+              emitirAlertaSonoraAdmin();
+              mostrarModalAlertaNuevoPedidoAdmin(primerId, nuevos[primerId]);
+            }
+
+            // B) Detectar Chofer Solicitando Pago en Tienda o Reembolso (Paso 3)
+            idsNuevos.forEach(id => {
+              const p = nuevos[id];
+              if (!p) return;
+              const prev = pedidosPreviosObj[id];
+              const m = parseFloat(p.montoFacturaTienda || p.montoGastoChofer || 0);
+              const solicitoPagoAhora = (p.estadoPagoAdmin === 'pendiente' || p.solicitudReembolso === 'pendiente') && m > 0;
+              const yaEstabaNotificado = prev && (prev.estadoPagoAdmin === 'pendiente' || prev.solicitudReembolso === 'pendiente');
+              
+              if (solicitoPagoAhora && !yaEstabaNotificado) {
+                emitirAlertaSonoraAdmin();
+                mostrarModalAlertaPagoTiendaAdmin(id, p);
+              }
+            });
           }
 
-          // B) Detectar Chofer Solicitando Pago en Tienda o Reembolso (Paso 3)
-          idsNuevos.forEach(id => {
-            const p = nuevos[id];
-            const prev = pedidosPreviosObj[id];
-            const m = parseFloat(p.montoFacturaTienda || p.montoGastoChofer || 0);
-            const solicitoPagoAhora = p && (p.estadoPagoAdmin === 'pendiente' || p.solicitudReembolso === 'pendiente') && m > 0;
-            const yaEstabaNotificado = prev && (prev.estadoPagoAdmin === 'pendiente' || prev.solicitudReembolso === 'pendiente');
-            
-            if (solicitoPagoAhora && !yaEstabaNotificado) {
-              emitirAlertaSonoraAdmin();
-              mostrarModalAlertaPagoTiendaAdmin(id, p);
-            }
-          });
+          pedidosPreviosIds = idsNuevos;
+          pedidosPreviosObj = JSON.parse(JSON.stringify(nuevos));
+
+          verificarPedidosPendientesYChoferes();
+          calcularMetricasAdmin();
+          renderizarTablaPedidos();
+          renderizarChoferesAdmin();
+          renderizarClientesAdmin();
+          actualizarMarcadoresRadarAdmin();
+
+          // Actualizar modal si está abierto
+          if (pedidoSeleccionadoId && todosLosPedidosAdmin[pedidoSeleccionadoId]) {
+            actualizarVisualStepperDetalle(todosLosPedidosAdmin[pedidoSeleccionadoId]);
+          }
+        } catch (errPedidos) {
+          console.error("Error al procesar pedidos en Admin:", errPedidos);
         }
-
-        pedidosPreviosIds = idsNuevos;
-        pedidosPreviosObj = JSON.parse(JSON.stringify(nuevos));
-
-        verificarPedidosPendientesYChoferes();
-        calcularMetricasAdmin();
-        renderizarTablaPedidos();
-        renderizarChoferesAdmin();
-        renderizarClientesAdmin();
-        actualizarMarcadoresRadarAdmin();
-
-        // Actualizar modal si está abierto
-        if (pedidoSeleccionadoId && todosLosPedidosAdmin[pedidoSeleccionadoId]) {
-          actualizarVisualStepperDetalle(todosLosPedidosAdmin[pedidoSeleccionadoId]);
+      }, (error) => {
+        console.error("Error Firebase en pedidos:", error);
+        const tbody = document.getElementById('tabla-pedidos-body');
+        if (tbody) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="9" class="p-8 text-center text-rose-400 font-bold">
+                <p class="text-sm">⚠️ Error de conexión con Firebase Realtime Database: ${error.message}</p>
+                <p class="text-[11px] text-slate-400 mt-1 font-normal">Verifica la conexión a Internet o las reglas de seguridad (.read: true).</p>
+              </td>
+            </tr>
+          `;
         }
       });
 
       // 7. Gastos
       db.ref('gastos').on('value', (snapshot) => {
-        gastosBD = snapshot.val() ? Object.values(snapshot.val()) : [];
-        renderizarGastosAdmin();
-        calcularMetricasAdmin();
-      });
+        try {
+          gastosBD = snapshot.val() ? Object.values(snapshot.val()) : [];
+          renderizarGastosAdmin();
+          calcularMetricasAdmin();
+        } catch(e) { console.error("Error gastos:", e); }
+      }, (err) => console.error("Error Firebase gastos:", err));
 
       // 8. Puntos Oficiales de Compra
       escucharConfiguracionComprasAdmin();
@@ -2510,7 +2592,21 @@
       tbody.innerHTML = "";
 
       const keys = Object.keys(todosLosPedidosAdmin).reverse(); // Nuevos primero
-      const query = document.getElementById('busqueda-admin-pedidos').value.toLowerCase().trim();
+      const query = (document.getElementById('busqueda-admin-pedidos')?.value || '').toLowerCase().trim();
+
+      if (keys.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" class="p-8 text-center text-slate-400">
+              <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50 text-indigo-400"></i>
+              <p class="font-bold">No hay pedidos registrados en Firebase todavía.</p>
+              <p class="text-[11px] text-slate-500 mt-1">Las órdenes creadas por clientes aparecerán aquí automáticamente en tiempo real.</p>
+            </td>
+          </tr>
+        `;
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
 
       const filtrados = keys.filter(id => {
         const p = todosLosPedidosAdmin[id];
@@ -2576,9 +2672,10 @@
         const tieneFoto = !!(p.fotoFacturaUrl || p.fotoFacturaReembolsoUrl || p.tieneFacturaSubida);
         const verificada = p.facturaVerificadaAdmin === 'aprobada';
         const dudosa = p.facturaVerificadaAdmin === 'dudosa';
+        const enviadaWs = !!p.facturaEnviadaWhatsApp;
         
         let celdaFoto = `<span class="text-slate-500 text-[10px]">Sin foto</span>`;
-        if (tieneFoto) {
+        if (tieneFoto || enviadaWs) {
           let badgeVerif = '';
           if (verificada) {
             badgeVerif = `<span class="text-[8px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1 rounded block mt-0.5">✓ Verificada</span>`;
@@ -2588,11 +2685,20 @@
             badgeVerif = `<span class="text-[8px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1 rounded block mt-0.5">⏳ Por revisar</span>`;
           }
 
+          const badgeWs = enviadaWs ? `<span class="text-[8px] bg-emerald-500/20 text-accent-emerald border border-emerald-500/40 px-1 rounded block mt-0.5 font-bold">📲 Enviada a WS</span>` : '';
+
           celdaFoto = `
-            <div>
-              <button onclick="verFacturaPedidoPorId('${id}')" class="text-[10px] bg-indigo-600/30 hover:bg-indigo-600/50 text-accent-cyan px-2 py-1 rounded-lg border border-indigo-500/30 font-black flex items-center gap-1 shadow-sm transition">
-                📸 Ver Factura
-              </button>
+            <div class="space-y-0.5">
+              ${tieneFoto ? `
+                <button onclick="verFacturaPedidoPorId('${id}')" class="text-[10px] bg-indigo-600/30 hover:bg-indigo-600/50 text-accent-cyan px-2 py-0.5 rounded-lg border border-indigo-500/30 font-black flex items-center gap-1 shadow-sm transition">
+                  📸 Ver Factura
+                </button>
+              ` : `
+                <button onclick="abrirChatChoferFacturaAdmin('${id}')" class="text-[10px] bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-slate-950 px-2 py-0.5 rounded-lg border border-emerald-500/40 font-black flex items-center gap-1 shadow-sm transition">
+                  📲 Ver en WS
+                </button>
+              `}
+              ${badgeWs}
               ${badgeVerif}
             </div>
           `;
@@ -2758,10 +2864,24 @@
           }
           
           const cajaFoto = document.getElementById('adm-caja-foto-factura');
-          if (fotoUrl) {
+          const cajaWsNotif = document.getElementById('adm-caja-factura-ws-notif');
+          const enviadaWs = !!p.facturaEnviadaWhatsApp;
+
+          if (cajaWsNotif) {
+            if (enviadaWs) cajaWsNotif.classList.remove('hidden');
+            else cajaWsNotif.classList.add('hidden');
+          }
+
+          if (fotoUrl || enviadaWs) {
             cajaFoto.classList.remove('hidden');
-            document.getElementById('adm-img-foto-factura').src = fotoUrl;
-            document.getElementById('adm-link-foto-factura').href = fotoUrl;
+            const imgEl = document.getElementById('adm-img-foto-factura');
+            if (fotoUrl) {
+              imgEl.src = fotoUrl;
+              imgEl.classList.remove('hidden');
+              document.getElementById('adm-link-foto-factura').href = fotoUrl;
+            } else {
+              imgEl.classList.add('hidden');
+            }
             actualizarBadgeAuditoriaFactura(p.facturaVerificadaAdmin);
           } else {
             cajaFoto.classList.add('hidden');
@@ -3061,10 +3181,16 @@
       if (!banner) return;
 
       const keysP = Object.keys(todosLosPedidosAdmin);
-      const pendientes = keysP.filter(id => todosLosPedidosAdmin[id].estado === 'pendiente');
+      const pendientes = keysP.filter(id => {
+        const p = todosLosPedidosAdmin[id];
+        return p && p.estado === 'pendiente';
+      });
 
       const keysC = Object.keys(choferesBD);
-      const choferesConectados = keysC.filter(tel => choferesBD[tel].enLinea === true && choferesBD[tel].estado === 'autorizado');
+      const choferesConectados = keysC.filter(tel => {
+        const ch = choferesBD[tel];
+        return ch && ch.enLinea === true && ch.estado === 'autorizado';
+      });
 
       if (pendientes.length > 0 && choferesConectados.length === 0) {
         if (badge) badge.innerText = `${pendientes.length} sin chofer en línea`;
@@ -3487,6 +3613,7 @@
 
       Object.keys(todosLosPedidosAdmin).forEach(id => {
         const p = todosLosPedidosAdmin[id];
+        if (!p) return;
         totalPedidos++;
         if (p.estado === 'entregado') {
           totalVentas += parseFloat(p.total || p.montoTotal || p.monto || 0);
@@ -3569,7 +3696,7 @@
       const choferesKeys = Object.keys(choferesBD);
       choferesKeys.forEach(tel => {
         const ch = choferesBD[tel];
-        if (ch.estado === 'autorizado' && ch.enLinea && ch.gps && ch.gps.lat && ch.gps.lng) {
+        if (ch && ch.estado === 'autorizado' && ch.enLinea && ch.gps && ch.gps.lat && ch.gps.lng) {
           cantChoferesActivos++;
           const pos = [parseFloat(ch.gps.lat), parseFloat(ch.gps.lng)];
           
@@ -3608,7 +3735,7 @@
 
       Object.keys(tiendasBD).forEach(tid => {
         const t = tiendasBD[tid];
-        if (t.lat && t.lng) {
+        if (t && t.lat && t.lng) {
           cantComercios++;
           const pos = [parseFloat(t.lat), parseFloat(t.lng)];
           const m = L.marker(pos, {
@@ -3624,7 +3751,7 @@
 
       Object.keys(todosLosPedidosAdmin).forEach(id => {
         const p = todosLosPedidosAdmin[id];
-        if (p.estado === 'pendiente' || p.estado === 'aceptado' || p.estado === 'en_local' || p.estado === 'en_camino') {
+        if (p && (p.estado === 'pendiente' || p.estado === 'aceptado' || p.estado === 'en_local' || p.estado === 'en_camino')) {
           cantOrdenesActivas++;
           const latDest = p.lat ? parseFloat(p.lat) : (p.destinoLat ? parseFloat(p.destinoLat) : null);
           const lngDest = p.lng ? parseFloat(p.lng) : (p.destinoLng ? parseFloat(p.destinoLng) : null);
