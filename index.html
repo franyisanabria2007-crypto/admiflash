@@ -1445,7 +1445,7 @@
         b.className = "text-[9px] font-black px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/40 animate-pulse";
         b.innerText = "⚠️ FACTURA DUDOSA / RECHAZADA";
       } else {
-        b.className = "text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30";
+        b.className = "text-[9px] font-black px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30";
         b.innerText = "⏳ PENDIENTE DE REVISIÓN";
       }
     }
@@ -1516,7 +1516,7 @@
     }
 
     function inicializarSuscripciones() {
-      // 0. Monitor de Conexión en Tiempo Real con Firebase
+      // 0. Monitor de Conexión en Tiempo Real con Firebase RTDB
       db.ref('.info/connected').on('value', (snap) => {
         const conectado = snap.val() === true;
         const ind = document.getElementById('indicador-conexion-firebase');
@@ -1700,13 +1700,12 @@
         const telNorm = normalizarTelefono(u.telefonoOriginal || u.telefono || tel);
         const fechaReg = u.fechaRegistro ? new Date(u.fechaRegistro).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Reciente';
 
-        // Calcular historial de compras del cliente
         let pedidosCliente = 0;
         let totalComprado = 0;
 
         Object.keys(todosLosPedidosAdmin).forEach(id => {
           const p = todosLosPedidosAdmin[id];
-          const telPed = normalizarTelefono(p.telefono || (p.cliente && p.cliente.telefono ? p.cliente.telefono : ''));
+          const telPed = normalizarTelefono(p.telefono || (typeof p.cliente === 'object' && p.cliente !== null ? p.cliente.telefono : ''));
           if (telPed && telPed === telNorm) {
             pedidosCliente++;
             totalComprado += parseFloat(p.total || p.montoTotal || p.monto || 0);
@@ -1738,7 +1737,6 @@
                 </p>
               </div>
 
-              <!-- RESUMEN DE ACTIVIDAD DEL CLIENTE -->
               <div class="grid grid-cols-2 gap-2 text-xs pt-1">
                 <div class="bg-slate-900/90 p-2 rounded-xl border border-slate-800">
                   <span class="text-[9px] text-slate-400 font-bold block uppercase">Compras Hechas</span>
@@ -2117,8 +2115,8 @@
       if (!modal) return;
 
       document.getElementById('txt-alerta-orden-id').innerText = `Orden ${p.orden || id}`;
-      const nomCliente = p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente');
-      const telCliente = p.telefono || (p.cliente ? p.cliente.telefono : '') || '';
+      const nomCliente = typeof p.cliente === 'object' && p.cliente !== null ? (p.cliente.nombre || p.nombre || 'Cliente') : (p.cliente || p.nombre || 'Cliente');
+      const telCliente = p.telefono || (typeof p.cliente === 'object' && p.cliente !== null ? p.cliente.telefono : '') || '';
       document.getElementById('txt-alerta-cliente-info').innerText = `${nomCliente} • ${telCliente}`;
       document.getElementById('txt-alerta-monto').innerText = `$${parseFloat(p.total || 0).toFixed(2)}`;
       document.getElementById('txt-alerta-local').innerText = p.tiendaNombre || 'General / Víveres';
@@ -2153,9 +2151,9 @@
 
       const telAdmin = normalizarTelefono(telefonoAdminWhatsApp || "584262566854");
       const numOrden = p.orden || `#FLASH-${pedidoId.substring(0, 6)}`;
-      const clienteNom = p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente');
-      const telCli = p.telefono || (p.cliente ? p.cliente.telefono : '') || 'Sin tel';
-      const dir = p.cliente ? (p.cliente.direccion || p.direccion) : (p.direccion || 'Nirgua');
+      const clienteNom = typeof p.cliente === 'object' && p.cliente !== null ? (p.cliente.nombre || p.nombre || 'Cliente') : (p.cliente || p.nombre || 'Cliente');
+      const telCli = p.telefono || (typeof p.cliente === 'object' && p.cliente !== null ? p.cliente.telefono : '') || 'Sin tel';
+      const dir = typeof p.cliente === 'object' && p.cliente !== null ? (p.cliente.direccion || p.direccion) : (p.direccion || 'Nirgua');
       const total = parseFloat(p.total || p.montoTotal || p.monto || 0).toFixed(2);
       const tienda = p.tiendaNombre ? `\n🏪 *Local/Tienda:* ${p.tiendaNombre}` : '';
       const linkGPS = (p.lat && p.lng) ? `https://maps.google.com/?q=${p.lat},${p.lng}` : (p.ubicacionGPS || '');
@@ -2591,7 +2589,7 @@
       if (!tbody) return;
       tbody.innerHTML = "";
 
-      const keys = Object.keys(todosLosPedidosAdmin).reverse(); // Nuevos primero
+      const keys = Object.keys(todosLosPedidosAdmin || {}).reverse(); // Nuevos primero
       const query = (document.getElementById('busqueda-admin-pedidos')?.value || '').toLowerCase().trim();
 
       if (keys.length === 0) {
@@ -2608,14 +2606,29 @@
         return;
       }
 
+      const obtenerNombreCliente = (p) => {
+        if (typeof p.cliente === 'object' && p.cliente !== null) {
+          return String(p.cliente.nombre || p.nombre || 'Cliente');
+        }
+        return String(p.cliente || p.nombre || 'Cliente');
+      };
+
+      const obtenerTelCliente = (p) => {
+        if (typeof p.cliente === 'object' && p.cliente !== null) {
+          return String(p.telefono || p.cliente.telefono || 'Sin tel');
+        }
+        return String(p.telefono || 'Sin tel');
+      };
+
       const filtrados = keys.filter(id => {
         const p = todosLosPedidosAdmin[id];
-        if (!p) return false;
-        const nom = (p.cliente || (p.cliente && p.cliente.nombre) || p.nombre || '').toLowerCase();
-        const tel = (p.telefono || (p.cliente && p.cliente.telefono) || '').toLowerCase();
-        const ord = (p.orden || id).toLowerCase();
+        if (!p || typeof p !== 'object') return false;
 
-        const matchQuery = nom.includes(query) || tel.includes(query) || ord.includes(query);
+        const nom = obtenerNombreCliente(p).toLowerCase();
+        const tel = obtenerTelCliente(p).toLowerCase();
+        const ord = String(p.orden || id).toLowerCase();
+
+        const matchQuery = !query || nom.includes(query) || tel.includes(query) || ord.includes(query);
         const matchEstado = (estadoFiltroActual === 'todos') || (p.estado === estadoFiltroActual);
 
         return matchQuery && matchEstado;
@@ -2627,121 +2640,125 @@
       }
 
       filtrados.forEach(id => {
-        const p = todosLosPedidosAdmin[id];
-        const numOrden = p.orden || id.substring(0, 8);
-        const nombreCliente = p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente');
-        const telCliente = p.telefono || (p.cliente ? p.cliente.telefono : '') || 'Sin tel';
-        const monto = parseFloat(p.total || p.montoTotal || p.monto || 0).toFixed(2);
-        const chofer = p.chofer || 'Sin Asignar';
+        try {
+          const p = todosLosPedidosAdmin[id];
+          const numOrden = String(p.orden || id.substring(0, 8));
+          const nombreCliente = obtenerNombreCliente(p);
+          const telCliente = obtenerTelCliente(p);
+          const montoNum = parseFloat(p.total || p.montoTotal || p.monto || 0);
+          const monto = (isNaN(montoNum) ? 0 : montoNum).toFixed(2);
+          const chofer = String(p.chofer || 'Sin Asignar');
 
-        let nombreTienda = p.tiendaNombre || '';
-        if (!nombreTienda && p.items && Array.isArray(p.items)) {
-          const itemTienda = p.items.find(it => it.tiendaId || it.local);
-          if (itemTienda) {
-            const tid = itemTienda.tiendaId || itemTienda.local;
-            if (tiendasBD[tid]) nombreTienda = tiendasBD[tid].nombre;
-          }
-        }
-
-        // BADGE DE ESTADO CON LOS 4 PASOS
-        let badgePaso = '<span class="bg-amber-500/20 text-accent-yellow border border-amber-500/30 text-[10px] font-black px-2 py-0.5 rounded-md">⏳ Pendiente</span>';
-        if (p.estado === 'aceptado') {
-          badgePaso = '<span class="bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-black px-2 py-0.5 rounded-md">Paso 1: Aceptado</span>';
-        } else if (p.estado === 'en_local') {
-          badgePaso = '<span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-black px-2 py-0.5 rounded-md animate-pulse">Paso 2: En Local</span>';
-        } else if (p.estado === 'en_camino') {
-          badgePaso = '<span class="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] font-black px-2 py-0.5 rounded-md">Paso 4: En Camino</span>';
-        } else if (p.estado === 'entregado') {
-          badgePaso = '<span class="bg-emerald-500/20 text-accent-emerald border border-emerald-500/30 text-[10px] font-black px-2 py-0.5 rounded-md">✓ Entregado</span>';
-        }
-
-        // ESTADO DE PAGO EN TIENDA / REEMBOLSO CHOFER (PASO 3)
-        let badgePagoTienda = '<span class="text-slate-500 text-[10px]">--</span>';
-        const mFact = parseFloat(p.montoFacturaTienda || p.montoGastoChofer || 0);
-        if (mFact > 0) {
-          if (p.modalidadPagoTienda === 'chofer_paga') {
-            const listo = p.solicitudReembolso === 'aprobado' || p.estadoPagoAdmin === 'aprobado';
-            badgePagoTienda = `<span class="px-2 py-0.5 rounded-md text-[9px] font-bold ${listo ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-purple-600 text-white font-black animate-pulse'}">Reembolso Chofer ($${mFact.toFixed(2)})</span>`;
-          } else {
-            const listo = p.estadoPagoAdmin === 'pagado' || p.estadoPagoAdmin === 'aprobado' || p.solicitudReembolso === 'aprobado';
-            badgePagoTienda = `<span class="px-2 py-0.5 rounded-md text-[9px] font-bold ${listo ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500 text-slate-950 font-black animate-bounce'}">Pago Tienda ($${mFact.toFixed(2)})</span>`;
-          }
-        }
-
-        // FACTURA (CORREGIDO DE RAÍZ: LLAMA A verFacturaPedidoPorId(id) EN VEZ DE INLINEAR EL BASE64)
-        const tieneFoto = !!(p.fotoFacturaUrl || p.fotoFacturaReembolsoUrl || p.tieneFacturaSubida);
-        const verificada = p.facturaVerificadaAdmin === 'aprobada';
-        const dudosa = p.facturaVerificadaAdmin === 'dudosa';
-        const enviadaWs = !!p.facturaEnviadaWhatsApp;
-        
-        let celdaFoto = `<span class="text-slate-500 text-[10px]">Sin foto</span>`;
-        if (tieneFoto || enviadaWs) {
-          let badgeVerif = '';
-          if (verificada) {
-            badgeVerif = `<span class="text-[8px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1 rounded block mt-0.5">✓ Verificada</span>`;
-          } else if (dudosa) {
-            badgeVerif = `<span class="text-[8px] bg-rose-500/20 text-rose-300 border border-rose-500/30 px-1 rounded block mt-0.5">⚠️ Dudosa</span>`;
-          } else {
-            badgeVerif = `<span class="text-[8px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1 rounded block mt-0.5">⏳ Por revisar</span>`;
+          let nombreTienda = p.tiendaNombre || '';
+          if (!nombreTienda && p.items && Array.isArray(p.items)) {
+            const itemTienda = p.items.find(it => it && (it.tiendaId || it.local));
+            if (itemTienda) {
+              const tid = itemTienda.tiendaId || itemTienda.local;
+              if (tiendasBD && tiendasBD[tid]) nombreTienda = tiendasBD[tid].nombre;
+            }
           }
 
-          const badgeWs = enviadaWs ? `<span class="text-[8px] bg-emerald-500/20 text-accent-emerald border border-emerald-500/40 px-1 rounded block mt-0.5 font-bold">📲 Enviada a WS</span>` : '';
+          // BADGE DE ESTADO CON LOS 4 PASOS
+          let badgePaso = '<span class="bg-amber-500/20 text-accent-yellow border border-amber-500/30 text-[10px] font-black px-2 py-0.5 rounded-md">⏳ Pendiente</span>';
+          if (p.estado === 'aceptado') {
+            badgePaso = '<span class="bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-black px-2 py-0.5 rounded-md">Paso 1: Aceptado</span>';
+          } else if (p.estado === 'en_local') {
+            badgePaso = '<span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-black px-2 py-0.5 rounded-md animate-pulse">Paso 2: En Local</span>';
+          } else if (p.estado === 'en_camino') {
+            badgePaso = '<span class="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] font-black px-2 py-0.5 rounded-md">Paso 4: En Camino</span>';
+          } else if (p.estado === 'entregado') {
+            badgePaso = '<span class="bg-emerald-500/20 text-accent-emerald border border-emerald-500/30 text-[10px] font-black px-2 py-0.5 rounded-md">✓ Entregado</span>';
+          }
 
-          celdaFoto = `
-            <div class="space-y-0.5">
-              ${tieneFoto ? `
-                <button onclick="verFacturaPedidoPorId('${id}')" class="text-[10px] bg-indigo-600/30 hover:bg-indigo-600/50 text-accent-cyan px-2 py-0.5 rounded-lg border border-indigo-500/30 font-black flex items-center gap-1 shadow-sm transition">
-                  📸 Ver Factura
-                </button>
-              ` : `
-                <button onclick="abrirChatChoferFacturaAdmin('${id}')" class="text-[10px] bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-slate-950 px-2 py-0.5 rounded-lg border border-emerald-500/40 font-black flex items-center gap-1 shadow-sm transition">
-                  📲 Ver en WS
-                </button>
-              `}
-              ${badgeWs}
-              ${badgeVerif}
-            </div>
-          `;
-        }
+          // ESTADO DE PAGO EN TIENDA / REEMBOLSO CHOFER (PASO 3)
+          let badgePagoTienda = '<span class="text-slate-500 text-[10px]">--</span>';
+          const mFact = parseFloat(p.montoFacturaTienda || p.montoGastoChofer || 0);
+          if (!isNaN(mFact) && mFact > 0) {
+            if (p.modalidadPagoTienda === 'chofer_paga') {
+              const listo = p.solicitudReembolso === 'aprobado' || p.estadoPagoAdmin === 'aprobado';
+              badgePagoTienda = `<span class="px-2 py-0.5 rounded-md text-[9px] font-bold ${listo ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-purple-600 text-white font-black animate-pulse'}">Reembolso Chofer ($${mFact.toFixed(2)})</span>`;
+            } else {
+              const listo = p.estadoPagoAdmin === 'pagado' || p.estadoPagoAdmin === 'aprobado' || p.solicitudReembolso === 'aprobado';
+              badgePagoTienda = `<span class="px-2 py-0.5 rounded-md text-[9px] font-bold ${listo ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500 text-slate-950 font-black animate-bounce'}">Pago Tienda ($${mFact.toFixed(2)})</span>`;
+            }
+          }
 
-        // INDICADOR DE PROMO DELIVERY GRATIS (+20 PRODS)
-        const badgePromo = p.deliveryGratis 
-          ? `<span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-black px-1.5 py-0.2 rounded block mt-1">🎁 Delivery Gratis (+20)</span>` 
-          : '';
+          const tieneFoto = !!(p.fotoFacturaUrl || p.fotoFacturaReembolsoUrl || p.tieneFacturaSubida);
+          const verificada = p.facturaVerificadaAdmin === 'aprobada';
+          const dudosa = p.facturaVerificadaAdmin === 'dudosa';
+          const enviadaWs = !!p.facturaEnviadaWhatsApp;
 
-        tbody.innerHTML += `
-          <tr class="hover:bg-slate-800/40 transition">
-            <td class="p-3.5 font-bold text-white">
-              ${numOrden}
-              ${badgePromo}
-            </td>
-            <td class="p-3.5">
-              <span class="block font-bold text-white">${nombreCliente}</span>
-              <span class="text-[10px] text-slate-400">${telCliente}</span>
-            </td>
-            <td class="p-3.5">
-              ${nombreTienda 
-                ? `<span class="bg-amber-500/15 text-accent-yellow border border-amber-500/30 text-[10px] font-black px-2 py-0.5 rounded-md block w-fit truncate max-w-[140px]">${nombreTienda}</span>` 
-                : `<span class="text-slate-500 text-[11px]">General / Víveres</span>`}
-            </td>
-            <td class="p-3.5 font-black text-accent-yellow">$${monto}</td>
-            <td class="p-3.5">${badgePaso}</td>
-            <td class="p-3.5">${badgePagoTienda}</td>
-            <td class="p-3.5">${celdaFoto}</td>
-            <td class="p-3.5 font-bold text-slate-300">${chofer}</td>
-            <td class="p-3.5 text-center">
-              <div class="flex items-center justify-center gap-1.5">
-                <button onclick="abrirModalAdminDetalle('${id}')" class="btn-tactil bg-indigo-600/30 hover:bg-indigo-600 text-accent-cyan hover:text-white font-bold px-2.5 py-1.5 rounded-lg text-[10px] border border-indigo-500/30 transition whitespace-nowrap">
-                  Ver / Auditar
-                </button>
-                <button onclick="abrirNotificacionPedidoEnWhatsAppAdmin('${id}')" class="btn-tactil bg-emerald-600/20 hover:bg-emerald-600 text-accent-emerald hover:text-white font-black px-2 py-1.5 rounded-lg text-[10px] border border-emerald-500/30 transition flex items-center gap-1 whitespace-nowrap" title="Enviar a Mi WhatsApp">
-                  📲 WS
-                </button>
+          let celdaFoto = `<span class="text-slate-500 text-[10px]">Sin foto</span>`;
+          if (tieneFoto || enviadaWs) {
+            let badgeVerif = '';
+            if (verificada) {
+              badgeVerif = `<span class="text-[8px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1 rounded block mt-0.5">✓ Verificada</span>`;
+            } else if (dudosa) {
+              badgeVerif = `<span class="text-[8px] bg-rose-500/20 text-rose-300 border border-rose-500/30 px-1 rounded block mt-0.5">⚠️ Dudosa</span>`;
+            } else {
+              badgeVerif = `<span class="text-[8px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1 rounded block mt-0.5">⏳ Por revisar</span>`;
+            }
+
+            const badgeWs = enviadaWs ? `<span class="text-[8px] bg-emerald-500/20 text-accent-emerald border border-emerald-500/40 px-1 rounded block mt-0.5 font-bold">📲 Enviada a WS</span>` : '';
+
+            celdaFoto = `
+              <div class="space-y-0.5">
+                ${tieneFoto ? `
+                  <button onclick="verFacturaPedidoPorId('${id}')" class="text-[10px] bg-indigo-600/30 hover:bg-indigo-600/50 text-accent-cyan px-2 py-0.5 rounded-lg border border-indigo-500/30 font-black flex items-center gap-1 shadow-sm transition">
+                    📸 Ver Factura
+                  </button>
+                ` : `
+                  <button onclick="abrirChatChoferFacturaAdmin('${id}')" class="text-[10px] bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-slate-950 px-2 py-0.5 rounded-lg border border-emerald-500/40 font-black flex items-center gap-1 shadow-sm transition">
+                    📲 Ver en WS
+                  </button>
+                `}
+                ${badgeWs}
+                ${badgeVerif}
               </div>
-            </td>
-          </tr>
-        `;
+            `;
+          }
+
+          const badgePromo = p.deliveryGratis
+            ? `<span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-black px-1.5 py-0.2 rounded block mt-1">🎁 Delivery Gratis (+20)</span>`
+            : '';
+
+          tbody.innerHTML += `
+            <tr class="hover:bg-slate-800/40 transition">
+              <td class="p-3.5 font-bold text-white">
+                ${numOrden}
+                ${badgePromo}
+              </td>
+              <td class="p-3.5">
+                <span class="block font-bold text-white">${nombreCliente}</span>
+                <span class="text-[10px] text-slate-400">${telCliente}</span>
+              </td>
+              <td class="p-3.5">
+                ${nombreTienda
+                  ? `<span class="bg-amber-500/15 text-accent-yellow border border-amber-500/30 text-[10px] font-black px-2 py-0.5 rounded-md block w-fit truncate max-w-[140px]">${nombreTienda}</span>`
+                  : `<span class="text-slate-500 text-[11px]">General / Víveres</span>`}
+              </td>
+              <td class="p-3.5 font-black text-accent-yellow">$${monto}</td>
+              <td class="p-3.5">${badgePaso}</td>
+              <td class="p-3.5">${badgePagoTienda}</td>
+              <td class="p-3.5">${celdaFoto}</td>
+              <td class="p-3.5 font-bold text-slate-300">${chofer}</td>
+              <td class="p-3.5 text-center">
+                <div class="flex items-center justify-center gap-1.5">
+                  <button onclick="abrirModalAdminDetalle('${id}')" class="btn-tactil bg-indigo-600/30 hover:bg-indigo-600 text-accent-cyan hover:text-white font-bold px-2.5 py-1.5 rounded-lg text-[10px] border border-indigo-500/30 transition whitespace-nowrap">
+                    Ver / Auditar
+                  </button>
+                  <button onclick="abrirNotificacionPedidoEnWhatsAppAdmin('${id}')" class="btn-tactil bg-emerald-600/20 hover:bg-emerald-600 text-accent-emerald hover:text-white font-black px-2 py-1.5 rounded-lg text-[10px] border border-emerald-500/30 transition flex items-center gap-1 whitespace-nowrap" title="Enviar a Mi WhatsApp">
+                    📲 WS
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        } catch (errFila) {
+          console.error(`Error al renderizar pedido ${id}:`, errFila);
+        }
       });
+
       if (window.lucide) lucide.createIcons();
     }
 
@@ -2750,11 +2767,15 @@
       const p = todosLosPedidosAdmin[id];
       if (!p) return;
 
+      const nomCliente = typeof p.cliente === 'object' && p.cliente !== null ? (p.cliente.nombre || p.nombre || 'Cliente') : (p.cliente || p.nombre || 'Cliente');
+      const telCliente = p.telefono || (typeof p.cliente === 'object' && p.cliente !== null ? p.cliente.telefono : '') || 'Sin especificar';
+      const dirCliente = typeof p.cliente === 'object' && p.cliente !== null ? (p.cliente.direccion || p.direccion) : (p.direccion || 'Sin dirección');
+
       document.getElementById('adm-modal-orden-id').innerText = `Orden: ${p.orden || id}`;
       document.getElementById('adm-modal-fecha').innerText = p.fecha ? new Date(p.fecha).toLocaleString() : 'Reciente';
-      document.getElementById('adm-modal-cliente').innerText = p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente');
-      document.getElementById('adm-modal-telefono').innerText = p.telefono || 'Sin especificar';
-      document.getElementById('adm-modal-direccion').innerText = p.cliente ? (p.cliente.direccion || p.direccion) : (p.direccion || 'Sin dirección');
+      document.getElementById('adm-modal-cliente').innerText = nomCliente;
+      document.getElementById('adm-modal-telefono').innerText = telCliente;
+      document.getElementById('adm-modal-direccion').innerText = dirCliente;
       
       let latGPS = (p.lat !== undefined && p.lat !== null) ? p.lat : p.destinoLat;
       let lngGPS = (p.lng !== undefined && p.lng !== null) ? p.lng : p.destinoLng;
@@ -2784,7 +2805,6 @@
       const totalMonto = parseFloat(p.total || p.montoTotal || p.monto || 0);
       document.getElementById('adm-modal-total').innerText = `$${totalMonto.toFixed(2)}`;
 
-      // Badge de promo en modal
       const cajaPromoModal = document.getElementById('adm-caja-promo-delivery-gratis');
       if (cajaPromoModal) {
         if (p.deliveryGratis) cajaPromoModal.classList.remove('hidden');
@@ -2836,7 +2856,6 @@
         vehiculoReqEl.innerText = p.vehiculoRequerido || (p.tipoServicio === 'transporte' ? 'Transporte' : 'Cualquiera');
       }
 
-      // PASO 3 & FACTURA: Compra en Comercio / Reembolso Chofer + Auditoría de Factura
       const cajaFacturaChofer = document.getElementById('adm-caja-factura-chofer');
       if (cajaFacturaChofer) {
         const montoGasto = parseFloat(p.montoFacturaTienda || p.montoGastoChofer || 0);
@@ -2903,7 +2922,6 @@
         }
       }
 
-      // Selector de Tiendas
       const selectTienda = document.getElementById('adm-select-tienda-asignada');
       if (selectTienda) {
         selectTienda.innerHTML = `<option value="">Sin Asignar (Comercio Libre / Indicado por Cliente)</option>`;
@@ -3026,6 +3044,7 @@
       const lngDest = p.lng ? parseFloat(p.lng) : (p.destinoLng ? parseFloat(p.destinoLng) : -68.5668);
       const latOrig = p.origenLat ? parseFloat(p.origenLat) : 10.1506;
       const lngOrig = p.origenLng ? parseFloat(p.origenLng) : -68.5668;
+      const nomCliente = typeof p.cliente === 'object' && p.cliente !== null ? (p.cliente.nombre || p.nombre || 'Destino') : (p.cliente || p.nombre || 'Destino');
 
       if (!mapaModalAdminInstance) {
         mapaModalAdminInstance = L.map('adm-mapa-modal-orden', { zoomControl: false, attributionControl: false }).setView([latDest, lngDest], 14);
@@ -3060,7 +3079,7 @@
           html: `<div class="pin-persona-cliente"><div class="pin-persona-onda"></div><div class="pin-persona-cuerpo">👤</div><span class="pin-persona-badge-tu">CLIENTE</span></div>`, 
           iconSize: [34, 34] 
         })
-      }).addTo(mapaModalAdminInstance).bindPopup(`📍 Cliente: ${p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Destino')}`).openPopup();
+      }).addTo(mapaModalAdminInstance).bindPopup(`📍 Cliente: ${nomCliente}`).openPopup();
       marcadoresMiniMapa.push(pinCliente);
 
       if (p.choferTelefono && choferesBD[p.choferTelefono] && choferesBD[p.choferTelefono].gps) {
@@ -3112,8 +3131,8 @@
 
       const telFinal = normalizarTelefono(choferObj.telefono);
       const numOrden = p.orden || `#FLASH-${pedidoSeleccionadoId.substring(0, 6)}`;
-      const dir = p.cliente ? (p.cliente.direccion || p.direccion) : (p.direccion || 'Nirgua');
-      const clienteNom = p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente');
+      const dir = typeof p.cliente === 'object' && p.cliente !== null ? (p.cliente.direccion || p.direccion) : (p.direccion || 'Nirgua');
+      const clienteNom = typeof p.cliente === 'object' && p.cliente !== null ? (p.cliente.nombre || p.nombre || 'Cliente') : (p.cliente || p.nombre || 'Cliente');
       const tienda = p.tiendaNombre ? `\n🏪 *Local a Comprar:* ${p.tiendaNombre}` : '';
 
       const msj = encodeURIComponent(
@@ -3157,8 +3176,8 @@
       const tel = normalizarTelefono(choferTarget.telefono);
 
       const numOrden = p.orden || `#FLASH-${id.substring(0, 6)}`;
-      const dir = p.cliente ? (p.cliente.direccion || p.direccion) : (p.direccion || 'Nirgua');
-      const clienteNom = p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente');
+      const dir = typeof p.cliente === 'object' && p.cliente !== null ? (p.cliente.direccion || p.direccion) : (p.direccion || 'Nirgua');
+      const clienteNom = typeof p.cliente === 'object' && p.cliente !== null ? (p.cliente.nombre || p.nombre || 'Cliente') : (p.cliente || p.nombre || 'Cliente');
       const tienda = p.tiendaNombre ? `\n🏪 *Comercio:* ${p.tiendaNombre}` : '';
 
       const msj = encodeURIComponent(
@@ -3755,6 +3774,7 @@
           cantOrdenesActivas++;
           const latDest = p.lat ? parseFloat(p.lat) : (p.destinoLat ? parseFloat(p.destinoLat) : null);
           const lngDest = p.lng ? parseFloat(p.lng) : (p.destinoLng ? parseFloat(p.destinoLng) : null);
+          const nomCliente = typeof p.cliente === 'object' && p.cliente !== null ? (p.cliente.nombre || p.nombre || 'Cliente') : (p.cliente || p.nombre || 'Cliente');
 
           if (latDest && lngDest) {
             cantClientes++;
@@ -3767,7 +3787,7 @@
             }).addTo(mapaRadarAdmin).bindPopup(`
               <div class="p-1 font-sans text-xs">
                 <b class="text-orange-400 block">${p.orden || '#FLASH'}</b>
-                <span class="text-slate-200 font-bold block">${p.cliente ? (p.cliente.nombre || p.cliente) : (p.nombre || 'Cliente')}</span>
+                <span class="text-slate-200 font-bold block">${nomCliente}</span>
                 <span class="text-slate-400 text-[10px] block">${p.direccion || 'Nirgua'}</span>
                 <span class="text-emerald-400 font-mono text-[10px] block mt-1">Estado: ${p.estado}</span>
               </div>
