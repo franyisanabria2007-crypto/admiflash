@@ -1317,6 +1317,133 @@
     </div>
   </div>
 
+  <!-- ================= MODAL: GESTIÓN DE MENÚ DE COMERCIOS ALIADOS ================= -->
+  <div id="modal-gestionar-menu-tienda" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="bg-slate-900 border-2 border-amber-500/50 w-full max-w-4xl rounded-3xl p-4 sm:p-6 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto no-scrollbar flex flex-col">
+      <!-- HEADER TIENDA -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <img id="menu-tienda-logo" src="img/logo.jfif" class="w-12 h-12 rounded-2xl object-cover border-2 border-amber-500/40 shrink-0" onerror="this.src='img/logo.jfif';">
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 id="menu-tienda-nombre" class="text-base sm:text-lg font-black text-white">Menú del Comercio</h3>
+              <span id="menu-tienda-badge-cat" class="bg-amber-500/20 text-accent-yellow border border-amber-500/30 text-[10px] font-black px-2 py-0.5 rounded-full uppercase">Comida Rápida</span>
+            </div>
+            <p id="menu-tienda-sub" class="text-[11px] text-slate-400">Administra los platos, precios en USD, disponibilidad y fotos de este restaurante aliado.</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <button onclick="abrirModalCrearPlatoTienda()" class="btn-tactil bg-gradient-to-r from-accent-yellow to-amber-500 hover:brightness-110 text-slate-950 font-black px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-md shadow-amber-500/20 whitespace-nowrap">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i> + Agregar Plato al Menú
+          </button>
+          <button onclick="cerrarModalGestionMenuTienda()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center shrink-0">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- BARRA DE BÚSQUEDA Y ESTADÍSTICAS DEL MENÚ -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 bg-slate-950 p-3 rounded-2xl border border-slate-800">
+        <div class="relative flex-1">
+          <i data-lucide="search" class="w-4 h-4 text-amber-400 absolute left-3 top-2.5"></i>
+          <input type="text" id="busqueda-menu-tienda" oninput="filtrarPlatosMenuTienda()" placeholder="Buscar plato por nombre o descripción... (Ej: Hamburguesa, Pizza, Café)" class="w-full pl-9 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-accent-yellow">
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <span class="bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 text-slate-300 font-bold whitespace-nowrap">
+            Total Platos: <b id="menu-tienda-cant-total" class="text-accent-yellow font-black">0</b>
+          </span>
+          <span class="bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 text-slate-300 font-bold whitespace-nowrap">
+            Disponibles: <b id="menu-tienda-cant-disponibles" class="text-accent-emerald font-black">0</b>
+          </span>
+        </div>
+      </div>
+
+      <!-- GRID DE PLATOS DEL MENÚ -->
+      <div id="grid-platos-menu-tienda" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 flex-1 overflow-y-auto no-scrollbar py-1">
+        <div class="text-slate-500 text-xs py-8 text-center col-span-full">Cargando platos del menú...</div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="border-t border-slate-800 pt-3 flex items-center justify-between text-xs text-slate-400">
+        <span>💡 Cualquier cambio de precio o plato se refleja de inmediato en los clientes.</span>
+        <button onclick="cerrarModalGestionMenuTienda()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-4 py-2 rounded-xl text-xs transition">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: AGREGAR / EDITAR PLATO DE COMERCIO ALIADO ================= -->
+  <div id="modal-editar-plato-tienda" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[60] flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border-2 border-amber-500/50 w-full max-w-md rounded-3xl p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto no-scrollbar">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <div class="p-2 bg-amber-500/20 text-accent-yellow rounded-xl border border-amber-500/30">
+            <i data-lucide="utensils" class="w-4 h-4"></i>
+          </div>
+          <h3 id="titulo-modal-plato-tienda" class="text-sm font-black text-white">Editar Plato del Menú</h3>
+        </div>
+        <button onclick="cerrarModalEditarPlatoTienda()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form onsubmit="guardarPlatoTienda(event)" class="space-y-3 text-xs">
+        <input type="hidden" id="plato-edit-tienda-id" value="">
+        <input type="hidden" id="plato-edit-id" value="">
+
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Nombre del Plato / Producto: *</label>
+          <input type="text" id="plato-edit-nombre" required placeholder="Ej: Hamburguesa Doble Queso, Pizza 4 Estaciones" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold focus:outline-none focus:border-accent-yellow">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Precio al Público en USD ($): *</label>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="ajustarPrecioPlatoInput(-0.25)" class="w-12 h-10 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-xl text-sm">-0.25</button>
+            <input type="number" step="0.01" id="plato-edit-precio" required placeholder="5.00" class="flex-1 bg-slate-950 border-2 border-amber-500/40 rounded-xl p-2 text-center text-lg font-black text-accent-yellow focus:outline-none focus:border-accent-yellow">
+            <button type="button" onclick="ajustarPrecioPlatoInput(0.25)" class="w-12 h-10 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-xl text-sm">+0.25</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Etiqueta / Badge (Opcional):</label>
+          <input type="text" id="plato-edit-badge" placeholder="Ej: TOP, POPULAR, DESTACADO, COMBO, NUEVO" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-yellow">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Descripción / Ingredientes (Opcional):</label>
+          <textarea id="plato-edit-sub" rows="2" placeholder="Ej: Carne 150g, tocineta, queso blanco, papitas crujientes y salsas" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-accent-yellow leading-relaxed"></textarea>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Ruta o URL de Imagen:</label>
+          <input type="text" id="plato-edit-imagen" placeholder="img/c1.png o enlace web" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono focus:outline-none focus:border-accent-yellow">
+        </div>
+
+        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between cursor-pointer">
+          <label for="plato-edit-disponible" class="font-bold text-white text-[11px] cursor-pointer flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>
+            <span>Plato Disponible (Visible para ordenar)</span>
+          </label>
+          <input type="checkbox" id="plato-edit-disponible" class="w-4 h-4 accent-emerald-500 rounded cursor-pointer" checked>
+        </div>
+
+        <div class="flex gap-2 pt-2 border-t border-slate-800">
+          <button type="button" id="btn-eliminar-plato-modal" onclick="eliminarPlatoDesdeModal()" class="hidden bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/30 font-black px-3 py-2.5 rounded-xl transition flex items-center justify-center gap-1">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Borrar
+          </button>
+          <button type="button" onclick="cerrarModalEditarPlatoTienda()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl transition">
+            Cancelar
+          </button>
+          <button type="submit" class="flex-1 bg-gradient-to-r from-accent-yellow to-amber-500 hover:brightness-110 text-slate-950 font-black py-2.5 rounded-xl transition shadow-md shadow-amber-500/20 flex items-center justify-center gap-1.5">
+            <i data-lucide="save" class="w-4 h-4"></i> Guardar Plato
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- ================= MODAL: EDITAR PRODUCTO Y PRECIO ================= -->
   <div id="modal-cambiar-precio" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border border-indigo-500/40 w-full max-w-md rounded-3xl p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto no-scrollbar">
@@ -1712,6 +1839,17 @@
           renderizarComerciosAdmin();
         } catch(e) { console.error("Error tiendas:", e); }
       }, (err) => console.error("Error Firebase tiendas:", err));
+
+      // 2.1 Menús de Platos de Comercios Aliados (productos_tiendas)
+      db.ref('productos_tiendas').on('value', (snapshot) => {
+        try {
+          productosTiendasBD = snapshot.val() || {};
+          if (tiendaMenuSeleccionadaId) {
+            renderizarListaPlatosMenuTienda(tiendaMenuSeleccionadaId);
+          }
+          renderizarComerciosAdmin();
+        } catch(e) { console.error("Error productos_tiendas:", e); }
+      }, (err) => console.error("Error Firebase productos_tiendas:", err));
 
       // 3. Cuentas Tiendas
       db.ref('cuentas_tiendas').on('value', (snapshot) => {
@@ -3819,13 +3957,78 @@ Desaparecerá tanto del Panel Admin como de la App de Clientes.`)) return;
       }
     }
 
-    // ================= TIENDAS Y COMIDA RÁPIDA =================
+    // ================= TIENDAS, COMIDA RÁPIDA & MENÚS DE RESTAURANTES =================
+    let productosTiendasBD = {};
+    let tiendaMenuSeleccionadaId = null;
+
+    const platosBaseComercios = {
+      moravos: [
+        { id: 'mc_cafe_capuchino', nombre: 'Café Capuchino Especial ☕', precioBase: 2.00, imagen: 'img/b6.png', badge: 'CAFÉ', sub: 'Café espresso con leche vaporizada y espuma cremosa', disponible: true },
+        { id: 'mc_postre_chocolate', nombre: 'Torta de Chocolate Moravos 🍰', precioBase: 3.00, imagen: 'img/p_quesillo.png', badge: 'POSTRE', sub: 'Bizcocho húmedo de chocolate con fudge artesanal', disponible: true }
+      ],
+      fran_chero: [
+        { id: 'fc_hamb_mixta', nombre: 'Hamburguesa Mixta Fran & Chero 🍔', precioBase: 5.00, imagen: 'img/c1.png', badge: 'DESTACADO', sub: 'Carne de res, pechuga de pollo, queso de mano, jamón y salsas', disponible: true },
+        { id: 'fc_perro_caliente', nombre: 'Perro Caliente Especial 🌭', precioBase: 2.00, imagen: 'img/c2.png', badge: 'CLÁSICO', sub: 'Salchicha especial, cebolla, papitas crujientes, queso blanco y salsas', disponible: true },
+        { id: 'fc_pepito_res', nombre: 'Pepito Especial de Res 🥖', precioBase: 6.50, imagen: 'img/c5.png', badge: 'POPULAR', sub: 'Pan baguette artesanal, lomito picado, queso gratinado, tocineta y papitas', disponible: true }
+      ],
+      antons: [
+        { id: 'ab_hamb_antons', nombre: "Hamburguesa Anton's Supreme 🍔", precioBase: 6.00, imagen: 'img/c1.png', badge: 'TOP', sub: 'Doble carne smashed, queso cheddar americano, tocineta crocante', disponible: true },
+        { id: 'ab_combo_empanadas', nombre: 'Combo 3 Empanadas 🥟', precioBase: 3.50, imagen: 'img/c4.png', badge: 'FRESCO', sub: '3 empanadas crujientes recién hechas con guiso especial', disponible: true }
+      ],
+      zirus: [
+        { id: 'zp_pizza_familiar', nombre: 'Pizza Familiar Zirus 🍕', precioBase: 12.00, imagen: 'img/c3.png', badge: 'TOP', sub: 'Masa artesanal a la piedra, salsa napolitana de la casa y doble mozzarella', disponible: true }
+      ]
+    };
+
+    function obtenerComerciosCombinadosAdmin() {
+      const base = {
+        moravos: { id: 'moravos', nombre: 'Moravos Café', categoria: 'cafeteria', porcentajeComision: 8, logo: 'img/moravos.jpg', direccion: 'Nirgua, Yaracuy', telefono: '04121234567' },
+        fran_chero: { id: 'fran_chero', nombre: 'El Sabor de Fran & Chero', categoria: 'hamburguesas', porcentajeComision: 10, logo: 'img/fran y chero.jpg', direccion: 'Nirgua, Yaracuy', telefono: '04121234567' },
+        antons: { id: 'antons', nombre: "Anton's Burgers", categoria: 'hamburguesas', porcentajeComision: 10, logo: 'img/anto bruger nirgua.jpg', direccion: 'Nirgua, Yaracuy', telefono: '04121234567' },
+        zirus: { id: 'zirus', nombre: 'Zirus Pizza', categoria: 'pizzeria', porcentajeComision: 10, logo: 'img/ziruspizza.webp', direccion: 'Nirgua, Yaracuy', telefono: '04121234567' }
+      };
+      const combinados = { ...base };
+      if (tiendasBD && typeof tiendasBD === 'object') {
+        Object.keys(tiendasBD).forEach(k => {
+          if (tiendasBD[k] && !tiendasBD[k].eliminado) {
+            combinados[k] = { ...combinados[k], ...tiendasBD[k], id: k };
+          } else if (tiendasBD[k] && tiendasBD[k].eliminado) {
+            delete combinados[k];
+          }
+        });
+      }
+      return combinados;
+    }
+
+    function obtenerPlatosTiendaCombinados(tid) {
+      const mapa = {};
+      // 1. Platos base iniciales si existen
+      if (platosBaseComercios[tid]) {
+        platosBaseComercios[tid].forEach(p => {
+          mapa[p.id] = { ...p, tiendaId: tid };
+        });
+      }
+      // 2. Fusionar con Firebase productos_tiendas[tid]
+      if (productosTiendasBD[tid] && typeof productosTiendasBD[tid] === 'object') {
+        Object.keys(productosTiendasBD[tid]).forEach(pid => {
+          const item = productosTiendasBD[tid][pid];
+          if (item && !item.eliminado) {
+            mapa[pid] = { ...(mapa[pid] || {}), ...item, id: pid, tiendaId: tid };
+          } else if (item && item.eliminado) {
+            delete mapa[pid];
+          }
+        });
+      }
+      return Object.values(mapa);
+    }
+
     function renderizarComerciosAdmin() {
       const grid = document.getElementById('grid-tiendas-admin');
       if (!grid) return;
       grid.innerHTML = "";
 
-      const keys = Object.keys(tiendasBD);
+      const comerciosMap = obtenerComerciosCombinadosAdmin();
+      const keys = Object.keys(comerciosMap);
       document.getElementById('cant-admin-comercios-badge').innerText = keys.length;
 
       if (keys.length === 0) {
@@ -3834,7 +4037,7 @@ Desaparecerá tanto del Panel Admin como de la App de Clientes.`)) return;
       }
 
       keys.forEach(tid => {
-        const t = tiendasBD[tid];
+        const t = comerciosMap[tid];
         const cta = cuentasTiendasBD[tid] || {};
         const movs = cta.movimientos ? Object.values(cta.movimientos) : [];
         let totalVentasTienda = 0;
@@ -3845,23 +4048,28 @@ Desaparecerá tanto del Panel Admin como de la App de Clientes.`)) return;
           totalComisionFlash += parseFloat(m.comisionFlash || 0);
         });
 
+        const platosTienda = obtenerPlatosTiendaCombinados(tid);
+        const cantPlatos = platosTienda.length;
+        const cantDisponibles = platosTienda.filter(p => p.disponible !== false).length;
+
         grid.innerHTML += `
-          <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3 flex flex-col justify-between">
-            <div>
+          <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 hover:border-amber-500/40 space-y-3 flex flex-col justify-between shadow-xl transition group">
+            <div class="space-y-3">
               <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
-                <div class="flex items-center gap-2.5">
-                  <img src="${t.logo || 'img/logo.jfif'}" class="w-10 h-10 rounded-xl object-cover border border-white/10" onerror="this.src='img/logo.jfif';">
-                  <div>
-                    <h4 class="font-black text-white text-xs sm:text-sm">${t.nombre}</h4>
-                    <span class="text-[10px] text-accent-yellow font-bold">${t.categoria || 'Comida Rápida'}</span>
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <img src="${t.logo || 'img/logo.jfif'}" class="w-11 h-11 rounded-2xl object-cover border border-white/10 shrink-0" onerror="this.src='img/logo.jfif';">
+                  <div class="min-w-0">
+                    <h4 class="font-black text-white text-xs sm:text-sm truncate">${t.nombre}</h4>
+                    <span class="text-[10px] text-accent-yellow font-bold uppercase block truncate">${t.categoria || 'Comida Rápida'}</span>
                   </div>
                 </div>
-                <span class="bg-accent-cyan/15 text-accent-cyan border border-accent-cyan/30 text-[10px] font-mono font-black px-2 py-0.5 rounded-full">
+                <span class="bg-accent-cyan/15 text-accent-cyan border border-accent-cyan/30 text-[10px] font-mono font-black px-2 py-0.5 rounded-full shrink-0">
                   ${t.porcentajeComision || 8}% Comisión
                 </span>
               </div>
 
-              <div class="grid grid-cols-2 gap-2 text-xs pt-3">
+              <!-- RESUMEN FINANCIERO -->
+              <div class="grid grid-cols-2 gap-2 text-xs">
                 <div class="bg-slate-900 p-2 rounded-xl border border-slate-800">
                   <span class="text-[9px] text-slate-400 font-bold block uppercase">Ventas Vía Flash</span>
                   <span class="text-sm font-black text-white font-mono">$${totalVentasTienda.toFixed(2)}</span>
@@ -3871,20 +4079,268 @@ Desaparecerá tanto del Panel Admin como de la App de Clientes.`)) return;
                   <span class="text-sm font-black text-accent-cyan font-mono">+$${totalComisionFlash.toFixed(2)}</span>
                 </div>
               </div>
+
+              <!-- RESUMEN MENÚ -->
+              <div class="bg-slate-900/60 p-2 rounded-xl border border-slate-800 flex items-center justify-between text-[11px]">
+                <span class="text-slate-400 font-bold flex items-center gap-1.5">
+                  <i data-lucide="utensils" class="w-3.5 h-3.5 text-accent-yellow"></i> Carta / Menú:
+                </span>
+                <span class="text-white font-bold font-mono">
+                  <b class="text-accent-yellow">${cantPlatos}</b> platos (<b class="text-accent-emerald">${cantDisponibles}</b> activos)
+                </span>
+              </div>
             </div>
 
-            <div class="flex items-center gap-2 pt-2 border-t border-slate-800/80 text-[11px]">
-              <button onclick="editarTiendaModal('${tid}')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-1.5 rounded-lg transition">
-                Editar
+            <!-- BOTONES DE ACCIÓN: GESTIÓN DE MENÚ Y EDICIÓN -->
+            <div class="space-y-2 pt-2 border-t border-slate-800/80 text-[11px]">
+              <button onclick="abrirModalGestionMenuTienda('${tid}')" class="btn-tactil w-full bg-gradient-to-r from-accent-yellow to-amber-500 hover:brightness-110 text-slate-950 font-black py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/20">
+                <i data-lucide="utensils-crossed" class="w-4 h-4"></i>
+                <span>🍽️ GESTIONAR MENÚ DE PLATOS (${cantPlatos})</span>
               </button>
-              <button onclick="eliminarTiendaAdmin('${tid}')" class="text-rose-400 hover:bg-rose-500/20 px-2 py-1.5 rounded-lg font-bold transition">
-                Eliminar
-              </button>
+
+              <div class="flex items-center gap-2">
+                <button onclick="editarTiendaModal('${tid}')" class="btn-tactil flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-1.5 rounded-lg transition flex items-center justify-center gap-1">
+                  <i data-lucide="edit" class="w-3.5 h-3.5 text-accent-cyan"></i> Datos Comercio
+                </button>
+                <button onclick="eliminarTiendaAdmin('${tid}')" class="btn-tactil bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-lg font-bold transition flex items-center justify-center gap-1">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
             </div>
           </div>
         `;
       });
       if (window.lucide) lucide.createIcons();
+    }
+
+    // ================= FUNCIONES DE GESTIÓN DE MENÚ (PRODUCTOS_TIENDAS) =================
+    function abrirModalGestionMenuTienda(tid) {
+      tiendaMenuSeleccionadaId = tid;
+      const comerciosMap = obtenerComerciosCombinadosAdmin();
+      const t = comerciosMap[tid] || { nombre: tid, categoria: 'Comida Rápida', logo: 'img/logo.jfif' };
+
+      document.getElementById('menu-tienda-nombre').innerText = `Menú de ${t.nombre}`;
+      document.getElementById('menu-tienda-sub').innerText = `Administra todos los platos, precios en USD, disponibilidad y fotos de "${t.nombre}".`;
+      document.getElementById('menu-tienda-logo').src = t.logo || 'img/logo.jfif';
+      document.getElementById('menu-tienda-badge-cat').innerText = (t.categoria || 'Comida Rápida').toUpperCase();
+      document.getElementById('busqueda-menu-tienda').value = '';
+
+      renderizarListaPlatosMenuTienda(tid);
+      document.getElementById('modal-gestionar-menu-tienda').classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function cerrarModalGestionMenuTienda() {
+      document.getElementById('modal-gestionar-menu-tienda').classList.add('hidden');
+      tiendaMenuSeleccionadaId = null;
+    }
+
+    function filtrarPlatosMenuTienda() {
+      if (tiendaMenuSeleccionadaId) {
+        renderizarListaPlatosMenuTienda(tiendaMenuSeleccionadaId);
+      }
+    }
+
+    function renderizarListaPlatosMenuTienda(tid) {
+      const grid = document.getElementById('grid-platos-menu-tienda');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const platos = obtenerPlatosTiendaCombinados(tid);
+      const query = (document.getElementById('busqueda-menu-tienda')?.value || '').toLowerCase().trim();
+
+      const totalEl = document.getElementById('menu-tienda-cant-total');
+      const dispEl = document.getElementById('menu-tienda-cant-disponibles');
+      if (totalEl) totalEl.innerText = platos.length;
+      if (dispEl) dispEl.innerText = platos.filter(p => p.disponible !== false).length;
+
+      const filtrados = platos.filter(p => {
+        if (!query) return true;
+        const nom = (p.nombre || '').toLowerCase();
+        const sub = (p.sub || p.descripcion || '').toLowerCase();
+        const badge = (p.badge || '').toLowerCase();
+        return nom.includes(query) || sub.includes(query) || badge.includes(query);
+      });
+
+      if (filtrados.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-12 text-slate-500 space-y-2">
+            <i data-lucide="utensils" class="w-8 h-8 mx-auto opacity-40"></i>
+            <p class="text-xs">No se encontraron platos en el menú con ese filtro.</p>
+            <button onclick="abrirModalCrearPlatoTienda()" class="text-xs font-bold text-accent-yellow hover:underline mt-1 inline-block">
+              + Agregar el primer plato a este menú
+            </button>
+          </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      filtrados.forEach(p => {
+        const disponible = p.disponible !== false;
+        const precio = parseFloat(p.precioBase || 0).toFixed(2);
+        const img = p.imagen || 'img/logo.jfif';
+        const badgeHTML = p.badge ? `<span class="text-[9px] font-black bg-amber-500/20 text-accent-yellow border border-amber-500/40 px-2 py-0.5 rounded-full uppercase">${p.badge}</span>` : '';
+
+        grid.innerHTML += `
+          <div class="bg-slate-950 p-3.5 rounded-2xl border ${disponible ? 'border-slate-800' : 'border-rose-500/40 opacity-75'} hover:border-amber-500/40 transition shadow-lg flex flex-col justify-between space-y-3">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between gap-1">
+                ${badgeHTML || '<span></span>'}
+                <button type="button" onclick="toggleDisponibilidadPlatoTienda('${tid}', '${p.id}', ${!disponible})" class="text-[9px] font-black px-2 py-0.5 rounded-full border transition ${disponible ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-rose-500/20 hover:text-rose-300' : 'bg-rose-500/20 text-rose-300 border-rose-500/40 hover:bg-emerald-500/20 hover:text-emerald-300'}">
+                  ${disponible ? '🟢 DISPONIBLE' : '🔴 AGOTADO'}
+                </button>
+              </div>
+
+              <div class="w-full h-24 rounded-xl overflow-hidden bg-slate-900 border border-slate-800/80 flex items-center justify-center p-1">
+                <img src="${img}" alt="${(p.nombre || '').replace(/"/g, '&quot;')}" class="w-full h-full object-contain" onerror="this.src='img/logo.jfif';">
+              </div>
+
+              <div>
+                <h4 class="font-black text-white text-xs leading-snug line-clamp-2">${p.nombre}</h4>
+                ${p.sub || p.descripcion ? `<p class="text-[10px] text-slate-400 line-clamp-2 mt-1 leading-relaxed">${p.sub || p.descripcion}</p>` : ''}
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-800/80 space-y-2">
+              <div class="flex items-baseline justify-between">
+                <span class="text-[10px] text-slate-400 font-bold">Precio Cliente:</span>
+                <span class="text-base font-black text-accent-yellow font-mono">$${precio}</span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="abrirModalEditarPlatoTienda('${tid}', '${p.id}')" class="btn-tactil flex-1 bg-gradient-to-r from-accent-yellow to-amber-500 hover:brightness-110 text-slate-950 font-black py-1.5 rounded-xl text-xs flex items-center justify-center gap-1 shadow transition">
+                  <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Editar
+                </button>
+                <button onclick="eliminarPlatoTienda('${tid}', '${p.id}')" title="Eliminar del menú" class="btn-tactil bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/30 p-1.5 rounded-xl transition">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function abrirModalCrearPlatoTienda(tid) {
+      const targetTid = tid || tiendaMenuSeleccionadaId;
+      if (!targetTid) return;
+
+      document.getElementById('titulo-modal-plato-tienda').innerText = "Nuevo Plato al Menú";
+      document.getElementById('plato-edit-tienda-id').value = targetTid;
+      document.getElementById('plato-edit-id').value = "";
+      document.getElementById('plato-edit-nombre').value = "";
+      document.getElementById('plato-edit-precio').value = "5.00";
+      document.getElementById('plato-edit-badge').value = "";
+      document.getElementById('plato-edit-sub').value = "";
+      document.getElementById('plato-edit-imagen').value = "";
+      document.getElementById('plato-edit-disponible').checked = true;
+      document.getElementById('btn-eliminar-plato-modal').classList.add('hidden');
+
+      document.getElementById('modal-editar-plato-tienda').classList.remove('hidden');
+      document.getElementById('plato-edit-nombre').focus();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function abrirModalEditarPlatoTienda(tid, platoId) {
+      tiendaMenuSeleccionadaId = tid;
+      const platos = obtenerPlatosTiendaCombinados(tid);
+      const p = platos.find(item => item.id === platoId);
+      if (!p) return;
+
+      document.getElementById('titulo-modal-plato-tienda').innerText = `Editar: ${p.nombre}`;
+      document.getElementById('plato-edit-tienda-id').value = tid;
+      document.getElementById('plato-edit-id').value = platoId;
+      document.getElementById('plato-edit-nombre').value = p.nombre || '';
+      document.getElementById('plato-edit-precio').value = parseFloat(p.precioBase || 0).toFixed(2);
+      document.getElementById('plato-edit-badge').value = p.badge || '';
+      document.getElementById('plato-edit-sub').value = p.sub || p.descripcion || '';
+      document.getElementById('plato-edit-imagen').value = p.imagen || '';
+      document.getElementById('plato-edit-disponible').checked = p.disponible !== false;
+      document.getElementById('btn-eliminar-plato-modal').classList.remove('hidden');
+
+      document.getElementById('modal-editar-plato-tienda').classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function cerrarModalEditarPlatoTienda() {
+      document.getElementById('modal-editar-plato-tienda').classList.add('hidden');
+    }
+
+    function ajustarPrecioPlatoInput(delta) {
+      const inp = document.getElementById('plato-edit-precio');
+      let val = parseFloat(inp.value) || 0;
+      val += delta;
+      if (val < 0) val = 0;
+      inp.value = val.toFixed(2);
+    }
+
+    function guardarPlatoTienda(e) {
+      e.preventDefault();
+      const tid = document.getElementById('plato-edit-tienda-id').value;
+      const idExistente = document.getElementById('plato-edit-id').value;
+      const nombre = document.getElementById('plato-edit-nombre').value.trim();
+      const precio = parseFloat(document.getElementById('plato-edit-precio').value);
+      const badge = document.getElementById('plato-edit-badge').value.trim();
+      const sub = document.getElementById('plato-edit-sub').value.trim();
+      const imagen = document.getElementById('plato-edit-imagen').value.trim() || 'img/logo.jfif';
+      const disponible = document.getElementById('plato-edit-disponible').checked;
+
+      if (!tid || !nombre || isNaN(precio) || precio < 0) {
+        alert("Completa el nombre y un precio válido.");
+        return;
+      }
+
+      const platoId = idExistente || `plato_${Date.now()}`;
+      const datosPlato = {
+        id: platoId,
+        tiendaId: tid,
+        nombre: nombre,
+        precioBase: precio,
+        badge: badge,
+        sub: sub,
+        descripcion: sub,
+        imagen: imagen,
+        disponible: disponible,
+        eliminado: false,
+        actualizadoEn: new Date().toISOString()
+      };
+
+      db.ref(`productos_tiendas/${tid}/${platoId}`).set(datosPlato).then(() => {
+        cerrarModalEditarPlatoTienda();
+        alert(`✓ ¡Plato "${nombre}" guardado con éxito! Se actualizó en el menú.`);
+      }).catch(err => {
+        alert("Error al guardar plato: " + err.message);
+      });
+    }
+
+    function toggleDisponibilidadPlatoTienda(tid, platoId, nuevoEstado) {
+      db.ref(`productos_tiendas/${tid}/${platoId}`).update({
+        disponible: nuevoEstado,
+        actualizadoEn: new Date().toISOString()
+      });
+    }
+
+    function eliminarPlatoTienda(tid, platoId) {
+      if (!confirm("¿Seguro que deseas eliminar este plato del menú de la tienda?")) return;
+      db.ref(`productos_tiendas/${tid}/${platoId}`).update({
+        eliminado: true,
+        disponible: false,
+        eliminadoEn: new Date().toISOString()
+      }).then(() => {
+        cerrarModalEditarPlatoTienda();
+        alert("🗑️ Plato eliminado del menú.");
+      }).catch(err => {
+        alert("Error al eliminar plato: " + err.message);
+      });
+    }
+
+    function eliminarPlatoDesdeModal() {
+      const tid = document.getElementById('plato-edit-tienda-id').value;
+      const platoId = document.getElementById('plato-edit-id').value;
+      if (tid && platoId) eliminarPlatoTienda(tid, platoId);
     }
 
     function abrirModalRegistrarTienda() {
@@ -3907,7 +4363,8 @@ Desaparecerá tanto del Panel Admin como de la App de Clientes.`)) return;
     }
 
     function editarTiendaModal(tid) {
-      const t = tiendasBD[tid];
+      const comerciosMap = obtenerComerciosCombinadosAdmin();
+      const t = comerciosMap[tid];
       if (!t) return;
       document.getElementById('tienda-edit-id').value = tid;
       document.getElementById('titulo-modal-tienda').innerText = `Editar ${t.nombre}`;
@@ -3939,6 +4396,7 @@ Desaparecerá tanto del Panel Admin como de la App de Clientes.`)) return;
         telefono: telefono,
         logo: logo,
         direccion: direccion,
+        eliminado: false,
         actualizadoEn: new Date().toISOString()
       };
 
@@ -3949,8 +4407,16 @@ Desaparecerá tanto del Panel Admin como de la App de Clientes.`)) return;
     }
 
     function eliminarTiendaAdmin(tid) {
-      if (confirm("¿Estás seguro de eliminar esta tienda?")) {
-        db.ref(`tiendas/${tid}`).remove();
+      const comerciosMap = obtenerComerciosCombinadosAdmin();
+      const t = comerciosMap[tid];
+      const nom = t ? t.nombre : tid;
+      if (confirm(`¿Estás seguro de eliminar "${nom}"? Desaparecerá del panel y de la app de clientes.`)) {
+        db.ref(`tiendas/${tid}`).update({
+          eliminado: true,
+          eliminadoEn: new Date().toISOString()
+        }).then(() => {
+          alert(`🗑️ Tienda "${nom}" eliminada.`);
+        });
       }
     }
 
