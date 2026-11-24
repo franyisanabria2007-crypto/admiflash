@@ -18,6 +18,13 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+  <!-- Catálogo Base de Productos con respaldo seguro para GitHub Pages -->
+  <script>
+    window.PRODUCTOS_BASE = window.PRODUCTOS_BASE || {};
+    window.productos = window.productos || {};
+  </script>
+  <script src="./productos.js" onerror="console.warn('productos.js no encontrado en servidor GitHub Pages, usando catálogo base y Firebase.')"></script>
+
   <!-- Google Fonts: Plus Jakarta Sans & Orbitron -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
@@ -123,8 +130,6 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
     }
   </style>
-  <!-- Catálogo Base de Productos -->
-  <script src="productos.js"></script>
 
   <!-- Catálogo Completo Extraído de produ.txt (Embedido para carga inmediata sin depender solo de productos.js) -->
   <script>
@@ -1737,12 +1742,22 @@
       }
     }
 
-    // ENTRADA DIRECTA: INICIALIZACIÓN SIN BARRERAS DE LOGIN
-    window.onload = () => {
-      cargarAjustesWhatsAppGuardados();
-      inicializarSuscripciones();
-      if (window.lucide) lucide.createIcons();
-    };
+    // ENTRADA DIRECTA: INICIALIZACIÓN SEGURA Y RESILIENTE PARA GITHUB PAGES
+    let appAdminIniciada = false;
+    function iniciarAppAdminSegura() {
+      if (appAdminIniciada) return;
+      appAdminIniciada = true;
+      try {
+        if (window.CATALOGO_PRODU_TXT) {
+          window.PRODUCTOS_BASE = Object.assign({}, window.CATALOGO_PRODU_TXT, window.PRODUCTOS_BASE || {});
+        }
+        cargarAjustesWhatsAppGuardados();
+        inicializarSuscripciones();
+        if (window.lucide) lucide.createIcons();
+      } catch (err) {
+        console.error('Error al inicializar Pedidos Flash Admin en GitHub Pages:', err);
+      }
+    }
 
     function autenticarAdmin(e) {
       if (e) e.preventDefault();
@@ -1818,6 +1833,18 @@
           }
         }
       });
+
+      // Timeout preventivo para evitar que se quede congelado en "Conectando..." en GitHub Pages
+      setTimeout(() => {
+        const txt = document.getElementById('txt-conexion-firebase');
+        if (txt && txt.innerText && txt.innerText.includes('Conectando')) {
+          const ind = document.getElementById('indicador-conexion-firebase');
+          if (ind) {
+            ind.className = "bg-amber-500/15 text-amber-300 border border-amber-500/40 text-[10px] font-black px-2.5 py-1 rounded-xl flex items-center gap-1.5 shadow-sm transition";
+          }
+          txt.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400"></span> Modo local / Esperando Firebase`;
+        }
+      }, 3500);
 
       // 1. Catálogo (fusiona productos.js + Firebase sin borrar existentes)
       let catalogoBaseAutoSincronizado = false;
@@ -3584,7 +3611,18 @@
 
     function obtenerCatalogoCombinadoAdmin() {
       const combinado = {};
-      // 0. Cargar todos los productos del listado completo (produ.txt)
+      // 0. Cargar PRODUCTOS_BASE si existe (catálogo precargado de respaldo seguro)
+      if (window.PRODUCTOS_BASE && typeof window.PRODUCTOS_BASE === 'object') {
+        Object.keys(window.PRODUCTOS_BASE).forEach(k => {
+          const item = window.PRODUCTOS_BASE[k];
+          if (item && item.id) {
+            combinado[item.id] = { ...item };
+          } else if (item && typeof item === 'object') {
+            combinado[k] = { ...item, id: k };
+          }
+        });
+      }
+      // 0.1 Cargar todos los productos del listado completo (produ.txt embebido)
       if (window.CATALOGO_PRODU_TXT && typeof window.CATALOGO_PRODU_TXT === 'object') {
         Object.keys(window.CATALOGO_PRODU_TXT).forEach(id => {
           const item = window.CATALOGO_PRODU_TXT[id];
@@ -3693,7 +3731,7 @@
               </div>
 
               <div class="w-full h-24 rounded-xl overflow-hidden bg-slate-950 flex items-center justify-center mb-2.5 p-1 border border-slate-800/80">
-                <img src="${img}" alt="${(p.nombre || '').replace(/"/g, '&quot;')}" loading="lazy" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" onerror="this.src='img/logo.jfif';">
+                <img src="${img}" alt="${(p.nombre || '').replace(/"/g, '&quot;')}" loading="lazy" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'1.5\'><rect width=\'20\' height=\'20\' x=\'2\' y=\'2\' rx=\'4\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'m21 15-5-5L5 21\'/></svg>';">
               </div>
 
               <h4 class="font-bold text-white text-xs leading-snug line-clamp-2 mb-1" title="${(p.nombre || '').replace(/"/g, '&quot;')}">${p.nombre}</h4>
@@ -4057,7 +4095,7 @@ Desaparecerá tanto del Panel Admin como de la App de Clientes.`)) return;
             <div class="space-y-3">
               <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
                 <div class="flex items-center gap-2.5 min-w-0">
-                  <img src="${t.logo || 'img/logo.jfif'}" class="w-11 h-11 rounded-2xl object-cover border border-white/10 shrink-0" onerror="this.src='img/logo.jfif';">
+                  <img src="${t.logo || 'img/logo.jfif'}" class="w-11 h-11 rounded-2xl object-cover border border-white/10 shrink-0" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'1.5\'><rect width=\'20\' height=\'20\' x=\'2\' y=\'2\' rx=\'4\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'m21 15-5-5L5 21\'/></svg>';">
                   <div class="min-w-0">
                     <h4 class="font-black text-white text-xs sm:text-sm truncate">${t.nombre}</h4>
                     <span class="text-[10px] text-accent-yellow font-bold uppercase block truncate">${t.categoria || 'Comida Rápida'}</span>
@@ -4193,7 +4231,7 @@ Desaparecerá tanto del Panel Admin como de la App de Clientes.`)) return;
               </div>
 
               <div class="w-full h-24 rounded-xl overflow-hidden bg-slate-900 border border-slate-800/80 flex items-center justify-center p-1">
-                <img src="${img}" alt="${(p.nombre || '').replace(/"/g, '&quot;')}" class="w-full h-full object-contain" onerror="this.src='img/logo.jfif';">
+                <img src="${img}" alt="${(p.nombre || '').replace(/"/g, '&quot;')}" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'1.5\'><rect width=\'20\' height=\'20\' x=\'2\' y=\'2\' rx=\'4\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'m21 15-5-5L5 21\'/></svg>';">
               </div>
 
               <div>
@@ -4735,6 +4773,14 @@ Desaparecerá tanto del Panel Admin como de la App de Clientes.`)) return;
     function filtrarTablaPedidos() {
       renderizarTablaPedidos();
     }
+
+    // Inicialización segura y resiliente para GitHub Pages (DOMContentLoaded con fallback a load y ejecución inmediata)
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', iniciarAppAdminSegura);
+    } else {
+      iniciarAppAdminSegura();
+    }
+    window.addEventListener('load', iniciarAppAdminSegura);
   </script>
 </body>
 </html>
